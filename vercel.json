@@ -1,6 +1,7 @@
 {
   "buildCommand": "pnpm --filter front build",
   "outputDirectory": "front/dist",
+  "installCommand": "pnpm install",
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
