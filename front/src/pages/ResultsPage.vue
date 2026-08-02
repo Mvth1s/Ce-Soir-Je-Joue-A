@@ -28,6 +28,25 @@ const isFreeGamesFallback = computed(
   () => suggestions.value.length > 0 && suggestions.value.every((s) => s.match === null),
 );
 
+// Precharge les affiches pendant que l'ecran de calcul est encore affiche,
+// pour que les cartes du podium apparaissent avec leurs images deja pretes
+// plutot que de les voir se charger une a une. Un delai max evite de bloquer
+// l'affichage si une affiche est lente ou indisponible.
+function preloadImages(urls: string[], timeoutMs = 2500): Promise<void[]> {
+  return Promise.all(
+    urls.map(
+      (url) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          img.src = url;
+          setTimeout(resolve, timeoutMs);
+        }),
+    ),
+  );
+}
+
 async function fetchSuggestions() {
   phase.value = "loading";
   try {
@@ -51,6 +70,12 @@ async function fetchSuggestions() {
     }
     const data = (await res.json()) as { suggestions: PodiumSuggestion[] };
     suggestions.value = data.suggestions;
+    const posterUrls = data.suggestions
+      .map((s) => s.posterUrl)
+      .filter((url): url is string => Boolean(url));
+    if (posterUrls.length > 0) {
+      await preloadImages(posterUrls);
+    }
     phase.value = "results";
   } catch {
     phase.value = "error";

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppFooter from "@/components/AppFooter.vue";
 import AppHeader from "@/components/AppHeader.vue";
 import BootScreen from "@/components/BootScreen.vue";
 </script>
@@ -18,5 +19,6 @@ import BootScreen from "@/components/BootScreen.vue";
     <main style="flex: 1; display: flex; flex-direction: column">
       <router-view />
     </main>
+    <AppFooter />
   </div>
 </template>
