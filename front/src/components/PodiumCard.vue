@@ -26,6 +26,7 @@ const props = defineProps<{
 
 const flipped = ref(false);
 const isTouch = ref(false);
+const posterLoaded = ref(false);
 
 onMounted(() => {
   isTouch.value = window.matchMedia("(hover: none)").matches;
@@ -95,6 +96,10 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
               :src="suggestion.posterUrl"
               :alt="suggestion.name"
               class="podium-card__poster-img"
+              :class="{ 'podium-card__poster-img--loaded': posterLoaded }"
+              fetchpriority="high"
+              decoding="async"
+              @load="posterLoaded = true"
             />
             <div v-if="suggestion.posterUrl" class="podium-card__poster-overlay"></div>
             <span v-if="!suggestion.posterUrl" class="podium-card__poster-label">affiche steam</span>
@@ -172,13 +177,13 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   animation-duration: 0.55s;
 }
 .podium-card[data-size="silver"] {
-  width: min(220px, 42vw);
+  width: min(300px, 88vw);
   height: min(452px, 86vw);
   perspective: 1300px;
   animation-delay: 0.12s;
 }
 .podium-card[data-size="bronze"] {
-  width: min(200px, 42vw);
+  width: min(300px, 88vw);
   height: min(408px, 86vw);
   perspective: 1300px;
   animation-delay: 0.24s;
@@ -305,6 +310,11 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.podium-card__poster-img--loaded {
+  opacity: 1;
 }
 .podium-card__poster-overlay {
   position: absolute;
