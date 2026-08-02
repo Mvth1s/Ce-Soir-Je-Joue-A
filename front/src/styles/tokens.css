@@ -1,0 +1,123 @@
+/* Portee depuis la maquette Claude Design "Ce soir je joue a...". */
+
+:root {
+  --bg: #26211f;
+  --bg2: #2e2825;
+  --surf: #332c29;
+  --surf2: #3d3532;
+  --bord: #4b413c;
+  --tx: #f6ebe1;
+  --tx2: #c6b5a8;
+  --tx3: #b3a398;
+  --acc: #6fb3e0;
+  --accink: #10222e;
+  --gold: #ebc684;
+  --goldbg: linear-gradient(160deg, #453519, #8e6c33 45%, #ebc684 130%);
+  --silver: #cfc4bc;
+  --silverbg: linear-gradient(160deg, #302926, #6c625c 55%, #c2b6ae 140%);
+  --bronze: #d6976f;
+  --bronzebg: linear-gradient(160deg, #3a2620, #84523b 55%, #d6976f 140%);
+  --posterbg: linear-gradient(170deg, #453c37, #2c2523);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+}
+
+[data-theme="light"] {
+  --bg: #fbf4ec;
+  --bg2: #f4e8dc;
+  --surf: #fffcf8;
+  --surf2: #f8efe6;
+  --bord: #e7d7c7;
+  --tx: #302623;
+  --tx2: #716056;
+  --tx3: #877263;
+  --acc: #2f72a6;
+  --accink: #fff8f3;
+  --gold: #c89340;
+  --goldbg: linear-gradient(160deg, #fff3d8, #f2d9a3 55%, #d6a757 140%);
+  --silver: #8d8078;
+  --silverbg: linear-gradient(160deg, #faf5f0, #e0d5cc 55%, #afa298 140%);
+  --bronze: #b0714a;
+  --bronzebg: linear-gradient(160deg, #fbe5d5, #e5b492 55%, #bc7c55 140%);
+  --posterbg: linear-gradient(170deg, #eee2d6, #dcccbd);
+  --shadow: 0 18px 44px rgba(80, 58, 44, 0.13);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: #26211f;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  color: var(--acc);
+}
+
+button {
+  font: inherit;
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes bootbar {
+  from {
+    width: 4%;
+  }
+  to {
+    width: 100%;
+  }
+}
+@keyframes pagein {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pulseblock {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-6px);
+  }
+}
+@keyframes fadeout {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

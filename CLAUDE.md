@@ -8,12 +8,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Documentation-only stage: no source code, no `package.json`, no build/lint/test tooling exists yet. The backend framework is still undecided (see "Points encore ouverts" in `docs/02-architecture-logicielle.md`). Once real code and tooling land, add the actual build/lint/test commands here — do not invent them in the meantime.
+V1 implemented: Steam login, criteria form, and the podium suggestion flow all work end-to-end. pnpm monorepo: `front/` (Vue 3 + Vite SPA), `back/src/` (backend logic: db, session, Steam/Mistral/SteamGridDB clients), `api/` (thin Vercel serverless entrypoints importing from `back/src/`). Common commands: `pnpm install`, `pnpm dev` (front only — pair with `vercel dev` for the `api/` functions), `pnpm build`, `pnpm typecheck`.
 
 ## Stack
 
 - **Front** : Vue 3
-- **Back** : TypeScript (framework precis a determiner)
+- **Back** : TypeScript, fonctions serverless Vercel natives (pas de framework HTTP)
+- **Stockage** : Postgres (ex : Vercel Postgres/Neon) via `@vercel/postgres`
 - **Hebergement** : Vercel
 
 ## Documents de reference
@@ -40,9 +41,9 @@ Ne jamais utiliser le SteamID64 comme cle primaire ou comme identifiant de sessi
 
 | Service | Role | Notes |
 |---|---|---|
-| Steam OpenID | Connexion | via `passport-steam` ou equivalent |
-| Steam Web API | Bibliotheque, temps joue, derniere session | mise en cache cote backend |
-| Mistral API | Matching IA | tier gratuit ; recoit titre/genre/temps joue/derniere session + criteres utilisateur, renvoie nom + ID Steam |
+| Steam OpenID | Connexion | via le paquet `openid` (`RelyingParty`, mode stateless) |
+| Steam Web API | Bibliotheque, temps joue, derniere session | mise en cache Postgres (TTL 4h) |
+| Mistral API | Matching IA | tier gratuit ; recoit titre/temps joue/derniere session (pas le genre, indisponible sans appel Steam supplementaire par jeu) + criteres utilisateur, renvoie nom + ID Steam |
 | SteamGridDB | Affiches portrait | requetee avec l'ID Steam renvoye par Mistral |
 
 ## Sequence d'une requete de suggestion
@@ -51,7 +52,7 @@ Ne jamais utiliser le SteamID64 comme cle primaire ou comme identifiant de sessi
 2. Resynchroniser la bibliotheque (cache si valide, sinon appel a la Steam Web API).
 3. Si bibliotheque vide, basculer sur une liste de jeux gratuits Steam.
 4. Recevoir les criteres utilisateur (humeur, fatigue, temps disponible, moment de la journee).
-5. Envoyer a Mistral, pour chaque jeu candidat : titre, genre, temps joue, derniere session, plus les criteres utilisateur.
+5. Envoyer a Mistral, pour une shortlist deterministe de jeux candidats (max 40, priorite aux jeux recents/tres joues) : titre, temps joue, derniere session, plus les criteres utilisateur.
 6. Recevoir de Mistral 3 jeux (nom + ID Steam).
 7. Recuperer l'affiche portrait de chaque jeu via SteamGridDB a partir de l'ID Steam.
 8. Renvoyer les 3 jeux et leurs affiches au front.

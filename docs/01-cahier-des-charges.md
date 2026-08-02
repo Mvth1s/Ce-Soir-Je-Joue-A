@@ -32,7 +32,7 @@ L'utilisateur renseigne, a chaque utilisation :
 
 Une IA (API gratuite de Mistral) fait le matching entre l'etat declare par l'utilisateur et les caracteristiques des jeux disponibles dans sa bibliotheque Steam.
 
-Donnees envoyees a l'IA pour chaque jeu candidat : titre, genre, temps joue, date de la derniere session.
+Donnees envoyees a l'IA pour chaque jeu candidat : titre, temps joue, date de la derniere session. Le genre n'est pas envoye : la Steam Web API ne le fournit pas dans l'appel de recuperation de bibliotheque, et l'obtenir demanderait un appel supplementaire par jeu, trop couteux pour des bibliotheques de plusieurs centaines de jeux. Piste d'amelioration possible si la qualite du matching s'avere insuffisante sans cette donnee.
 
 Donnees attendues en retour : nom du jeu et ID Steam (pour une correspondance precise et pour permettre l'affichage de l'affiche du jeu en portrait).
 
@@ -50,7 +50,7 @@ Chaque carte affiche l'affiche du jeu en format portrait, recuperee via SteamGri
 
 ## Cas limites a gerer
 
-- **Bibliotheque Steam vide ou profil non synchronise** : proposer des jeux gratuits sur Steam a la place des suggestions personnalisees.
+- **Bibliotheque Steam vide ou profil non synchronise** : proposer des jeux gratuits sur Steam a la place des suggestions personnalisees, sans appel a Mistral, mais avec les memes vraies affiches SteamGridDB pour garder un podium visuellement coherent.
 - **Quota de l'API Mistral depasse** : prevoir, a terme, un fallback (systeme de scoring simple sans IA) si le tier gratuit devient insuffisant.
 
 ## RGPD et donnees stockees
@@ -62,10 +62,9 @@ Point de vigilance explicite du porteur de projet : etre extremement prudent sur
 Voir le document d'architecture logicielle pour le detail. Resume :
 
 - Front : Vue 3
-- Back : simple, probablement TypeScript
+- Back : TypeScript, fonctions serverless Vercel natives (pas de framework HTTP)
 - Hebergement : Vercel dans un premier temps
 
 ## Points encore ouverts
 
 - Justification du choix par l'IA affichee ou non sur chaque carte
-- Duree exacte de mise en cache des donnees de la bibliotheque Steam

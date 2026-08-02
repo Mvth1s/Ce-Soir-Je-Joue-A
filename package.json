@@ -1,0 +1,14 @@
+{
+  "name": "ce-soir-je-joue-a",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "pnpm --filter front dev",
+    "build": "pnpm --filter front build",
+    "typecheck": "pnpm --filter front typecheck && pnpm --filter back typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@11.3.0"
+}

@@ -1,0 +1,6 @@
+packages:
+  - "front"
+  - "back"
+allowBuilds:
+  bufferutil: false
+  esbuild: true
