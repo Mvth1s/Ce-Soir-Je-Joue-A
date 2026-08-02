@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Architecture du site - Ce soir je joue a ...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101018; --bg-alt:#161620; --surface:#1c1c28; --border:#2a2a38;
+    --text:#EDEDF3; --text-dim:#9898a8;
+    --gold:#E8C35C; --gold-dim:#3a3320;
+    --silver:#C7CAD6; --silver-dim:#2b2c33;
+    --bronze:#C98A4B; --bronze-dim:#332318;
+    --teal:#3FD9C3; --teal-dim:#12302c;
+    --red:#E2645A; --red-dim:#331c1c;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; line-height:1.65; padding:0 0 80px;}
+  .wrap{max-width:860px; margin:0 auto; padding:0 32px;}
+  header.hero{background:linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 100%); border-bottom:1px solid var(--border); padding:72px 0 48px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--teal); letter-spacing:0.08em; text-transform:uppercase; margin:0 0 14px;}
+  h1{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:40px; margin:0 0 12px; letter-spacing:-0.01em;}
+  .subtitle{color:var(--text-dim); font-size:17px; max-width:600px; margin:0;}
+
+  section{padding:44px 0; border-bottom:1px solid var(--border);}
+  section:last-of-type{border-bottom:none;}
+  h2{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:23px; margin:0 0 18px; display:flex; align-items:center; gap:10px;}
+  h2::before{content:""; width:4px; height:20px; background:var(--teal); border-radius:2px; display:inline-block;}
+  h3{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; margin:22px 0 8px; color:var(--text);}
+  p{margin:0 0 14px; color:var(--text-dim);}
+  strong{color:var(--text); font-weight:500;}
+
+  .badge-row{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 20px;}
+  .badge{font-family:'JetBrains Mono',monospace; font-size:12px; padding:5px 12px; border-radius:999px; border:1px solid var(--border); color:var(--text-dim);}
+  .badge.v1{border-color:var(--gold); color:var(--gold); background:var(--gold-dim);}
+  .badge.v15{border-color:var(--silver); color:var(--silver); background:var(--silver-dim);}
+
+  /* Podium demo with flip cards */
+  .podium-demo{display:flex; align-items:flex-end; justify-content:center; gap:20px; margin:32px 0; perspective:1000px;}
+  .flip-card{width:140px; height:190px; cursor:pointer;}
+  .flip-card.p1{width:160px; height:210px;}
+  .flip-inner{position:relative; width:100%; height:100%; transition:transform .6s; transform-style:preserve-3d;}
+  .flip-card:hover .flip-inner, .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-front, .flip-back{
+    position:absolute; width:100%; height:100%; backface-visibility:hidden;
+    border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:14px; text-align:center;
+  }
+  .flip-front{font-family:'JetBrains Mono',monospace; font-weight:500;}
+  .p1 .flip-front{background:linear-gradient(160deg, var(--gold), #7a5f1c); color:#3a2f0f;}
+  .p2 .flip-front{background:linear-gradient(160deg, var(--silver), #4a4c56); color:#26272e;}
+  .p3 .flip-front{background:linear-gradient(160deg, var(--bronze), #6b4522); color:#2e1e10;}
+  .flip-back{background:var(--surface); border:1px solid var(--border); transform:rotateY(180deg); font-size:12px; color:var(--text-dim);}
+  .flip-back strong{display:block; color:var(--text); font-size:13px; margin-bottom:6px;}
+  .rank{font-size:26px; margin-bottom:6px;}
+  .hint{text-align:center; color:var(--text-dim); font-size:13px; font-family:'JetBrains Mono',monospace; margin-top:-8px;}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0;}
+  .card{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px 20px;}
+  .card .label{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--teal); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;}
+  .card p{margin:0; color:var(--text);}
+
+  /* Error page mockup */
+  .error-mock{
+    background:var(--bg-alt); border:1px solid var(--border); border-radius:14px;
+    padding:48px 24px; text-align:center; margin:20px 0;
+  }
+  .error-code{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:64px; color:var(--red); letter-spacing:-0.02em; margin:0;}
+  .error-mock p{margin:8px 0 0; color:var(--text-dim);}
+  .error-mock .podium-mark{display:flex; justify-content:center; align-items:flex-end; gap:6px; margin-top:20px;}
+  .error-mock .podium-mark span{display:block; border-radius:3px 3px 0 0; opacity:.35;}
+  .error-mock .s2{width:20px; height:24px; background:var(--silver);}
+  .error-mock .s1{width:20px; height:34px; background:var(--gold);}
+  .error-mock .s3{width:20px; height:16px; background:var(--bronze);}
+
+  ul{margin:0 0 14px; padding-left:0; list-style:none;}
+  li{position:relative; padding-left:26px; margin-bottom:10px; color:var(--text-dim);}
+  li::before{content:"—"; position:absolute; left:0; color:var(--teal); font-weight:600;}
+
+  footer{padding:40px 0 0; color:var(--text-dim); font-size:13px; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Architecture du site - document 3 / 3</p>
+    <h1>Pages et parcours</h1>
+    <p class="subtitle">Un parcours volontairement court : connexion, criteres, resultats. Le podium est la piece centrale de l'experience.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <h2>Pages principales (V1)</h2>
+
+    <h3>1. Page d'accueil / connexion</h3>
+    <p>Presente le principe du site. Bouton <strong>« Se connecter avec Steam »</strong> (Steam OpenID). Pas d'inscription, pas de mot de passe a creer.</p>
+
+    <h3>2. Page de saisie des criteres</h3>
+    <div class="grid2">
+      <div class="card"><div class="label">Humeur</div><p>Detente, defi, social, decouverte...</p></div>
+      <div class="card"><div class="label">Fatigue</div><p>Niveau de fatigue du moment</p></div>
+      <div class="card"><div class="label">Temps disponible</div><p>Duree de jeu envisagee</p></div>
+      <div class="card"><div class="label">Moment de la journee</div><p>Pre-rempli via l'heure du PC, modifiable</p></div>
+    </div>
+
+    <h3>3. Page de resultats (podium)</h3>
+    <p>Survole (ou touche sur mobile) une carte pour voir la justification de l'IA au dos, comme sur le site final :</p>
+
+    <div class="podium-demo">
+      <div class="flip-card p2">
+        <div class="flip-inner">
+          <div class="flip-front">Jeu #2</div>
+          <div class="flip-back"><div class="rank">🥈</div><strong>Pourquoi ce jeu ?</strong>Genre proche de ton humeur « detente », session courte adaptee au temps disponible.</div>
+        </div>
+      </div>
+      <div class="flip-card p1">
+        <div class="flip-inner">
+          <div class="flip-front">Jeu #1</div>
+          <div class="flip-back"><div class="rank">🥇</div><strong>Pourquoi ce jeu ?</strong>Meilleure correspondance globale avec l'humeur, la fatigue et le moment de la journee.</div>
+        </div>
+      </div>
+      <div class="flip-card p3">
+        <div class="flip-inner">
+          <div class="flip-front">Jeu #3</div>
+          <div class="flip-back"><div class="rank">🥉</div><strong>Pourquoi ce jeu ?</strong>Jeu jamais lance recemment, bonne piste de decouverte pour ce moment.</div>
+        </div>
+      </div>
+    </div>
+    <p class="hint">survole une carte</p>
+
+    <p>Si la bibliotheque Steam de l'utilisateur est vide, cette page affiche a la place une selection de jeux gratuits sur Steam.</p>
+  </section>
+
+  <section>
+    <h2>Justification du choix de l'IA</h2>
+    <div class="badge-row"><span class="badge v1">V1</span></div>
+    <p>Chaque carte se retourne (effet de rotation) pour reveler au dos l'explication de l'IA : pourquoi ce jeu a ete choisi, et pourquoi il occupe cette place dans le podium.</p>
+  </section>
+
+  <section>
+    <h2>Bouton « reessayer »</h2>
+    <div class="badge-row"><span class="badge v15">V1.5 / V2</span></div>
+    <p>Un bouton « reessayer » permet de relancer une nouvelle suggestion sans ressaisir tous les criteres. Au clic, une question rapide est posee a l'utilisateur (pourquoi il souhaite reessayer), afin d'alimenter et d'ameliorer les choix futurs de l'IA. Fonctionnalite jugee utile mais non urgente.</p>
+  </section>
+
+  <section>
+    <h2>Pages d'erreur</h2>
+    <p>Des pages/messages d'erreur stylises, coherents avec l'identite visuelle du site, sont prevus pour les erreurs qui ne relevent pas du site lui-meme (404, 403, et autres erreurs HTTP similaires) :</p>
+    <div class="error-mock">
+      <p class="error-code">404</p>
+      <p>Ce jeu n'existe pas dans ce podium.</p>
+      <div class="podium-mark"><span class="s2"></span><span class="s1"></span><span class="s3"></span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Navigation</h2>
+    <ul>
+      <li>Parcours lineaire en V1 : connexion Steam → saisie des criteres → resultats.</li>
+      <li>Pas de tableau de bord, pas d'historique visible, pas de reglages avances (pas de systeme de compte pour le moment).</li>
+      <li>Resynchronisation automatique de la bibliotheque a chaque chargement de page (pas de bouton « actualiser » manuel en V1).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Points encore ouverts</h2>
+    <ul>
+      <li>Contenu exact de l'explication affichee au dos de chaque carte (texte libre genere par l'IA, ou format plus structure ?)</li>
+      <li>Liste precise des questions posees lors d'un clic sur « reessayer » (V1.5/V2)</li>
+      <li>Ecran ou message specifique en cas d'echec de connexion Steam ou de la Steam Web API (distinct des erreurs 404/403)</li>
+    </ul>
+  </section>
+
+  <footer>Ce soir je joue a ... — architecture du site — document 3/3</footer>
+
+</div>
+</body>
+</html>

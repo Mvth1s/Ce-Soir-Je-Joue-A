@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Architecture logicielle - Ce soir je joue a ...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#101018; --bg-alt:#161620; --surface:#1c1c28; --border:#2a2a38;
+    --text:#EDEDF3; --text-dim:#9898a8;
+    --gold:#E8C35C; --gold-dim:#3a3320;
+    --silver:#C7CAD6; --silver-dim:#2b2c33;
+    --bronze:#C98A4B; --bronze-dim:#332318;
+    --teal:#3FD9C3; --teal-dim:#12302c;
+    --purple:#A78BFA; --purple-dim:#241f3d;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; line-height:1.65; padding:0 0 80px;}
+  .wrap{max-width:860px; margin:0 auto; padding:0 32px;}
+  header.hero{background:linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 100%); border-bottom:1px solid var(--border); padding:72px 0 48px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--teal); letter-spacing:0.08em; text-transform:uppercase; margin:0 0 14px;}
+  h1{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:40px; margin:0 0 12px; letter-spacing:-0.01em;}
+  .subtitle{color:var(--text-dim); font-size:17px; max-width:600px; margin:0;}
+
+  section{padding:44px 0; border-bottom:1px solid var(--border);}
+  section:last-of-type{border-bottom:none;}
+  h2{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:23px; margin:0 0 18px; display:flex; align-items:center; gap:10px;}
+  h2::before{content:""; width:4px; height:20px; background:var(--teal); border-radius:2px; display:inline-block;}
+  h3{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; margin:22px 0 8px; color:var(--text);}
+  p{margin:0 0 14px; color:var(--text-dim);}
+  strong{color:var(--text); font-weight:500;}
+  code{font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--surface); color:var(--teal); padding:2px 6px; border-radius:4px;}
+
+  .diagram-card{background:var(--bg-alt); border:1px solid var(--border); border-radius:14px; padding:24px; margin:20px 0;}
+  .legend{display:flex; gap:18px; flex-wrap:wrap; margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--text-dim);}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:10px; height:10px; border-radius:3px; display:inline-block;}
+
+  .timeline{list-style:none; margin:0; padding:0; counter-reset:step;}
+  .timeline li{
+    counter-increment:step; position:relative; padding:0 0 22px 44px; color:var(--text-dim);
+  }
+  .timeline li::before{
+    content:counter(step); position:absolute; left:0; top:0; width:28px; height:28px;
+    background:var(--surface); border:1px solid var(--teal); color:var(--teal);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500;
+  }
+  .timeline li::after{
+    content:""; position:absolute; left:14px; top:28px; width:1px; height:calc(100% - 22px);
+    background:var(--border);
+  }
+  .timeline li:last-child::after{display:none;}
+  .timeline li strong{display:block; color:var(--text); margin-bottom:2px;}
+
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0;}
+  .svc{background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px;}
+  .svc .tag{font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; display:inline-block; padding:2px 8px; border-radius:999px;}
+  .svc.steam .tag{color:var(--purple); background:var(--purple-dim);}
+  .svc.mistral .tag{color:var(--purple); background:var(--purple-dim);}
+  .svc.grid .tag{color:var(--purple); background:var(--purple-dim);}
+  .svc h4{margin:0 0 6px; font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:600;}
+  .svc p{margin:0; font-size:14px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0;}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--border); font-size:14px;}
+  th{color:var(--text-dim); font-weight:500; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase;}
+  td{color:var(--text);}
+
+  footer{padding:40px 0 0; color:var(--text-dim); font-size:13px; font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Architecture logicielle - document 2 / 3</p>
+    <h1>Comment le systeme est construit</h1>
+    <p class="subtitle">Le client, le backend et les trois services externes qu'il orchestre, du chargement de la page jusqu'a l'affichage du podium.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <h2>Vue d'ensemble</h2>
+    <p>Le front ne parle jamais directement a Steam, Mistral ou SteamGridDB : tout passe par le backend, qui centralise les appels et met en cache ce qui peut l'etre.</p>
+
+    <div class="diagram-card">
+      <svg width="100%" viewBox="0 0 680 470" role="img">
+        <title>Architecture de Ce soir je joue a</title>
+        <desc>Client Vue 3 relie a un backend TypeScript qui gere l'identifiant utilisateur et le cache, puis appelle Steam, Mistral et SteamGridDB.</desc>
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="#6b6b7d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <rect x="240" y="20" width="200" height="44" rx="8" fill="#22222e" stroke="#3a3a4a" stroke-width="1"/>
+        <text x="340" y="46" text-anchor="middle" font-family="Inter" font-size="14" font-weight="500" fill="#EDEDF3">Client (Vue 3)</text>
+
+        <line x1="340" y1="64" x2="340" y2="98" stroke="#6b6b7d" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="60" y="100" width="560" height="230" rx="20" fill="none" stroke="#3FD9C3" stroke-width="1"/>
+        <text x="88" y="130" font-family="Space Grotesk" font-size="14" font-weight="600" fill="#3FD9C3">Backend (TypeScript, Vercel)</text>
+
+        <rect x="90" y="160" width="250" height="140" rx="12" fill="#3a3320" stroke="#E8C35C" stroke-width="1"/>
+        <text x="215" y="188" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="600" fill="#E8C35C">Identifiant utilisateur</text>
+        <text x="215" y="208" text-anchor="middle" font-family="Inter" font-size="12" fill="#d8c893">lien vers SteamID64</text>
+
+        <rect x="360" y="160" width="230" height="140" rx="12" fill="#332318" stroke="#C98A4B" stroke-width="1"/>
+        <text x="475" y="188" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="600" fill="#C98A4B">Cache bibliotheque</text>
+        <text x="475" y="208" text-anchor="middle" font-family="Inter" font-size="12" fill="#dcb287">TTL quelques heures</text>
+
+        <line x1="150" y1="330" x2="150" y2="388" stroke="#6b6b7d" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="340" y1="330" x2="340" y2="388" stroke="#6b6b7d" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="530" y1="330" x2="530" y2="388" stroke="#6b6b7d" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="60" y="390" width="180" height="56" rx="8" fill="#241f3d" stroke="#A78BFA" stroke-width="1"/>
+        <text x="150" y="412" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="600" fill="#A78BFA">Steam</text>
+        <text x="150" y="430" text-anchor="middle" font-family="Inter" font-size="12" fill="#c9bcf0">OpenID + Web API</text>
+
+        <rect x="260" y="390" width="160" height="56" rx="8" fill="#241f3d" stroke="#A78BFA" stroke-width="1"/>
+        <text x="340" y="412" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="600" fill="#A78BFA">Mistral API</text>
+        <text x="340" y="430" text-anchor="middle" font-family="Inter" font-size="12" fill="#c9bcf0">matching IA</text>
+
+        <rect x="440" y="390" width="180" height="56" rx="8" fill="#241f3d" stroke="#A78BFA" stroke-width="1"/>
+        <text x="530" y="412" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="600" fill="#A78BFA">SteamGridDB</text>
+        <text x="530" y="430" text-anchor="middle" font-family="Inter" font-size="12" fill="#c9bcf0">affiches portrait</text>
+      </svg>
+      <div class="legend">
+        <span><span class="dot" style="background:#3FD9C3"></span>Backend</span>
+        <span><span class="dot" style="background:#E8C35C"></span>Identifiant utilisateur</span>
+        <span><span class="dot" style="background:#C98A4B"></span>Cache</span>
+        <span><span class="dot" style="background:#A78BFA"></span>Services externes</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Composants</h2>
+    <h3>Client (Vue 3)</h3>
+    <p>Interface utilisateur : ecran de connexion Steam, formulaire de criteres, affichage des 3 resultats en format podium.</p>
+
+    <h3>Backend (TypeScript)</h3>
+    <p>Orchestre l'ensemble des appels externes et applique la logique metier (cas de bibliotheque vide, cache, etc.). Hebergement prevu sur Vercel dans un premier temps.</p>
+
+    <h3>Identifiant utilisateur interne</h3>
+    <p>Des la V1, chaque utilisateur connecte se voit associer un identifiant interne (<code>user_id</code>), meme sans systeme de compte visible. Le <code>SteamID64</code> obtenu via Steam OpenID est rattache a cet identifiant via une structure de type « liaisons de plateforme » (<code>user_id, platform, platform_id</code>). La session pointe vers cet identifiant interne, pas vers le SteamID64 brut — ce qui permet d'ajouter un vrai systeme de compte ou une deuxieme plateforme plus tard sans migrer la structure existante.</p>
+
+    <h3>Cache bibliotheque Steam</h3>
+    <p>Conserve temporairement les donnees de bibliotheque (jeux, temps joue, derniere session) pour eviter de solliciter la Steam Web API a chaque chargement de page. Duree de mise en cache encore a definir.</p>
+  </section>
+
+  <section>
+    <h2>Services externes</h2>
+    <div class="grid3">
+      <div class="svc steam">
+        <span class="tag">Auth + donnees</span>
+        <h4>Steam</h4>
+        <p>OpenID pour la connexion (via <code>passport-steam</code>), puis Web API pour la bibliotheque, le temps joue et la derniere session.</p>
+      </div>
+      <div class="svc mistral">
+        <span class="tag">IA</span>
+        <h4>Mistral API</h4>
+        <p>Recoit titre / genre / temps joue / derniere session par jeu, plus les criteres utilisateur. Renvoie nom + ID Steam pour 3 jeux.</p>
+      </div>
+      <div class="svc grid">
+        <span class="tag">Visuel</span>
+        <h4>SteamGridDB</h4>
+        <p>Fournit l'affiche portrait de chaque jeu a partir de son ID Steam, pour l'affichage sur les cartes du podium.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sequence d'une requete de suggestion</h2>
+    <ol class="timeline">
+      <li><strong>Chargement de la page</strong>Le backend verifie l'identifiant utilisateur interne et le SteamID64 associe.</li>
+      <li><strong>Resynchronisation</strong>La bibliotheque Steam est resynchronisee automatiquement (cache si valide, sinon appel a la Steam Web API).</li>
+      <li><strong>Bibliotheque vide ?</strong>Si oui, bascule sur une liste de jeux gratuits Steam.</li>
+      <li><strong>Saisie des criteres</strong>L'utilisateur renseigne humeur, fatigue, temps disponible, moment de la journee.</li>
+      <li><strong>Appel a Mistral</strong>Envoi de la liste des jeux candidats et des criteres utilisateur.</li>
+      <li><strong>Retour de l'IA</strong>Mistral renvoie 3 jeux (nom + ID Steam).</li>
+      <li><strong>Recuperation des affiches</strong>Le backend interroge SteamGridDB pour chaque ID Steam.</li>
+      <li><strong>Affichage</strong>Les 3 jeux et leurs affiches sont renvoyes au client pour l'affichage en podium.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Donnees stockees</h2>
+    <table>
+      <tr><th>Donnee</th><th>Statut</th></tr>
+      <tr><td>Identifiant utilisateur interne</td><td>Permanent</td></tr>
+      <tr><td>SteamID64 associe</td><td>Permanent (liaison de plateforme)</td></tr>
+      <tr><td>Donnees de bibliotheque</td><td>Temporaire (cache)</td></tr>
+      <tr><td>Historique de suggestions</td><td>A confirmer (voir RGPD)</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Stack technique</h2>
+    <table>
+      <tr><th>Couche</th><th>Choix</th></tr>
+      <tr><td>Front</td><td>Vue 3</td></tr>
+      <tr><td>Back</td><td>TypeScript (framework a determiner)</td></tr>
+      <tr><td>Hebergement</td><td>Vercel (dans un premier temps)</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Points encore ouverts</h2>
+    <p>Duree exacte de mise en cache des donnees Steam &middot; choix definitif du framework backend &middot; fallback si le quota gratuit de Mistral est depasse.</p>
+  </section>
+
+  <footer>Ce soir je joue a ... — architecture logicielle — document 2/3</footer>
+
+</div>
+</body>
+</html>
