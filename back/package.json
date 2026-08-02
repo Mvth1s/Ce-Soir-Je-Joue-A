@@ -7,7 +7,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@vercel/postgres": "^0.10.0",
+    "@neondatabase/serverless": "^1.1.0",
     "iron-session": "^8.0.4",
     "openid": "^2.0.7",
     "zod": "^3.23.8"

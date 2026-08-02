@@ -177,19 +177,51 @@ async function requestMistralSuggestions(prompt: string): Promise<MistralSuggest
     throw new Error("Reponse Mistral sans contenu exploitable.");
   }
 
+  // `response_format: { type: "json_object" }` garantit un contenu JSON valide
+  // d'apres la doc Mistral, mais on reste defensif au cas ou un modele
+  // enveloppe quand meme sa reponse dans un bloc de code markdown ou y ajoute
+  // un preambule : ca ne coute rien et evite un echec inutile.
+  const jsonPayload = extractJsonPayload(content);
+
   let raw: unknown;
   try {
-    raw = JSON.parse(content);
+    raw = JSON.parse(jsonPayload);
   } catch {
-    throw new Error("Reponse Mistral non-JSON.");
+    throw new Error(
+      `Reponse Mistral non-JSON (extrait recu : ${truncateForLog(jsonPayload)}).`,
+    );
   }
 
   const parsed = MistralResponseSchema.safeParse(raw);
   if (!parsed.success) {
-    throw new Error("Reponse Mistral de forme inattendue.");
+    throw new Error(
+      `Reponse Mistral de forme inattendue (${parsed.error.issues.map((i) => i.path.join(".") + ": " + i.message).join("; ")}) — extrait recu : ${truncateForLog(jsonPayload)}.`,
+    );
   }
 
   return parsed.data.suggestions;
+}
+
+// Retire un eventuel bloc de code markdown (```json ... ``` ou ``` ... ```)
+// et le texte avant/apres, au cas ou le modele n'a pas suivi le mode JSON strict.
+function extractJsonPayload(content: string): string {
+  const trimmed = content.trim();
+  const fenced = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(trimmed);
+  if (fenced?.[1]) {
+    return fenced[1].trim();
+  }
+  // Sinon, isole le plus grand bloc entre la premiere '{' et la derniere '}'
+  // (couvre le cas d'un preambule/commentaire hors JSON sans backticks).
+  const start = trimmed.indexOf("{");
+  const end = trimmed.lastIndexOf("}");
+  if (start !== -1 && end > start) {
+    return trimmed.slice(start, end + 1);
+  }
+  return trimmed;
+}
+
+function truncateForLog(text: string, maxLength = 300): string {
+  return text.length > maxLength ? `${text.slice(0, maxLength)}…` : text;
 }
 
 // Ne fait jamais confiance a l'IA pour ce qui peut se verifier : les appid renvoyes
