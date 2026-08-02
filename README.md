@@ -59,11 +59,13 @@ Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire é
    psql "$DATABASE_URL" -f back/src/db/schema.sql
    ```
 
-4. **Lancer le site.** Le plus simple est d'utiliser l'outil en ligne de commande de Vercel, qui fait tourner en même temps la partie visible et la partie serveur :
+4. **Lancer le site.** Il faut la partie visible (le site) ET la partie serveur (connexion Steam, IA...) en même temps, sinon les boutons ne marcheront pas :
    ```
-   npx vercel dev
+   pnpm dev:full
    ```
    Puis ouvre l'adresse affichée dans le terminal (normalement `http://localhost:3000`) dans ton navigateur.
+
+   ⚠️ `pnpm dev` (sans `:full`) ne lance que la partie visible, sans le serveur — pratique pour retoucher juste l'affichage, mais tous les boutons qui parlent au serveur (connexion Steam, recherche de jeux...) donneront une erreur de connexion. Pour tester le site en entier, utilise toujours `pnpm dev:full`.
 
 ### Vérifier que tout va bien sans lancer le site
 

@@ -2,11 +2,11 @@ import { getDb } from "../client";
 import type { Game } from "../../types";
 
 export async function getCachedLibrary(userId: string, ttlMs: number): Promise<Game[] | null> {
-  const db = await getDb();
-  const result = await db.sql<{ games: Game[]; fetched_at: string }>`
+  const sql = getDb();
+  const result = await sql`
     select games, fetched_at from library_cache where user_id = ${userId}
   `;
-  const row = result.rows[0];
+  const row = result.rows[0] as { games: Game[]; fetched_at: string } | undefined;
   if (!row) {
     return null;
   }
@@ -18,8 +18,8 @@ export async function getCachedLibrary(userId: string, ttlMs: number): Promise<G
 }
 
 export async function setCachedLibrary(userId: string, games: Game[]): Promise<void> {
-  const db = await getDb();
-  await db.sql`
+  const sql = getDb();
+  await sql`
     insert into library_cache (user_id, games, fetched_at)
     values (${userId}, ${JSON.stringify(games)}::jsonb, now())
     on conflict (user_id) do update
