@@ -59,13 +59,25 @@ Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire é
    psql "$DATABASE_URL" -f back/src/db/schema.sql
    ```
 
-4. **Lancer le site.** Il faut la partie visible (le site) ET la partie serveur (connexion Steam, IA...) en même temps, sinon les boutons ne marcheront pas :
-   ```
-   pnpm dev:full
-   ```
-   Puis ouvre l'adresse affichée dans le terminal (normalement `http://localhost:3000`) dans ton navigateur.
+4. **Lancer le site.** Il y a deux parties qui tournent séparément : la partie visible (le site, servi par Vite sur le port 5173) et la partie serveur (connexion Steam, IA..., servie par un petit serveur local sur le port 3000). Vite redirige automatiquement les appels serveur vers le port 3000, donc dans ton navigateur tu ouvres toujours **`http://localhost:5173`**, jamais le 3000 directement.
 
-   ⚠️ `pnpm dev` (sans `:full`) ne lance que la partie visible, sans le serveur — pratique pour retoucher juste l'affichage, mais tous les boutons qui parlent au serveur (connexion Steam, recherche de jeux...) donneront une erreur de connexion. Pour tester le site en entier, utilise toujours `pnpm dev:full`.
+   - **Tout lancer d'un coup** (le cas normal, pour utiliser le site en entier) :
+     ```
+     pnpm dev:full
+     ```
+     Ouvre ensuite `http://localhost:5173` dans ton navigateur.
+
+   - **Lancer seulement la partie visible** (pratique pour retoucher juste l'affichage sans toucher au serveur) :
+     ```
+     pnpm dev
+     ```
+     ⚠️ Sans la partie serveur en face, tous les boutons qui parlent au serveur (connexion Steam, recherche de jeux...) donneront une erreur de connexion.
+
+   - **Lancer seulement la partie serveur** (pratique pour tester une route ou regarder ses logs sans le site) :
+     ```
+     pnpm dev:api
+     ```
+     Les routes sont alors disponibles directement sur `http://localhost:3000/api/...`.
 
 ### Vérifier que tout va bien sans lancer le site
 
