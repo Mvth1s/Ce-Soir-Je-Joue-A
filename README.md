@@ -1,0 +1,74 @@
+# Ce soir je joue à...
+
+## C'est quoi ?
+
+Un petit site qui répond à une question toute simple : *"j'ai envie de jouer, mais à quoi ?"*
+
+Plus une bibliothèque Steam grossit, plus choisir un jeu devient une corvée — on finit par relancer toujours les 2-3 mêmes, ou par ne rien lancer du tout. Ce site regarde ta vraie bibliothèque Steam et te propose seulement **3 jeux**, choisis pour correspondre à ton état du moment.
+
+## Comment ça marche, en gros
+
+1. **Tu te connectes avec Steam.** Pas de compte à créer, pas de mot de passe à inventer : tu cliques "Se connecter avec Steam", tu passes par la page officielle de Steam, et c'est tout. Le site ne voit jamais ton mot de passe.
+2. **Tu dis où tu en es ce soir.** Ton humeur (détente, défi, envie de découvrir...), ton niveau de fatigue, le temps que tu as devant toi, et le moment de la journée (déjà pré-rempli automatiquement).
+3. **Une IA regarde ta bibliothèque et choisit 3 jeux.** Elle prend en compte ce que tu as déjà joué, depuis combien de temps, et ce que tu viens de lui dire sur ton état — et elle explique son choix.
+4. **Les 3 jeux s'affichent en podium** (or, argent, bronze), avec l'affiche de chaque jeu. Une carte se retourne pour lire pourquoi ce jeu a été choisi, et pourquoi il est à cette place.
+
+Si ta bibliothèque Steam est vide, le site te propose à la place une petite sélection de jeux gratuits sur Steam.
+
+## De quoi le site est fait
+
+- **Ce que tu vois** (les pages, les boutons, le podium) : dossier `front/`
+- **Ce qui tourne côté serveur** (connexion Steam, appel à l'IA, récupération des affiches, base de données) : dossiers `back/` et `api/`
+- **Les documents qui expliquent les choix de conception en détail** : dossier `docs/`
+
+Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire évoluer le site à haut niveau — les documents dans `docs/` sont là si tu veux creuser un point précis.
+
+## Lancer le site sur ton ordinateur
+
+### Ce qu'il te faut avant de commencer
+
+- [Node.js](https://nodejs.org) installé.
+- Le gestionnaire de paquets `pnpm` (`npm install -g pnpm` si tu ne l'as pas).
+- Une base de données Postgres (le plus simple : ajouter l'intégration "Vercel Postgres" à ton projet Vercel, qui t'en crée une gratuite).
+- Trois clés d'API gratuites, une par service utilisé par le site :
+
+| Variable | À quoi ça sert | Où l'obtenir |
+|---|---|---|
+| `STEAM_API_KEY` | Lire ta bibliothèque Steam | [steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey) |
+| `MISTRAL_API_KEY` | Le choix des 3 jeux par l'IA | [console.mistral.ai](https://console.mistral.ai) |
+| `STEAMGRIDDB_API_KEY` | Les affiches des jeux | [steamgriddb.com/profile/preferences/api](https://www.steamgriddb.com/profile/preferences/api) |
+
+### Les étapes
+
+1. **Installer les dépendances**, à la racine du projet :
+   ```
+   pnpm install
+   ```
+
+2. **Créer ton fichier `.env`** en copiant l'exemple fourni, puis en remplissant les valeurs :
+   ```
+   cp .env.example .env
+   ```
+   En plus des 3 clés ci-dessus, il faut aussi remplir :
+   - `SESSION_SECRET` : une phrase secrète aléatoire d'au moins 32 caractères (sert à sécuriser la connexion). Tu peux en générer une avec `openssl rand -base64 32`.
+   - `DATABASE_URL` : l'adresse de ta base Postgres.
+   - `PUBLIC_BASE_URL` : l'adresse à laquelle le site tourne en local, normalement `http://localhost:3000`.
+
+3. **Préparer la base de données**, une seule fois (crée les tables nécessaires) :
+   ```
+   psql "$DATABASE_URL" -f back/src/db/schema.sql
+   ```
+
+4. **Lancer le site.** Le plus simple est d'utiliser l'outil en ligne de commande de Vercel, qui fait tourner en même temps la partie visible et la partie serveur :
+   ```
+   npx vercel dev
+   ```
+   Puis ouvre l'adresse affichée dans le terminal (normalement `http://localhost:3000`) dans ton navigateur.
+
+### Vérifier que tout va bien sans lancer le site
+
+```
+pnpm typecheck
+pnpm build
+```
+Ces deux commandes vérifient que le code est valide et que le site se construit correctement, sans avoir besoin des clés d'API ni de la base de données.
