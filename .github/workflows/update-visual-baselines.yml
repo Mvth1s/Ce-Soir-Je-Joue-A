@@ -18,13 +18,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Recuperer le code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Installer pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
 
       - name: Installer Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: pnpm
@@ -51,7 +51,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
 
       - name: Ouvrir une pull request avec les nouvelles captures
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "test: met a jour les captures de reference visuelles"
           title: "Mise a jour des captures de reference (regression visuelle)"
