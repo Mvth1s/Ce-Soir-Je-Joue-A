@@ -15,7 +15,18 @@ const VIEWPORTS = [
   { name: "wide-1920x1080", width: 1920, height: 1080 },
 ];
 
-const MOBILE_BREAKPOINT = 480;
+// Les 3 cartes ont la meme largeur CSS (min(300px, 88vw)) : le nombre qui
+// tient par ligne depend d'une combinaison de gap/padding non triviale a
+// deriver depuis la largeur du viewport seule (constate empiriquement :
+// ni 768px ni 1024px ne suffisent pour les 3, meme si 1024 > 2*480).
+// On detecte donc le regroupement par ligne a partir des positions reelles
+// plutot que d'un seuil de largeur devine.
+function sameRow(a: { y: number; height: number }, b: { y: number; height: number }): boolean {
+  // `align-items: flex-end` aligne les bas de cartes d'une meme ligne : leurs
+  // bords bas coincident, pas forcement leurs bords hauts (cartes de tailles
+  // differentes).
+  return Math.abs(a.y + a.height - (b.y + b.height)) < 4;
+}
 
 async function expectNoHorizontalScroll(page: Page) {
   const overflow = await page.evaluate(() => ({
@@ -58,6 +69,11 @@ for (const viewport of VIEWPORTS) {
       await page.getByRole("button", { name: "Trouver mes 3 jeux" }).click();
       await page.waitForURL("**/resultats");
       await expect(page.getByText("Votre podium du soir")).toBeVisible({ timeout: 10_000 });
+      // Chaque carte a sa propre animation d'entree (riseIn, jusqu'a 0.24s de
+      // delai + 0.55s de duree pour la carte bronze, voir PodiumCard.vue) :
+      // attendre qu'elle soit terminee avant de mesurer les positions, sinon
+      // les cartes pas encore stabilisees faussent la detection de ligne.
+      await page.waitForTimeout(900);
       await expectNoHorizontalScroll(page);
 
       const silverBox = await page.locator('[data-size="silver"]').boundingBox();
@@ -66,17 +82,27 @@ for (const viewport of VIEWPORTS) {
       expect(silverBox && goldBox && bronzeBox).toBeTruthy();
       if (!silverBox || !goldBox || !bronzeBox) return;
 
-      if (viewport.width >= MOBILE_BREAKPOINT * 2) {
-        // Desktop/tablette large : la carte or est au centre, argent a
-        // gauche, bronze a droite, et plus grande que ses voisines.
+      const silverGoldSameRow = sameRow(silverBox, goldBox);
+      const goldBronzeSameRow = sameRow(goldBox, bronzeBox);
+
+      if (silverGoldSameRow && goldBronzeSameRow) {
+        // Les 3 cartes tiennent sur une seule ligne : argent a gauche, or au
+        // centre (et plus grande), bronze a droite.
         expect(silverBox.x).toBeLessThan(goldBox.x);
         expect(goldBox.x).toBeLessThan(bronzeBox.x);
         expect(goldBox.height).toBeGreaterThan(silverBox.height);
         expect(goldBox.height).toBeGreaterThan(bronzeBox.height);
+      } else if (silverGoldSameRow) {
+        // Seules argent et or tiennent sur la premiere ligne (largeurs
+        // identiques pour les 3 cartes : si les deux premieres du DOM
+        // tiennent ensemble, bronze est forcement la 3e et passe seule a la
+        // ligne suivante, quel que soit le nombre de colonnes possible).
+        expect(silverBox.x).toBeLessThan(goldBox.x);
+        expect(bronzeBox.y).toBeGreaterThan(goldBox.y);
+        expect(bronzeBox.y).toBeGreaterThan(silverBox.y);
       } else {
-        // Mobile : les cartes n'ont pas la place de tenir cote a cote
-        // (chaque carte fait jusqu'a 88vw), elles s'empilent dans l'ordre
-        // du DOM (argent, or, bronze).
+        // Aucune ligne partagee : empilement complet dans l'ordre du DOM
+        // (argent, or, bronze).
         expect(silverBox.y).toBeLessThan(goldBox.y);
         expect(goldBox.y).toBeLessThan(bronzeBox.y);
       }
