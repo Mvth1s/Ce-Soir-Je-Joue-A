@@ -147,7 +147,7 @@
     <p>Orchestre l'ensemble des appels externes et applique la logique metier (cas de bibliotheque vide, cache, etc.). Hebergement prevu sur Vercel dans un premier temps.</p>
 
     <h3>Identifiant utilisateur interne</h3>
-    <p>Des la V1, chaque utilisateur connecte se voit associer un identifiant interne (<code>user_id</code>), meme sans systeme de compte visible. Le <code>SteamID64</code> obtenu via Steam OpenID est rattache a cet identifiant via une structure de type « liaisons de plateforme » (<code>user_id, platform, platform_id</code>). La session pointe vers cet identifiant interne, pas vers le SteamID64 brut — ce qui permet d'ajouter un vrai systeme de compte ou une deuxieme plateforme plus tard sans migrer la structure existante.</p>
+    <p>Des la V1, chaque utilisateur connecte se voit associer un identifiant interne (<code>user_id</code>), meme sans systeme de compte visible. Le <code>SteamID64</code> obtenu via Steam OpenID est rattache a cet identifiant via une structure de type « liaisons de plateforme » (<code>user_id, platform, platform_id</code>). La session pointe vers cet identifiant interne, pas vers le SteamID64 brut, ce qui permet d'ajouter un vrai systeme de compte ou une deuxieme plateforme plus tard sans migrer la structure existante.</p>
 
     <h3>Cache bibliotheque Steam</h3>
     <p>Conserve temporairement les donnees de bibliotheque (jeux, temps joue, derniere session) pour eviter de solliciter la Steam Web API a chaque chargement de page. Duree de mise en cache encore a definir.</p>
@@ -214,7 +214,7 @@
     <p>Duree exacte de mise en cache des donnees Steam &middot; choix definitif du framework backend &middot; fallback si le quota gratuit de Mistral est depasse.</p>
   </section>
 
-  <footer>Ce soir je joue a ... — architecture logicielle — document 2/3</footer>
+  <footer>Ce soir je joue a ... · architecture logicielle · document 2/3</footer>
 
 </div>
 </body>

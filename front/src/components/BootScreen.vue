@@ -53,7 +53,7 @@ onUnmounted(() => clearTimeout(bootTimer));
     </div>
     <span
       style="
-        font: 400 9px Silkscreen, monospace;
+        font: 400 11px Silkscreen, monospace;
         color: var(--tx3);
         animation: blink 1s steps(1) infinite;
       "

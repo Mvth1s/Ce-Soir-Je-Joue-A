@@ -20,7 +20,7 @@ export async function fetchPosterUrl(appid: number): Promise<string | null> {
 
   try {
     // `types=static` exclut les affiches animees (webm/apng), potentiellement
-    // plusieurs Mo contre quelques centaines de Ko pour une image statique —
+    // plusieurs Mo contre quelques centaines de Ko pour une image statique :
     // le podium n'affiche que 3 affiches, mais chacune doit rester legere.
     const response = await fetch(
       `${STEAMGRIDDB_GRIDS_URL}/${appid}?dimensions=600x900&types=static&limit=1`,

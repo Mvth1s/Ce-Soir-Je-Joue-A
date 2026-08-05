@@ -95,7 +95,7 @@ async function loadLibrary() {
   try {
     const res = await fetch("/api/library");
     if (res.status === 401) {
-      router.push("/");
+      router.push("/connexion");
       return;
     }
     if (!res.ok) {
@@ -150,13 +150,13 @@ onMounted(loadLibrary);
       >
         Où en êtes-vous, ce soir ?
       </h2>
-      <p style="margin: 0; font-size: 14px; color: var(--tx2)">{{ subtitle }}</p>
+      <p style="margin: 0; font-size: 15px; color: var(--tx2)">{{ subtitle }}</p>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 12px">
       <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap">
-        <span style="font-size: 13px; font-weight: 600; color: var(--tx)">HUMEUR</span>
-        <span style="font-size: 12px; color: var(--tx3)">plusieurs choix possibles</span>
+        <span style="font-size: 14px; font-weight: 600; color: var(--tx)">HUMEUR</span>
+        <span style="font-size: 13px; color: var(--tx3)">plusieurs choix possibles</span>
       </div>
       <div
         style="
@@ -178,7 +178,7 @@ onMounted(loadLibrary);
             border: `1px solid ${m.visual.border}`,
             background: m.visual.bg,
             fontFamily: 'Space Grotesk, sans-serif',
-            fontSize: '13.5px',
+            fontSize: '14.5px',
             fontWeight: 600,
             color: m.visual.color,
             cursor: 'pointer',
@@ -186,7 +186,7 @@ onMounted(loadLibrary);
           }"
           @click="toggleMood(m.id)"
         >
-          <span :style="{ font: '400 14px Silkscreen, monospace', color: m.visual.icon }">{{
+          <span :style="{ font: '400 15px Silkscreen, monospace', color: m.visual.icon }">{{
             m.glyph
           }}</span>
           {{ m.label }}
@@ -196,7 +196,7 @@ onMounted(loadLibrary);
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 26px">
       <div style="display: flex; flex-direction: column; gap: 12px">
-        <span style="font-size: 13px; font-weight: 600; color: var(--tx)">FATIGUE</span>
+        <span style="font-size: 14px; font-weight: 600; color: var(--tx)">FATIGUE</span>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px">
           <button
             v-for="f in fatigueItems"
@@ -212,14 +212,14 @@ onMounted(loadLibrary);
               border: `1px solid ${f.visual.border}`,
               background: f.visual.bg,
               fontFamily: 'Space Grotesk, sans-serif',
-              fontSize: '12.5px',
+              fontSize: '13.5px',
               fontWeight: 600,
               color: f.visual.color,
               cursor: 'pointer',
             }"
             @click="state.fatigue = f.id"
           >
-            <span :style="{ font: '400 10px Silkscreen, monospace', color: f.visual.icon }">{{
+            <span :style="{ font: '400 11px Silkscreen, monospace', color: f.visual.icon }">{{
               f.bars
             }}</span>
             {{ f.label }}
@@ -227,7 +227,7 @@ onMounted(loadLibrary);
         </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 12px">
-        <span style="font-size: 13px; font-weight: 600; color: var(--tx)">TEMPS DISPONIBLE</span>
+        <span style="font-size: 14px; font-weight: 600; color: var(--tx)">TEMPS DISPONIBLE</span>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px">
           <button
             v-for="t in timeItems"
@@ -241,7 +241,7 @@ onMounted(loadLibrary);
               border: `1px solid ${t.visual.border}`,
               background: t.visual.bg,
               fontFamily: 'Space Grotesk, sans-serif',
-              fontSize: '13px',
+              fontSize: '14px',
               fontWeight: 600,
               color: t.visual.color,
               cursor: 'pointer',
@@ -256,13 +256,13 @@ onMounted(loadLibrary);
 
     <div style="display: flex; flex-direction: column; gap: 12px">
       <div style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap">
-        <span style="font-size: 13px; font-weight: 600; color: var(--tx)">MOMENT DE LA JOURNÉE</span>
+        <span style="font-size: 14px; font-weight: 600; color: var(--tx)">MOMENT DE LA JOURNÉE</span>
         <span
           style="
             padding: 3px 8px;
             border-radius: 5px;
             background: color-mix(in oklch, var(--acc) 18%, transparent);
-            font: 400 9px Silkscreen, monospace;
+            font: 400 10.5px Silkscreen, monospace;
             color: var(--acc);
           "
           >auto · {{ state.momentAutoLabel }}</span
@@ -287,7 +287,7 @@ onMounted(loadLibrary);
             border: `1px solid ${mo.visual.border}`,
             background: mo.visual.bg,
             fontFamily: 'Space Grotesk, sans-serif',
-            fontSize: '13px',
+            fontSize: '14px',
             fontWeight: 600,
             color: mo.visual.color,
             cursor: 'pointer',
@@ -311,7 +311,7 @@ onMounted(loadLibrary);
         border-top: 1px solid var(--bord);
       "
     >
-      <span style="font-size: 12.5px; color: var(--tx2)">{{ summary }}</span>
+      <span style="font-size: 13.5px; color: var(--tx2)">{{ summary }}</span>
       <div style="display: flex; gap: 10px">
         <button
           type="button"
@@ -323,7 +323,7 @@ onMounted(loadLibrary);
             background: var(--surf);
             color: var(--tx2);
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 14.5px;
+            font-size: 15.5px;
             cursor: pointer;
           "
           @click="goHome"
@@ -343,13 +343,13 @@ onMounted(loadLibrary);
             background: var(--acc);
             color: var(--accink);
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 15.5px;
+            font-size: 16.5px;
             font-weight: 600;
             cursor: pointer;
           "
           @click="goResults"
         >
-          Trouver mes 3 jeux<span style="font: 400 12px Silkscreen, monospace">▶</span>
+          Trouver mes 3 jeux<span style="font: 400 13px Silkscreen, monospace">▶</span>
         </button>
       </div>
     </div>

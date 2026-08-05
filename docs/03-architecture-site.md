@@ -2,12 +2,17 @@
 
 ## Pages principales (V1)
 
-### 1. Page d'accueil / connexion
+### 1. Page d'atterrissage (`/`)
 
-- Presente le principe du site.
+- Presente le principe du site (accroche, apercu visuel du podium, les 3 etapes du parcours, section de reassurance : lecture seule, pas de mot de passe stocke, donnees minimales). L'etape "votre podium" precise que le classement est fait par IA (Mistral) ; voir `docs/02-architecture-logicielle.md` (section "Mistral API") pour le modele exact et un exemple de prompt.
+- Bouton d'appel a l'action qui mene vers la page de connexion (`/connexion`), pas de connexion Steam directe depuis cette page.
+
+### 2. Page de connexion (`/connexion`)
+
 - Bouton "Se connecter avec Steam" (Steam OpenID). Pas d'inscription, pas de mot de passe a creer.
+- Affiche un message discret en cas d'echec de connexion (`?auth_error=1`).
 
-### 2. Page de saisie des criteres
+### 3. Page de saisie des criteres
 
 Formulaire rempli a chaque utilisation, avant chaque suggestion :
 
@@ -16,7 +21,7 @@ Formulaire rempli a chaque utilisation, avant chaque suggestion :
 - Temps de jeu disponible
 - Moment de la journee, pre-rempli automatiquement via l'heure du PC, modifiable manuellement
 
-### 3. Page de resultats (podium)
+### 4. Page de resultats (podium)
 
 Affiche les 3 jeux suggeres sous forme de podium :
 
@@ -25,6 +30,8 @@ Affiche les 3 jeux suggeres sous forme de podium :
 - A droite : jeu numero 3, carte avec arriere-plan bronze, plus petite que la deuxieme
 
 Chaque carte affiche l'affiche du jeu en format portrait (recuperee via SteamGridDB).
+
+Le bouton "Lancer {jeu}" du jeu numero 1 utilise le lien `steam://rungameid/{appid}`, qui ouvre le client Steam installe et lance directement le jeu (au lieu de renvoyer vers la fiche magasin, peu utile si le jeu est deja possede).
 
 Si la bibliotheque Steam de l'utilisateur est vide, cette page affiche a la place une selection de jeux gratuits sur Steam.
 
@@ -36,13 +43,25 @@ Chaque carte peut se retourner (effet de rotation) pour reveler au dos l'explica
 
 Un bouton "reessayer" permet de relancer une nouvelle suggestion sans ressaisir tous les criteres. Au moment du clic, une question rapide est posee a l'utilisateur (pourquoi il souhaite reessayer), afin d'alimenter et d'ameliorer les choix futurs de l'IA. Fonctionnalite jugee utile mais non urgente, prevue pour une version ulterieure a la V1.
 
+### 5. Page mentions legales (`/mentions-legales`)
+
+Editeur (pseudo + contact), hebergement (Vercel), lien vers le code source (repo GitHub public), et un resume du traitement des donnees personnelles qui reprend le point de vigilance RGPD du `docs/01-cahier-des-charges.md`. Accessible depuis le footer, present sur tous les ecrans.
+
+### 6. Page FAQ (`/faq`)
+
+Questions frequentes en accordeon (`<details>`/`<summary>`, sans JS supplementaire) : fonctionnement du matching IA, donnees stockees, mot de passe Steam, bouton "Lancer", bibliotheque vide, modification des criteres, gratuite du site, code source. Accessible depuis le footer, present sur tous les ecrans.
+
+## Pied de page
+
+Present sur tous les ecrans (`AppFooter.vue`, monte une fois dans `App.vue`) : marque du site (lien vers l'accueil), tagline, liens vers la FAQ, les mentions legales et le code source, resume du stack technique et credit de l'auteur.
+
 ## Pages d'erreur
 
 Des pages/messages d'erreur stylises (coherents avec l'identite visuelle du site) sont prevus pour les erreurs qui ne relevent pas du site lui-meme : 404 (page introuvable), 403 (acces refuse), et autres erreurs HTTP similaires.
 
 ## Navigation
 
-Parcours lineaire et simple en V1 : connexion Steam -> saisie des criteres -> resultats. Pas de tableau de bord, pas d'historique visible, pas de reglages avances, conformement au choix de ne pas ajouter de systeme de compte pour le moment.
+Parcours lineaire et simple en V1 : atterrissage -> connexion Steam -> saisie des criteres -> resultats. Pas de tableau de bord, pas d'historique visible, pas de reglages avances, conformement au choix de ne pas ajouter de systeme de compte pour le moment.
 
 La bibliotheque se resynchronise automatiquement a chaque chargement de page (pas de bouton "actualiser" manuel en V1).
 
