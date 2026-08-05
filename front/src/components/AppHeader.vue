@@ -8,20 +8,22 @@ const { theme, toggleTheme } = useTheme();
 
 const stepLabel = computed(() => {
   switch (route.name) {
+    case "login":
+      return "étape 01 / 03";
     case "criteria":
       return "étape 02 / 03";
     case "results":
       return "étape 03 / 03";
-    case "home":
-      return "étape 01 / 03";
     default:
       return "";
   }
 });
 
-const dot2Active = computed(() => route.name !== "home");
+const dot1Active = computed(() => route.name !== "home");
+const dot2Active = computed(() => route.name === "criteria" || route.name === "results");
 const dot3Active = computed(() => route.name === "results");
 const themeLabel = computed(() => (theme.value === "dark" ? "☾ sombre" : "☀ clair"));
+const isAuthenticatedRoute = computed(() => route.name === "criteria" || route.name === "results");
 </script>
 
 <template>
@@ -48,11 +50,11 @@ const themeLabel = computed(() => (theme.value === "dark" ? "☾ sombre" : "☀ 
         cursor: pointer;
       "
     >
-      <span style="font: 400 14px Silkscreen, monospace; color: var(--acc)">▮▮</span>
+      <span style="font: 400 15px Silkscreen, monospace; color: var(--acc)">▮▮</span>
       <span
         style="
           font-family: 'Pixelify Sans', monospace;
-          font-size: 17px;
+          font-size: 18px;
           font-weight: 600;
           color: var(--tx);
         "
@@ -60,11 +62,14 @@ const themeLabel = computed(() => (theme.value === "dark" ? "☾ sombre" : "☀ 
       >
     </router-link>
     <div style="display: flex; align-items: center; gap: 12px">
-      <span v-if="stepLabel" style="font: 400 9px Silkscreen, monospace; color: var(--tx3)">{{
+      <span v-if="stepLabel" style="font: 400 11px Silkscreen, monospace; color: var(--tx3)">{{
         stepLabel
       }}</span>
-      <div style="display: flex; gap: 4px">
-        <span style="width: 20px; height: 5px; border-radius: 2px; background: var(--acc)"></span>
+      <div v-if="stepLabel" style="display: flex; gap: 4px">
+        <span
+          style="width: 20px; height: 5px; border-radius: 2px"
+          :style="{ background: dot1Active ? 'var(--acc)' : 'var(--bord)' }"
+        ></span>
         <span
           style="width: 20px; height: 5px; border-radius: 2px"
           :style="{ background: dot2Active ? 'var(--acc)' : 'var(--bord)' }"
@@ -77,7 +82,7 @@ const themeLabel = computed(() => (theme.value === "dark" ? "☾ sombre" : "☀ 
       <button
         type="button"
         style="
-          font: 700 10px Silkscreen, monospace;
+          font: 700 11px Silkscreen, monospace;
           padding: 8px 12px;
           border-radius: 7px;
           border: 1px solid var(--bord);
@@ -90,8 +95,9 @@ const themeLabel = computed(() => (theme.value === "dark" ? "☾ sombre" : "☀ 
         {{ themeLabel }}
       </button>
       <a
+        v-if="isAuthenticatedRoute"
         href="/api/auth/logout"
-        style="font: 700 10px Silkscreen, monospace; color: var(--tx3)"
+        style="font: 700 11px Silkscreen, monospace; color: var(--tx3)"
         >déconnexion</a
       >
     </div>

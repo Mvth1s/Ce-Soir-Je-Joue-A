@@ -61,7 +61,7 @@ async function fetchSuggestions() {
       }),
     });
     if (res.status === 401) {
-      router.push("/");
+      router.push("/connexion");
       return;
     }
     if (!res.ok) {
@@ -141,7 +141,7 @@ onMounted(fetchSuggestions);
     >
       <div style="height: 100%; background: var(--acc); animation: bootbar 1.5s steps(12) forwards"></div>
     </div>
-    <span style="font: 400 9px Silkscreen, monospace; color: var(--tx3); text-align: center">{{
+    <span style="font: 400 11px Silkscreen, monospace; color: var(--tx3); text-align: center">{{
       summaryLower
     }}</span>
   </section>
@@ -160,7 +160,7 @@ onMounted(fetchSuggestions);
       animation: pagein 0.4s ease;
     "
   >
-    <span style="font: 400 10px Silkscreen, monospace; color: var(--acc); letter-spacing: 1px"
+    <span style="font: 400 11px Silkscreen, monospace; color: var(--acc); letter-spacing: 1px"
       >une erreur est survenue</span
     >
     <h2
@@ -174,7 +174,7 @@ onMounted(fetchSuggestions);
     >
       Impossible de calculer vos suggestions pour le moment.
     </h2>
-    <p style="margin: 0; max-width: 46ch; font-size: 14px; line-height: 1.6; color: var(--tx2)">
+    <p style="margin: 0; max-width: 46ch; font-size: 15px; line-height: 1.6; color: var(--tx2)">
       Réessayez dans un instant. Si le problème persiste, vérifiez votre connexion Steam.
     </p>
     <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center">
@@ -188,7 +188,7 @@ onMounted(fetchSuggestions);
           background: var(--acc);
           color: var(--accink);
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 600;
           cursor: pointer;
         "
@@ -206,7 +206,7 @@ onMounted(fetchSuggestions);
           background: var(--surf);
           color: var(--tx2);
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 14.5px;
+          font-size: 15.5px;
           cursor: pointer;
         "
         @click="editCriteria"
@@ -228,7 +228,7 @@ onMounted(fetchSuggestions);
       animation: pagein 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
     "
   >
-    <span style="font: 400 10px Silkscreen, monospace; color: var(--acc); letter-spacing: 1px; text-align: center">{{
+    <span style="font: 400 11px Silkscreen, monospace; color: var(--acc); letter-spacing: 1px; text-align: center">{{
       summaryLower
     }}</span>
     <h2
@@ -243,7 +243,7 @@ onMounted(fetchSuggestions);
     >
       Votre podium du soir
     </h2>
-    <p style="margin: 0 0 8px; font-size: 13.5px; color: var(--tx2); text-align: center">
+    <p style="margin: 0 0 8px; font-size: 14.5px; color: var(--tx2); text-align: center">
       Survolez une carte pour lire l'explication · cliquez pour ouvrir la fiche Steam.
     </p>
     <p
@@ -251,7 +251,7 @@ onMounted(fetchSuggestions);
       style="
         margin: 0 0 24px;
         max-width: 56ch;
-        font-size: 13px;
+        font-size: 14px;
         line-height: 1.55;
         color: var(--tx2);
         text-align: center;
@@ -270,9 +270,7 @@ onMounted(fetchSuggestions);
     <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; margin-top: 34px">
       <a
         v-if="goldSuggestion"
-        :href="`https://store.steampowered.com/app/${goldSuggestion.appid}/`"
-        target="_blank"
-        rel="noopener"
+        :href="`steam://rungameid/${goldSuggestion.appid}`"
         class="results-btn results-btn--primary"
         style="
           display: flex;
@@ -283,11 +281,11 @@ onMounted(fetchSuggestions);
           border: 1px solid var(--acc);
           background: var(--acc);
           color: var(--accink);
-          font-size: 15px;
+          font-size: 16px;
           font-weight: 600;
         "
       >
-        <span style="font: 400 11px Silkscreen, monospace">▶</span>Lancer {{ goldSuggestion.name }}
+        <span style="font: 400 12px Silkscreen, monospace">▶</span>Lancer {{ goldSuggestion.name }}
       </a>
       <button
         type="button"
@@ -299,7 +297,7 @@ onMounted(fetchSuggestions);
           background: var(--surf);
           color: var(--tx2);
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 14.5px;
+          font-size: 15.5px;
           cursor: pointer;
         "
         @click="retry"
@@ -316,7 +314,7 @@ onMounted(fetchSuggestions);
           background: transparent;
           color: var(--tx2);
           font-family: 'Space Grotesk', sans-serif;
-          font-size: 14.5px;
+          font-size: 15.5px;
           cursor: pointer;
         "
         @click="editCriteria"

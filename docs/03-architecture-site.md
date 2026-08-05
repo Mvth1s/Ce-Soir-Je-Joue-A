@@ -2,12 +2,17 @@
 
 ## Pages principales (V1)
 
-### 1. Page d'accueil / connexion
+### 1. Page d'atterrissage (`/`)
 
-- Presente le principe du site.
+- Presente le principe du site (accroche, les 3 etapes du parcours).
+- Bouton d'appel a l'action qui mene vers la page de connexion (`/connexion`), pas de connexion Steam directe depuis cette page.
+
+### 2. Page de connexion (`/connexion`)
+
 - Bouton "Se connecter avec Steam" (Steam OpenID). Pas d'inscription, pas de mot de passe a creer.
+- Affiche un message discret en cas d'echec de connexion (`?auth_error=1`).
 
-### 2. Page de saisie des criteres
+### 3. Page de saisie des criteres
 
 Formulaire rempli a chaque utilisation, avant chaque suggestion :
 
@@ -16,15 +21,17 @@ Formulaire rempli a chaque utilisation, avant chaque suggestion :
 - Temps de jeu disponible
 - Moment de la journee, pre-rempli automatiquement via l'heure du PC, modifiable manuellement
 
-### 3. Page de resultats (podium)
+### 4. Page de resultats (podium)
 
 Affiche les 3 jeux suggeres sous forme de podium :
 
-- Au centre : jeu numero 1, carte avec arriere-plan dore, la plus grande
-- A gauche : jeu numero 2, carte avec arriere-plan argente, plus petite que la premiere
-- A droite : jeu numero 3, carte avec arriere-plan bronze, plus petite que la deuxieme
+- Au centre : jeu numero 1, carte a arriere-plan dore, legerement surelevee
+- A gauche : jeu numero 2, carte a arriere-plan argente
+- A droite : jeu numero 3, carte a arriere-plan bronze
 
-Chaque carte affiche l'affiche du jeu en format portrait (recuperee via SteamGridDB).
+Les trois cartes ont le meme format (meme largeur, meme hauteur) : seules la couleur/le degrade de fond et, pour l'or, une legere elevation les distinguent visuellement. Chaque carte affiche l'affiche du jeu en format portrait (recuperee via SteamGridDB).
+
+Le bouton "Lancer {jeu}" du jeu numero 1 utilise le lien `steam://rungameid/{appid}`, qui ouvre le client Steam installe et lance directement le jeu (au lieu de renvoyer vers la fiche magasin, peu utile si le jeu est deja possede).
 
 Si la bibliotheque Steam de l'utilisateur est vide, cette page affiche a la place une selection de jeux gratuits sur Steam.
 
@@ -42,7 +49,7 @@ Des pages/messages d'erreur stylises (coherents avec l'identite visuelle du site
 
 ## Navigation
 
-Parcours lineaire et simple en V1 : connexion Steam -> saisie des criteres -> resultats. Pas de tableau de bord, pas d'historique visible, pas de reglages avances, conformement au choix de ne pas ajouter de systeme de compte pour le moment.
+Parcours lineaire et simple en V1 : atterrissage -> connexion Steam -> saisie des criteres -> resultats. Pas de tableau de bord, pas d'historique visible, pas de reglages avances, conformement au choix de ne pas ajouter de systeme de compte pour le moment.
 
 La bibliotheque se resynchronise automatiquement a chaque chargement de page (pas de bouton "actualiser" manuel en V1).
 

@@ -14,7 +14,7 @@
       animation: pagein 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
     "
   >
-    <span style="font: 400 10px Silkscreen, monospace; color: var(--acc); letter-spacing: 1px"
+    <span style="font: 400 11px Silkscreen, monospace; color: var(--acc); letter-spacing: 1px"
       >erreur 403</span
     >
     <h1
@@ -29,7 +29,7 @@
     >
       Accès refusé<span style="color: var(--acc); animation: blink 1.1s steps(1) infinite">_</span>
     </h1>
-    <p style="margin: 0; max-width: 46ch; font-size: 15px; line-height: 1.65; color: var(--tx2)">
+    <p style="margin: 0; max-width: 46ch; font-size: 16px; line-height: 1.65; color: var(--tx2)">
       Vous n'avez pas accès à cette page. Reconnectez-vous avec Steam si vous pensez que c'est une erreur.
     </p>
     <router-link
@@ -46,11 +46,11 @@
         background: var(--acc);
         color: var(--accink);
         font-family: 'Space Grotesk', sans-serif;
-        font-size: 15px;
+        font-size: 16px;
         font-weight: 600;
       "
     >
-      <span style="font: 400 12px Silkscreen, monospace">▶</span>Retour à l'accueil
+      <span style="font: 400 13px Silkscreen, monospace">▶</span>Retour à l'accueil
     </router-link>
   </section>
 </template>
