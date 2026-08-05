@@ -4,13 +4,13 @@
 
 Un petit site qui répond à une question toute simple : *"j'ai envie de jouer, mais à quoi ?"*
 
-Plus une bibliothèque Steam grossit, plus choisir un jeu devient une corvée — on finit par relancer toujours les 2-3 mêmes, ou par ne rien lancer du tout. Ce site regarde ta vraie bibliothèque Steam et te propose seulement **3 jeux**, choisis pour correspondre à ton état du moment.
+Plus une bibliothèque Steam grossit, plus choisir un jeu devient une corvée : on finit par relancer toujours les 2-3 mêmes, ou par ne rien lancer du tout. Ce site regarde ta vraie bibliothèque Steam et te propose seulement **3 jeux**, choisis pour correspondre à ton état du moment.
 
 ## Comment ça marche, en gros
 
 1. **Tu te connectes avec Steam.** Une page de présentation t'accueille d'abord, puis tu cliques "Se connecter avec Steam" : pas de compte à créer, pas de mot de passe à inventer, tu passes par la page officielle de Steam et c'est tout. Le site ne voit jamais ton mot de passe.
 2. **Tu dis où tu en es ce soir.** Ton humeur (détente, défi, envie de découvrir...), ton niveau de fatigue, le temps que tu as devant toi, et le moment de la journée (déjà pré-rempli automatiquement).
-3. **Une IA regarde ta bibliothèque et choisit 3 jeux.** Elle prend en compte ce que tu as déjà joué, depuis combien de temps, et ce que tu viens de lui dire sur ton état — et elle explique son choix. Il s'agit de [Mistral AI](https://mistral.ai) (modèle `mistral-small-latest`) ; le détail du prompt envoyé est documenté dans `docs/02-architecture-logicielle.md`.
+3. **Une IA regarde ta bibliothèque et choisit 3 jeux.** Elle prend en compte ce que tu as déjà joué, depuis combien de temps, et ce que tu viens de lui dire sur ton état, et elle explique son choix. Il s'agit de [Mistral AI](https://mistral.ai) (modèle `mistral-small-latest`) ; le détail du prompt envoyé est documenté dans `docs/02-architecture-logicielle.md`.
 4. **Les 3 jeux s'affichent en podium** (or, argent, bronze), avec l'affiche de chaque jeu. Une carte se retourne pour lire pourquoi ce jeu a été choisi, et pourquoi il est à cette place.
 
 Si ta bibliothèque Steam est vide, le site te propose à la place une petite sélection de jeux gratuits sur Steam.
@@ -21,7 +21,7 @@ Si ta bibliothèque Steam est vide, le site te propose à la place une petite s�
 - **Ce qui tourne côté serveur** (connexion Steam, appel à l'IA, récupération des affiches, base de données) : dossiers `back/` et `api/`
 - **Les documents qui expliquent les choix de conception en détail** : dossier `docs/`
 
-Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire évoluer le site à haut niveau — les documents dans `docs/` sont là si tu veux creuser un point précis.
+Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire évoluer le site à haut niveau : les documents dans `docs/` sont là si tu veux creuser un point précis.
 
 ## Informations légales
 

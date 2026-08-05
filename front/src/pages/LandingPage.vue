@@ -38,7 +38,7 @@
         "
       >
         Dites-nous votre humeur, votre fatigue et le temps que vous avez devant vous. On vous rend trois
-        jeux — pas trente.
+        jeux, pas trente.
       </p>
       <router-link
         to="/connexion"
@@ -161,7 +161,7 @@
       <span style="max-width: 52ch; font-size: 12.5px; line-height: 1.5; color: var(--tx3); text-align: center"
         >Le classement est fait par une IA (Mistral AI, modèle
         <code style="font-family: Silkscreen, monospace; font-size: 11px">mistral-small-latest</code>) à
-        partir de votre bibliothèque et de vos critères — jamais l'inverse.</span
+        partir de votre bibliothèque et de vos critères, jamais l'inverse.</span
       >
     </section>
 

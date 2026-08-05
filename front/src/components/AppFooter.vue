@@ -20,6 +20,9 @@
         >
       </router-link>
       <nav style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap">
+        <router-link to="/faq" class="app-footer-link" style="font-size: 13px; color: var(--tx3)"
+          >FAQ</router-link
+        >
         <router-link to="/mentions-legales" class="app-footer-link" style="font-size: 13px; color: var(--tx3)"
           >Mentions légales</router-link
         >
@@ -47,7 +50,7 @@
     >
       <span style="font-size: 12.5px; color: var(--tx3)">Un jeu à la fois, pas trente.</span>
       <span style="font-size: 12.5px; color: var(--tx3)">
-        Vue 3 · TypeScript · Postgres · Vercel — un projet de
+        Vue 3 · TypeScript · Postgres · Vercel · un projet de
         <a href="https://github.com/Mvth1s" target="_blank" rel="noopener" class="app-footer-link" style="color: var(--tx3)"
           >Mvth1s</a
         >

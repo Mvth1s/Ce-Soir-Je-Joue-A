@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-V1 implemented: Steam login, criteria form, and the podium suggestion flow all work end-to-end. pnpm monorepo: `front/` (Vue 3 + Vite SPA), `back/src/` (backend logic: db, session, Steam/Mistral/SteamGridDB clients), `api/` (thin Vercel serverless entrypoints importing from `back/src/`). Common commands: `pnpm install`, `pnpm dev` (front only — pair with `vercel dev` for the `api/` functions), `pnpm build`, `pnpm typecheck`.
+V1 implemented: Steam login, criteria form, and the podium suggestion flow all work end-to-end. pnpm monorepo: `front/` (Vue 3 + Vite SPA), `back/src/` (backend logic: db, session, Steam/Mistral/SteamGridDB clients), `api/` (thin Vercel serverless entrypoints importing from `back/src/`). Common commands: `pnpm install`, `pnpm dev:full` (front + api together), `pnpm dev` (front only), `pnpm dev:api` (api only), `pnpm build`, `pnpm typecheck`.
 
 ## Stack
 

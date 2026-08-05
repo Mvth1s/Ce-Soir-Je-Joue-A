@@ -195,7 +195,7 @@ async function requestMistralSuggestions(prompt: string): Promise<MistralSuggest
   const parsed = MistralResponseSchema.safeParse(raw);
   if (!parsed.success) {
     throw new Error(
-      `Reponse Mistral de forme inattendue (${parsed.error.issues.map((i) => i.path.join(".") + ": " + i.message).join("; ")}) — extrait recu : ${truncateForLog(jsonPayload)}.`,
+      `Reponse Mistral de forme inattendue (${parsed.error.issues.map((i) => i.path.join(".") + ": " + i.message).join("; ")}) ; extrait recu : ${truncateForLog(jsonPayload)}.`,
     );
   }
 

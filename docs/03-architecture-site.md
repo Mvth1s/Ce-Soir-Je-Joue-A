@@ -47,9 +47,13 @@ Un bouton "reessayer" permet de relancer une nouvelle suggestion sans ressaisir 
 
 Editeur (pseudo + contact), hebergement (Vercel), lien vers le code source (repo GitHub public), et un resume du traitement des donnees personnelles qui reprend le point de vigilance RGPD du `docs/01-cahier-des-charges.md`. Accessible depuis le footer, present sur tous les ecrans.
 
+### 6. Page FAQ (`/faq`)
+
+Questions frequentes en accordeon (`<details>`/`<summary>`, sans JS supplementaire) : fonctionnement du matching IA, donnees stockees, mot de passe Steam, bouton "Lancer", bibliotheque vide, modification des criteres, gratuite du site, code source. Accessible depuis le footer, present sur tous les ecrans.
+
 ## Pied de page
 
-Present sur tous les ecrans (`AppFooter.vue`, monte une fois dans `App.vue`) : marque du site (lien vers l'accueil), tagline, liens vers les mentions legales et le code source, resume du stack technique et credit de l'auteur.
+Present sur tous les ecrans (`AppFooter.vue`, monte une fois dans `App.vue`) : marque du site (lien vers l'accueil), tagline, liens vers la FAQ, les mentions legales et le code source, resume du stack technique et credit de l'auteur.
 
 ## Pages d'erreur
 
