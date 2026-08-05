@@ -25,11 +25,11 @@ Formulaire rempli a chaque utilisation, avant chaque suggestion :
 
 Affiche les 3 jeux suggeres sous forme de podium :
 
-- Au centre : jeu numero 1, carte a arriere-plan dore, legerement surelevee
-- A gauche : jeu numero 2, carte a arriere-plan argente
-- A droite : jeu numero 3, carte a arriere-plan bronze
+- Au centre : jeu numero 1, carte avec arriere-plan dore, la plus grande
+- A gauche : jeu numero 2, carte avec arriere-plan argente, plus petite que la premiere
+- A droite : jeu numero 3, carte avec arriere-plan bronze, plus petite que la deuxieme
 
-Les trois cartes ont le meme format (meme largeur, meme hauteur) : seules la couleur/le degrade de fond et, pour l'or, une legere elevation les distinguent visuellement. Chaque carte affiche l'affiche du jeu en format portrait (recuperee via SteamGridDB).
+Chaque carte affiche l'affiche du jeu en format portrait (recuperee via SteamGridDB).
 
 Le bouton "Lancer {jeu}" du jeu numero 1 utilise le lien `steam://rungameid/{appid}`, qui ouvre le client Steam installe et lance directement le jeu (au lieu de renvoyer vers la fiche magasin, peu utile si le jeu est deja possede).
 

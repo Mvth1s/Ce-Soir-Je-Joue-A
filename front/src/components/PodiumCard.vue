@@ -73,7 +73,7 @@ const lastPlayedLabel = computed(() =>
   props.suggestion.lastPlayedAt ? formatRelativeDate(props.suggestion.lastPlayedAt) : null,
 );
 
-const showHoverHint = computed(() => !isTouch.value);
+const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
 </script>
 
 <template>
@@ -162,34 +162,31 @@ const showHoverHint = computed(() => !isTouch.value);
 </template>
 
 <style scoped>
-/* Les trois cartes partagent le meme format (largeur/hauteur) : voir
-   docs/03-architecture-site.md. Seul l'or se distingue, par une legere
-   elevation, pas par une taille differente. */
 .podium-card {
   display: block;
   position: relative;
-  width: min(300px, 88vw);
-  height: min(540px, 130vw);
-  perspective: 1500px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
   animation: riseIn 0.5s backwards cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 .podium-card[data-size="gold"] {
+  width: min(300px, 88vw);
+  height: min(576px, 150vw);
+  perspective: 1500px;
   animation-duration: 0.55s;
-  transform: translateY(-18px);
 }
 .podium-card[data-size="silver"] {
+  width: min(300px, 88vw);
+  height: min(452px, 86vw);
+  perspective: 1300px;
   animation-delay: 0.12s;
 }
 .podium-card[data-size="bronze"] {
+  width: min(300px, 88vw);
+  height: min(408px, 86vw);
+  perspective: 1300px;
   animation-delay: 0.24s;
-}
-@media (max-width: 640px) {
-  .podium-card[data-size="gold"] {
-    transform: none;
-  }
 }
 
 .podium-card__inner {
@@ -249,29 +246,41 @@ const showHoverHint = computed(() => !isTouch.value);
 
 .podium-card__badge {
   position: absolute;
-  top: 12px;
-  left: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2;
+  font-family: "Silkscreen", monospace;
+  font-weight: 700;
+}
+[data-size="gold"] .podium-card__badge {
+  top: 12px;
+  left: 12px;
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  font-family: "Silkscreen", monospace;
-  font-weight: 700;
-  font-size: 14px;
-}
-[data-size="gold"] .podium-card__badge {
   background: var(--goldbg);
+  font-size: 14px;
   color: #3d2b13;
 }
 [data-size="silver"] .podium-card__badge {
+  top: 10px;
+  left: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   background: var(--silverbg);
+  font-size: 12px;
   color: #2f2825;
 }
 [data-size="bronze"] .podium-card__badge {
+  top: 10px;
+  left: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
   background: var(--bronzebg);
+  font-size: 11px;
   color: #37220f;
 }
 
@@ -284,7 +293,15 @@ const showHoverHint = computed(() => !isTouch.value);
   flex-direction: column;
   justify-content: flex-end;
   border-bottom: 1px solid var(--bord);
-  padding: 18px;
+}
+[data-size="gold"] .podium-card__poster {
+  padding: 20px;
+}
+[data-size="silver"] .podium-card__poster {
+  padding: 14px;
+}
+[data-size="bronze"] .podium-card__poster {
+  padding: 13px;
 }
 
 .podium-card__poster-img {
@@ -307,7 +324,7 @@ const showHoverHint = computed(() => !isTouch.value);
 .podium-card__poster-label {
   position: relative;
   z-index: 1;
-  font: 400 11px Silkscreen, monospace;
+  font: 400 10.5px Silkscreen, monospace;
   color: var(--tx3);
 }
 .podium-card__title {
@@ -315,7 +332,6 @@ const showHoverHint = computed(() => !isTouch.value);
   z-index: 1;
   font-family: "Pixelify Sans", monospace;
   font-weight: 600;
-  font-size: clamp(24px, 6vw, 30px);
   line-height: 1.1;
   color: var(--tx);
 }
@@ -323,12 +339,31 @@ const showHoverHint = computed(() => !isTouch.value);
   color: #f6ebe1;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
+[data-size="gold"] .podium-card__title {
+  font-size: clamp(27px, 6vw, 33px);
+}
+[data-size="silver"] .podium-card__title {
+  font-size: 22.5px;
+}
+[data-size="bronze"] .podium-card__title {
+  font-size: 19.5px;
+}
 
 .podium-card__stats {
   display: flex;
   flex-direction: column;
+}
+[data-size="gold"] .podium-card__stats {
   gap: 9px;
   padding: 17px 19px 19px;
+}
+[data-size="silver"] .podium-card__stats {
+  gap: 7px;
+  padding: 13px 14px 15px;
+}
+[data-size="bronze"] .podium-card__stats {
+  gap: 7px;
+  padding: 12px 13px 14px;
 }
 
 .podium-card__stats-row,
@@ -342,15 +377,17 @@ const showHoverHint = computed(() => !isTouch.value);
 .podium-card__percent {
   font-family: "Silkscreen", monospace;
   font-weight: 700;
-  font-size: 13px;
 }
 [data-size="gold"] .podium-card__percent {
+  font-size: 14px;
   color: var(--gold);
 }
 [data-size="silver"] .podium-card__percent {
+  font-size: 11px;
   color: var(--silver);
 }
 [data-size="bronze"] .podium-card__percent {
+  font-size: 11px;
   color: var(--bronze);
 }
 
@@ -358,18 +395,31 @@ const showHoverHint = computed(() => !isTouch.value);
 .podium-card__lastplayed {
   color: var(--tx2);
 }
-.podium-card__playtime {
+[data-size="gold"] .podium-card__playtime {
+  font-size: 13.5px;
+}
+[data-size="gold"] .podium-card__lastplayed {
   font-size: 13px;
 }
-.podium-card__lastplayed {
+[data-size="silver"] .podium-card__playtime,
+[data-size="silver"] .podium-card__lastplayed,
+[data-size="bronze"] .podium-card__playtime,
+[data-size="bronze"] .podium-card__lastplayed {
   font-size: 12.5px;
 }
 
 .podium-card__bar {
   overflow: hidden;
   background: var(--bord);
+}
+[data-size="gold"] .podium-card__bar {
   height: 5px;
   border-radius: 3px;
+}
+[data-size="silver"] .podium-card__bar,
+[data-size="bronze"] .podium-card__bar {
+  height: 4px;
+  border-radius: 2px;
 }
 .podium-card__bar-fill {
   height: 100%;
@@ -385,17 +435,11 @@ const showHoverHint = computed(() => !isTouch.value);
 }
 
 .podium-card__hint {
-  font: 400 10px Silkscreen, monospace;
+  font: 400 10.5px Silkscreen, monospace;
   white-space: nowrap;
 }
 [data-size="gold"] .podium-card__hint {
   color: var(--gold);
-}
-[data-size="silver"] .podium-card__hint {
-  color: var(--silver);
-}
-[data-size="bronze"] .podium-card__hint {
-  color: var(--bronze);
 }
 
 .podium-card__surface--back {
@@ -406,15 +450,31 @@ const showHoverHint = computed(() => !isTouch.value);
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+[data-size="gold"] .podium-card__back-header {
   padding: 16px 19px;
   border-bottom: 1px solid var(--bord);
   background: var(--surf2);
+}
+[data-size="silver"] .podium-card__back-header {
+  padding: 15px 15px 0;
+}
+[data-size="bronze"] .podium-card__back-header {
+  padding: 14px 14px 0;
 }
 .podium-card__back-title {
   font-family: "Pixelify Sans", monospace;
   font-weight: 600;
   color: var(--tx);
-  font-size: 18px;
+}
+[data-size="gold"] .podium-card__back-title {
+  font-size: 20px;
+}
+[data-size="silver"] .podium-card__back-title {
+  font-size: 17px;
+}
+[data-size="bronze"] .podium-card__back-title {
+  font-size: 16px;
 }
 
 .podium-card__back-body {
@@ -422,27 +482,61 @@ const showHoverHint = computed(() => !isTouch.value);
   flex-direction: column;
   flex: 1;
   overflow: auto;
+}
+[data-size="gold"] .podium-card__back-body {
   padding: 20px 19px;
   gap: 16px;
+}
+[data-size="silver"] .podium-card__back-body {
+  padding: 13px 15px 15px;
+  gap: 13px;
+}
+[data-size="bronze"] .podium-card__back-body {
+  padding: 12px 14px 14px;
+  gap: 12px;
 }
 
 .podium-card__why {
   display: flex;
   flex-direction: column;
+}
+[data-size="gold"] .podium-card__why {
   gap: 7px;
+}
+[data-size="silver"] .podium-card__why {
+  gap: 6px;
+}
+[data-size="bronze"] .podium-card__why {
+  gap: 5px;
 }
 .podium-card__why-label {
   font-family: "Silkscreen", monospace;
   font-weight: 700;
   color: var(--acc);
+}
+[data-size="gold"] .podium-card__why-label {
   font-size: 10px;
   letter-spacing: 0.5px;
+}
+[data-size="silver"] .podium-card__why-label,
+[data-size="bronze"] .podium-card__why-label {
+  font-size: 9.5px;
 }
 .podium-card__why-text {
   margin: 0;
   color: var(--tx2);
-  font-size: 13.5px;
+}
+[data-size="gold"] .podium-card__why-text {
+  font-size: 14px;
   line-height: 1.6;
+}
+[data-size="silver"] .podium-card__why-text {
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+[data-size="bronze"] .podium-card__why-text {
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .podium-card__back-hint {
