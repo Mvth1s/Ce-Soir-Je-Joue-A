@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
+import logoLoader from "@/assets/logo-loader.svg";
 
 const booting = ref(true);
 let bootTimer: ReturnType<typeof setTimeout>;
@@ -28,7 +29,7 @@ onUnmounted(() => clearTimeout(bootTimer));
     "
   >
     <div style="display: flex; align-items: center; gap: 12px">
-      <span style="font: 400 18px Silkscreen, monospace; color: var(--acc)">▮▮</span>
+      <img :src="logoLoader" alt="" width="40" height="40" style="display: block" />
       <span
         style="
           font-family: 'Pixelify Sans', monospace;

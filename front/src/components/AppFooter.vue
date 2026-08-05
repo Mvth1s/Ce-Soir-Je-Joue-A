@@ -1,4 +1,12 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { computed } from "vue";
+import { useTheme } from "@/composables/useTheme";
+import logoMonoDark from "@/assets/logo-mono-dark.svg";
+import logoMonoLight from "@/assets/logo-mono-light.svg";
+
+const { theme } = useTheme();
+const logoSrc = computed(() => (theme.value === "dark" ? logoMonoLight : logoMonoDark));
+</script>
 
 <template>
   <footer style="padding: 22px clamp(18px, 4vw, 40px); border-top: 1px solid var(--bord)">
@@ -8,7 +16,7 @@
         class="app-footer-brand"
         style="display: flex; align-items: center; gap: 10px; cursor: pointer"
       >
-        <span style="font: 400 13px Silkscreen, monospace; color: var(--tx3)">▮▮</span>
+        <img :src="logoSrc" alt="" width="18" height="18" style="display: block; opacity: 0.8" />
         <span
           style="
             font-family: 'Pixelify Sans', monospace;
