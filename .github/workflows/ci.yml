@@ -137,7 +137,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Installer pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
 
       - name: Verifier que les secrets Vercel sont configures
         env:
