@@ -4,7 +4,7 @@
 
 ### 1. Page d'atterrissage (`/`)
 
-- Presente le principe du site (accroche, apercu visuel du podium, les 3 etapes du parcours, section de reassurance : lecture seule, pas de mot de passe stocke, donnees minimales).
+- Presente le principe du site (accroche, apercu visuel du podium, les 3 etapes du parcours, section de reassurance : lecture seule, pas de mot de passe stocke, donnees minimales). L'etape "votre podium" precise que le classement est fait par IA (Mistral) ; voir `docs/02-architecture-logicielle.md` (section "Mistral API") pour le modele exact et un exemple de prompt.
 - Bouton d'appel a l'action qui mene vers la page de connexion (`/connexion`), pas de connexion Steam directe depuis cette page.
 
 ### 2. Page de connexion (`/connexion`)

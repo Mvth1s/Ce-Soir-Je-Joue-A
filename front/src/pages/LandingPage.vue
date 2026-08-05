@@ -154,10 +154,15 @@
           <span style="font: 700 11px Silkscreen, monospace; color: var(--tx3)">03</span>
           <span style="font-size: 15px; font-weight: 600; color: var(--tx)">Votre podium</span>
           <span style="font-size: 13.5px; line-height: 1.5; color: var(--tx2)"
-            >Trois jeux classés, et le pourquoi.</span
+            >Trois jeux classés par IA, et le pourquoi.</span
           >
         </div>
       </div>
+      <span style="max-width: 52ch; font-size: 12.5px; line-height: 1.5; color: var(--tx3); text-align: center"
+        >Le classement est fait par une IA (Mistral AI, modèle
+        <code style="font-family: Silkscreen, monospace; font-size: 11px">mistral-small-latest</code>) à
+        partir de votre bibliothèque et de vos critères — jamais l'inverse.</span
+      >
     </section>
 
     <section

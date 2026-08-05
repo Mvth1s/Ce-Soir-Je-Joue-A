@@ -14,7 +14,7 @@ V1 implemented: Steam login, criteria form, and the podium suggestion flow all w
 
 - **Front** : Vue 3
 - **Back** : TypeScript, fonctions serverless Vercel natives (pas de framework HTTP)
-- **Stockage** : Postgres (ex : Vercel Postgres/Neon) via `@vercel/postgres`
+- **Stockage** : Postgres (Neon) via `@neondatabase/serverless`
 - **Hebergement** : Vercel
 
 ## Documents de reference
