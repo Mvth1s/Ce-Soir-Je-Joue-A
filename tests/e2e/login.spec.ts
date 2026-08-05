@@ -19,9 +19,10 @@ test("la session ouverte par la connexion persiste sur un rechargement", async (
   await expect(page).toHaveURL(/\/criteres$/);
 });
 
-test("une connexion Steam refusee renvoie vers l'accueil avec une erreur", async ({ page }) => {
+test("une connexion Steam refusee renvoie vers la connexion avec un message d'erreur", async ({ page }) => {
   await page.goto(buildDeclinedCallbackUrl());
-  await page.waitForURL("**/?auth_error=1");
+  await page.waitForURL("**/connexion?auth_error=1");
+  await expect(page.getByText("La connexion à Steam a échoué, réessayez.")).toBeVisible();
 });
 
 test("le bouton de connexion pointe vers /api/auth/steam", async ({ page }) => {
