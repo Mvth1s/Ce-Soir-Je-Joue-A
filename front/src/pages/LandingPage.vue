@@ -216,7 +216,9 @@
           <span style="font-size: 14px; font-weight: 600; color: var(--tx)">Données minimales</span>
           <span style="font-size: 13px; line-height: 1.5; color: var(--tx2)"
             >Rien n'est revendu ni partagé. Détails dans les
-            <router-link to="/mentions-legales" style="color: var(--acc)">mentions légales</router-link>.</span
+            <router-link to="/mentions-legales" style="color: var(--acc); text-decoration: underline"
+              >mentions légales</router-link
+            >.</span
           >
         </div>
       </div>
