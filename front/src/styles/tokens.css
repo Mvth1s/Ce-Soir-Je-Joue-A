@@ -29,7 +29,10 @@
   --bord: #e7d7c7;
   --tx: #302623;
   --tx2: #716056;
-  --tx3: #877263;
+  /* Fonce par rapport a la maquette d'origine (#877263) : contraste
+     insuffisant (4.17:1) contre --bg en Lighthouse CI, sous le seuil AA de
+     4.5:1 pour du texte courant. #7a6759 tient a >=4.7:1 contre bg/surf/surf2. */
+  --tx3: #7a6759;
   --acc: #2f72a6;
   --accink: #fff8f3;
   --gold: #c89340;
