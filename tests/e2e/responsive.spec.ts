@@ -69,6 +69,13 @@ for (const viewport of VIEWPORTS) {
       await page.getByRole("button", { name: "Trouver mes 3 jeux" }).click();
       await page.waitForURL("**/resultats");
       await expect(page.getByText("Votre podium du soir")).toBeVisible({ timeout: 10_000 });
+      // Le clic sur "Trouver mes 3 jeux" laisse le curseur a l'endroit du
+      // bouton sur /criteres ; la navigation vers /resultats est une
+      // navigation SPA (pas de rechargement complet), donc le survol reel du
+      // navigateur persiste a cette position et peut tomber par coincidence
+      // sur une carte du podium a son nouvel emplacement, la faisant
+      // apparaitre retournee sur la capture. On neutralise ca explicitement.
+      await page.mouse.move(0, 0);
       // Chaque carte a sa propre animation d'entree (riseIn, jusqu'a 0.24s de
       // delai + 0.55s de duree pour la carte bronze, voir PodiumCard.vue) :
       // attendre qu'elle soit terminee avant de mesurer les positions, sinon
