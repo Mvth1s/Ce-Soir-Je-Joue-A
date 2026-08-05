@@ -1,0 +1,38 @@
+name: Lighthouse CI
+
+# Limite volontairement a la page d'accueil statique (voir lighthouserc.json) :
+# les pages authentifiees (criteres, podium) ont besoin d'une session + de
+# l'API + des reecritures SPA que le serveur statique de Lighthouse CI ne
+# fournit pas. Un vrai audit de la page podium (affiches, animations) reste a
+# faire manuellement de temps en temps sur une preview reelle.
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lighthouse:
+    name: lighthouse
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Installer les dependances
+        run: pnpm install --frozen-lockfile
+
+      - name: Construire le front
+        run: pnpm build
+
+      - name: Lancer Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          configPath: "./lighthouserc.json"

@@ -1,0 +1,32 @@
+name: CodeQL
+
+on:
+  push:
+    branches: [main, dev]
+  schedule:
+    # Chaque lundi a 5h10 UTC : independant des push, pour couvrir aussi les
+    # vulnerabilites decouvertes dans des dependances sans nouveau commit.
+    - cron: "10 5 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  analyze:
+    name: analyze
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Initialiser CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Analyser
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"

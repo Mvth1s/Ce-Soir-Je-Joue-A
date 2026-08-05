@@ -26,7 +26,10 @@ export default async function handler(
     const steamId64 = await verifySteamAssertion(returnUrl, query);
 
     if (!steamId64) {
-      res.writeHead(302, { Location: "/?auth_error=1" });
+      // Le message d'echec est affiche sur /connexion (voir docs/03-architecture-site.md,
+      // page "Connexion") : rediriger vers "/" laisserait le parametre
+      // auth_error sans effet visible, aucune autre page ne le lit.
+      res.writeHead(302, { Location: "/connexion?auth_error=1" });
       res.end();
       return;
     }

@@ -69,4 +69,4 @@ La bibliotheque se resynchronise automatiquement a chaque chargement de page (pa
 
 - Contenu exact de l'explication affichee au dos de chaque carte (texte libre genere par l'IA, ou format plus structure ?)
 - Liste precise des questions posees lors d'un clic sur "reessayer" (V1.5/V2)
-- Ecran ou message specifique en cas d'echec de connexion Steam ou de la Steam Web API (distinct des erreurs 404/403) : non discute pour le moment. Traitement minimal en place : redirection vers la page d'accueil avec `?auth_error=1`, qui affiche un message discret pres du bouton "Se connecter avec Steam". Rien de plus elabore n'a ete concu.
+- Ecran ou message specifique en cas d'echec de connexion Steam ou de la Steam Web API (distinct des erreurs 404/403) : non discute pour le moment. Traitement minimal en place : redirection vers `/connexion?auth_error=1`, qui affiche un message discret pres du bouton "Se connecter avec Steam". Rien de plus elabore n'a ete concu.

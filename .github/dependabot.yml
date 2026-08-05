@@ -1,0 +1,28 @@
+version: 2
+updates:
+  # Un seul lockfile pnpm (pnpm-lock.yaml) a la racine pour tout le monorepo
+  # (front/, back/) : une entree "/" suffit, Dependabot suit les workspaces.
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      # Les mises a jour mineures/correctifs sont groupees en une seule PR
+      # hebdomadaire (peu de risque, evite le bruit). Les montees de version
+      # majeure restent ouvertes individuellement : elles meritent une revue
+      # dediee (breaking changes potentiels).
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  # Garde aussi les actions utilisees dans .github/workflows/ a jour
+  # (actions/checkout, actions/setup-node, github/codeql-action, ...).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      github-actions:
+        patterns: ["*"]
