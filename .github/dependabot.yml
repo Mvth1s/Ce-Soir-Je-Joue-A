@@ -4,6 +4,7 @@ updates:
   # (front/, back/) : une entree "/" suffit, Dependabot suit les workspaces.
   - package-ecosystem: "npm"
     directory: "/"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -20,6 +21,7 @@ updates:
   # (actions/checkout, actions/setup-node, github/codeql-action, ...).
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
       day: "monday"
