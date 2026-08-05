@@ -2,9 +2,15 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { useTheme } from "@/composables/useTheme";
+import logoMonoDark from "@/assets/logo-mono-dark.svg";
+import logoMonoLight from "@/assets/logo-mono-light.svg";
 
 const route = useRoute();
 const { theme, toggleTheme } = useTheme();
+
+// logo-mono-dark = trait fonce (pour fond clair, theme "light") ;
+// logo-mono-light = trait clair (pour fond sombre, theme "dark").
+const logoSrc = computed(() => (theme.value === "dark" ? logoMonoLight : logoMonoDark));
 
 const stepLabel = computed(() => {
   switch (route.name) {
@@ -50,7 +56,7 @@ const isAuthenticatedRoute = computed(() => route.name === "criteria" || route.n
         cursor: pointer;
       "
     >
-      <span style="font: 400 15px Silkscreen, monospace; color: var(--acc)">▮▮</span>
+      <img :src="logoSrc" alt="" width="24" height="24" style="display: block" />
       <span
         style="
           font-family: 'Pixelify Sans', monospace;

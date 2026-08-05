@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import logo404 from "@/assets/logo-404.svg";
+</script>
 
 <template>
   <section
@@ -14,6 +16,7 @@
       animation: pagein 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
     "
   >
+    <img :src="logo404" alt="" width="88" height="88" style="display: block" />
     <span style="font: 400 11px Silkscreen, monospace; color: var(--acc); letter-spacing: 1px"
       >erreur 404</span
     >
