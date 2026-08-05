@@ -9,6 +9,10 @@
   et déploie explicitement via le CLI Vercel, **après** que les jobs `test` et `build` aient réussi.
   Un smoke test post-déploiement (`.github/scripts/smoke-test.sh`) vérifie que `/`, `/api/library`
   et `/api/suggest` répondent avec un statut cohérent avant de considérer le déploiement réussi.
+  Le smoke test cible le domaine custom `https://cesoirjejouea.vercel.app`, pas l'URL de
+  déploiement éphémère renvoyée par `vercel deploy` (celle-ci est protégée par la Vercel
+  Deployment Protection, même en production, et répond systématiquement 302 vers
+  `vercel.com/sso-api`).
 
 Pour que ce gate soit réellement respecté (et pas juste redondant avec un déploiement automatique
 Vercel qui partirait en parallèle sans attendre les tests), désactiver le déploiement automatique
