@@ -4,7 +4,7 @@
 
 ### 1. Page d'atterrissage (`/`)
 
-- Presente le principe du site (accroche, les 3 etapes du parcours).
+- Presente le principe du site (accroche, apercu visuel du podium, les 3 etapes du parcours, section de reassurance : lecture seule, pas de mot de passe stocke, donnees minimales).
 - Bouton d'appel a l'action qui mene vers la page de connexion (`/connexion`), pas de connexion Steam directe depuis cette page.
 
 ### 2. Page de connexion (`/connexion`)
@@ -42,6 +42,14 @@ Chaque carte peut se retourner (effet de rotation) pour reveler au dos l'explica
 ### Bouton "reessayer" (V1.5 ou V2, pas urgent)
 
 Un bouton "reessayer" permet de relancer une nouvelle suggestion sans ressaisir tous les criteres. Au moment du clic, une question rapide est posee a l'utilisateur (pourquoi il souhaite reessayer), afin d'alimenter et d'ameliorer les choix futurs de l'IA. Fonctionnalite jugee utile mais non urgente, prevue pour une version ulterieure a la V1.
+
+### 5. Page mentions legales (`/mentions-legales`)
+
+Editeur (pseudo + contact), hebergement (Vercel), lien vers le code source (repo GitHub public), et un resume du traitement des donnees personnelles qui reprend le point de vigilance RGPD du `docs/01-cahier-des-charges.md`. Accessible depuis le footer, present sur tous les ecrans.
+
+## Pied de page
+
+Present sur tous les ecrans (`AppFooter.vue`, monte une fois dans `App.vue`) : marque du site (lien vers l'accueil), tagline, liens vers les mentions legales et le code source, resume du stack technique et credit de l'auteur.
 
 ## Pages d'erreur
 

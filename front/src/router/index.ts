@@ -24,6 +24,11 @@ const router = createRouter({
       component: () => import("@/pages/ResultsPage.vue"),
     },
     {
+      path: "/mentions-legales",
+      name: "legal",
+      component: () => import("@/pages/MentionsLegalesPage.vue"),
+    },
+    {
       path: "/403",
       name: "forbidden",
       component: () => import("@/pages/ForbiddenPage.vue"),
