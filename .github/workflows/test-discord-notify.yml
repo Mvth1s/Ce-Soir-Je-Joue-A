@@ -1,0 +1,23 @@
+name: Tester la notification Discord
+
+# Declenchement manuel uniquement : envoie un message de test au webhook
+# configure (secret DISCORD_WEBHOOK_URL), pour verifier la configuration
+# sans attendre un vrai echec de pipeline.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  test-notify:
+    name: test-notify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Envoyer un message de test
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MESSAGE: "Test : ce message confirme que DISCORD_WEBHOOK_URL est correctement configure"
+          REF_NAME: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: .github/scripts/notify-discord.sh "$MESSAGE" "$REF_NAME" "$RUN_URL"
