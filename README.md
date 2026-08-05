@@ -4,13 +4,13 @@
 
 Un petit site qui répond à une question toute simple : *"j'ai envie de jouer, mais à quoi ?"*
 
-Plus une bibliothèque Steam grossit, plus choisir un jeu devient une corvée — on finit par relancer toujours les 2-3 mêmes, ou par ne rien lancer du tout. Ce site regarde ta vraie bibliothèque Steam et te propose seulement **3 jeux**, choisis pour correspondre à ton état du moment.
+Plus une bibliothèque Steam grossit, plus choisir un jeu devient une corvée : on finit par relancer toujours les 2-3 mêmes, ou par ne rien lancer du tout. Ce site regarde ta vraie bibliothèque Steam et te propose seulement **3 jeux**, choisis pour correspondre à ton état du moment.
 
 ## Comment ça marche, en gros
 
-1. **Tu te connectes avec Steam.** Pas de compte à créer, pas de mot de passe à inventer : tu cliques "Se connecter avec Steam", tu passes par la page officielle de Steam, et c'est tout. Le site ne voit jamais ton mot de passe.
+1. **Tu te connectes avec Steam.** Une page de présentation t'accueille d'abord, puis tu cliques "Se connecter avec Steam" : pas de compte à créer, pas de mot de passe à inventer, tu passes par la page officielle de Steam et c'est tout. Le site ne voit jamais ton mot de passe.
 2. **Tu dis où tu en es ce soir.** Ton humeur (détente, défi, envie de découvrir...), ton niveau de fatigue, le temps que tu as devant toi, et le moment de la journée (déjà pré-rempli automatiquement).
-3. **Une IA regarde ta bibliothèque et choisit 3 jeux.** Elle prend en compte ce que tu as déjà joué, depuis combien de temps, et ce que tu viens de lui dire sur ton état — et elle explique son choix.
+3. **Une IA regarde ta bibliothèque et choisit 3 jeux.** Elle prend en compte ce que tu as déjà joué, depuis combien de temps, et ce que tu viens de lui dire sur ton état, et elle explique son choix. Il s'agit de [Mistral AI](https://mistral.ai) (modèle `mistral-small-latest`) ; le détail du prompt envoyé est documenté dans `docs/02-architecture-logicielle.md`.
 4. **Les 3 jeux s'affichent en podium** (or, argent, bronze), avec l'affiche de chaque jeu. Une carte se retourne pour lire pourquoi ce jeu a été choisi, et pourquoi il est à cette place.
 
 Si ta bibliothèque Steam est vide, le site te propose à la place une petite sélection de jeux gratuits sur Steam.
@@ -21,7 +21,15 @@ Si ta bibliothèque Steam est vide, le site te propose à la place une petite s�
 - **Ce qui tourne côté serveur** (connexion Steam, appel à l'IA, récupération des affiches, base de données) : dossiers `back/` et `api/`
 - **Les documents qui expliquent les choix de conception en détail** : dossier `docs/`
 
-Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire évoluer le site à haut niveau — les documents dans `docs/` sont là si tu veux creuser un point précis.
+Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire évoluer le site à haut niveau : les documents dans `docs/` sont là si tu veux creuser un point précis.
+
+## Informations légales
+
+Éditeur, hébergement, code source et traitement des données personnelles sont détaillés sur une page dédiée du site, accessible depuis le pied de page (`/mentions-legales`) une fois le site lancé.
+
+## Licence
+
+Ce projet est distribué sous licence [GNU GPL v3](LICENSE) (ou, à ton choix, toute version ultérieure). Tu peux réutiliser, modifier et redistribuer le code, à condition que toute version modifiée ou redistribuée reste elle aussi sous GPL v3 et fournisse son code source.
 
 ## Lancer le site sur ton ordinateur
 
@@ -59,11 +67,25 @@ Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire é
    psql "$DATABASE_URL" -f back/src/db/schema.sql
    ```
 
-4. **Lancer le site.** Le plus simple est d'utiliser l'outil en ligne de commande de Vercel, qui fait tourner en même temps la partie visible et la partie serveur :
-   ```
-   npx vercel dev
-   ```
-   Puis ouvre l'adresse affichée dans le terminal (normalement `http://localhost:3000`) dans ton navigateur.
+4. **Lancer le site.** Il y a deux parties qui tournent séparément : la partie visible (le site, servi par Vite sur le port 5173) et la partie serveur (connexion Steam, IA..., servie par un petit serveur local sur le port 3000). Vite redirige automatiquement les appels serveur vers le port 3000, donc dans ton navigateur tu ouvres toujours **`http://localhost:5173`**, jamais le 3000 directement.
+
+   - **Tout lancer d'un coup** (le cas normal, pour utiliser le site en entier) :
+     ```
+     pnpm dev:full
+     ```
+     Ouvre ensuite `http://localhost:5173` dans ton navigateur.
+
+   - **Lancer seulement la partie visible** (pratique pour retoucher juste l'affichage sans toucher au serveur) :
+     ```
+     pnpm dev
+     ```
+     ⚠️ Sans la partie serveur en face, tous les boutons qui parlent au serveur (connexion Steam, recherche de jeux...) donneront une erreur de connexion.
+
+   - **Lancer seulement la partie serveur** (pratique pour tester une route ou regarder ses logs sans le site) :
+     ```
+     pnpm dev:api
+     ```
+     Les routes sont alors disponibles directement sur `http://localhost:3000/api/...`.
 
 ### Vérifier que tout va bien sans lancer le site
 

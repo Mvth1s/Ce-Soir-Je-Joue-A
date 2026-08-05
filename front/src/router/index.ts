@@ -6,7 +6,12 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: () => import("@/pages/HomePage.vue"),
+      component: () => import("@/pages/LandingPage.vue"),
+    },
+    {
+      path: "/connexion",
+      name: "login",
+      component: () => import("@/pages/LoginPage.vue"),
     },
     {
       path: "/criteres",
@@ -17,6 +22,16 @@ const router = createRouter({
       path: "/resultats",
       name: "results",
       component: () => import("@/pages/ResultsPage.vue"),
+    },
+    {
+      path: "/mentions-legales",
+      name: "legal",
+      component: () => import("@/pages/MentionsLegalesPage.vue"),
+    },
+    {
+      path: "/faq",
+      name: "faq",
+      component: () => import("@/pages/FaqPage.vue"),
     },
     {
       path: "/403",

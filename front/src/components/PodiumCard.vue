@@ -26,6 +26,7 @@ const props = defineProps<{
 
 const flipped = ref(false);
 const isTouch = ref(false);
+const posterLoaded = ref(false);
 
 onMounted(() => {
   isTouch.value = window.matchMedia("(hover: none)").matches;
@@ -95,6 +96,10 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
               :src="suggestion.posterUrl"
               :alt="suggestion.name"
               class="podium-card__poster-img"
+              :class="{ 'podium-card__poster-img--loaded': posterLoaded }"
+              fetchpriority="high"
+              decoding="async"
+              @load="posterLoaded = true"
             />
             <div v-if="suggestion.posterUrl" class="podium-card__poster-overlay"></div>
             <span v-if="!suggestion.posterUrl" class="podium-card__poster-label">affiche steam</span>
@@ -172,13 +177,13 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   animation-duration: 0.55s;
 }
 .podium-card[data-size="silver"] {
-  width: min(220px, 42vw);
+  width: min(300px, 88vw);
   height: min(452px, 86vw);
   perspective: 1300px;
   animation-delay: 0.12s;
 }
 .podium-card[data-size="bronze"] {
-  width: min(200px, 42vw);
+  width: min(300px, 88vw);
   height: min(408px, 86vw);
   perspective: 1300px;
   animation-delay: 0.24s;
@@ -255,7 +260,7 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   height: 34px;
   border-radius: 9px;
   background: var(--goldbg);
-  font-size: 13px;
+  font-size: 14px;
   color: #3d2b13;
 }
 [data-size="silver"] .podium-card__badge {
@@ -265,7 +270,7 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   height: 28px;
   border-radius: 8px;
   background: var(--silverbg);
-  font-size: 11px;
+  font-size: 12px;
   color: #2f2825;
 }
 [data-size="bronze"] .podium-card__badge {
@@ -275,7 +280,7 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   height: 26px;
   border-radius: 8px;
   background: var(--bronzebg);
-  font-size: 10px;
+  font-size: 11px;
   color: #37220f;
 }
 
@@ -305,6 +310,11 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.podium-card__poster-img--loaded {
+  opacity: 1;
 }
 .podium-card__poster-overlay {
   position: absolute;
@@ -314,7 +324,7 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
 .podium-card__poster-label {
   position: relative;
   z-index: 1;
-  font: 400 9px Silkscreen, monospace;
+  font: 400 10.5px Silkscreen, monospace;
   color: var(--tx3);
 }
 .podium-card__title {
@@ -330,13 +340,13 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 [data-size="gold"] .podium-card__title {
-  font-size: clamp(26px, 6vw, 32px);
+  font-size: clamp(27px, 6vw, 33px);
 }
 [data-size="silver"] .podium-card__title {
-  font-size: 21px;
+  font-size: 22.5px;
 }
 [data-size="bronze"] .podium-card__title {
-  font-size: 18px;
+  font-size: 19.5px;
 }
 
 .podium-card__stats {
@@ -369,15 +379,15 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   font-weight: 700;
 }
 [data-size="gold"] .podium-card__percent {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--gold);
 }
 [data-size="silver"] .podium-card__percent {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--silver);
 }
 [data-size="bronze"] .podium-card__percent {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--bronze);
 }
 
@@ -386,16 +396,16 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   color: var(--tx2);
 }
 [data-size="gold"] .podium-card__playtime {
-  font-size: 12.5px;
+  font-size: 13.5px;
 }
 [data-size="gold"] .podium-card__lastplayed {
-  font-size: 12px;
+  font-size: 13px;
 }
 [data-size="silver"] .podium-card__playtime,
 [data-size="silver"] .podium-card__lastplayed,
 [data-size="bronze"] .podium-card__playtime,
 [data-size="bronze"] .podium-card__lastplayed {
-  font-size: 11.5px;
+  font-size: 12.5px;
 }
 
 .podium-card__bar {
@@ -425,7 +435,7 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
 }
 
 .podium-card__hint {
-  font: 400 9px Silkscreen, monospace;
+  font: 400 10.5px Silkscreen, monospace;
   white-space: nowrap;
 }
 [data-size="gold"] .podium-card__hint {
@@ -458,13 +468,13 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   color: var(--tx);
 }
 [data-size="gold"] .podium-card__back-title {
-  font-size: 19px;
+  font-size: 20px;
 }
 [data-size="silver"] .podium-card__back-title {
-  font-size: 16px;
+  font-size: 17px;
 }
 [data-size="bronze"] .podium-card__back-title {
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .podium-card__back-body {
@@ -505,33 +515,33 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   color: var(--acc);
 }
 [data-size="gold"] .podium-card__why-label {
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.5px;
 }
 [data-size="silver"] .podium-card__why-label,
 [data-size="bronze"] .podium-card__why-label {
-  font-size: 8.5px;
+  font-size: 9.5px;
 }
 .podium-card__why-text {
   margin: 0;
   color: var(--tx2);
 }
 [data-size="gold"] .podium-card__why-text {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
 }
 [data-size="silver"] .podium-card__why-text {
-  font-size: 12.5px;
+  font-size: 13.5px;
   line-height: 1.55;
 }
 [data-size="bronze"] .podium-card__why-text {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
 .podium-card__back-hint {
   margin-top: auto;
-  font: 400 8.5px Silkscreen, monospace;
+  font: 400 10px Silkscreen, monospace;
   color: var(--tx3);
 }
 </style>

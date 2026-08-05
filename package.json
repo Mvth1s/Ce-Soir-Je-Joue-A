@@ -2,9 +2,12 @@
   "name": "ce-soir-je-joue-a",
   "private": true,
   "version": "0.0.0",
+  "license": "GPL-3.0-or-later",
   "type": "commonjs",
   "scripts": {
     "dev": "pnpm --filter front dev",
+    "dev:api": "tsx watch --env-file=.env scripts/dev-server.ts",
+    "dev:full": "concurrently -n front,api -c blue,green \"pnpm --filter front dev\" \"pnpm dev:api\"",
     "build": "pnpm --filter front build",
     "typecheck": "pnpm --filter front typecheck && pnpm --filter back typecheck"
   },
@@ -13,6 +16,9 @@
   },
   "packageManager": "pnpm@11.3.0",
   "devDependencies": {
-    "typescript": "^5.6.3"
+    "concurrently": "^9.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vercel": "^58.4.4"
   }
 }

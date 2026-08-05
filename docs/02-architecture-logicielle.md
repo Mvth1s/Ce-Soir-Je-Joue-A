@@ -48,7 +48,7 @@ Duree de mise en cache (TTL) : 4 heures (`LIBRARY_CACHE_TTL_MS`, `back/src/libra
 
 #### Stockage persistant (Postgres)
 
-Les fonctions serverless Vercel n'ont pas de memoire entre deux invocations : l'identifiant utilisateur interne, les liaisons de plateforme et le cache bibliotheque doivent donc etre persistes ailleurs qu'en memoire process. Choix : Postgres (Vercel Postgres / Neon, via le client `@vercel/postgres`), pas de Redis.
+Les fonctions serverless Vercel n'ont pas de memoire entre deux invocations : l'identifiant utilisateur interne, les liaisons de plateforme et le cache bibliotheque doivent donc etre persistes ailleurs qu'en memoire process. Choix : Postgres (Neon, via le client HTTP `@neondatabase/serverless`), pas de Redis. `@vercel/postgres` (deprecie par son editeur) a ete utilise initialement puis retire au profit de ce client.
 
 Trois tables :
 
@@ -65,11 +65,46 @@ Trois tables :
 
 ### Mistral API
 
+**Modele utilise : `mistral-small-latest`** (constante `MISTRAL_MODEL`, `back/src/mistral.ts`), un petit modele generaliste rapide, suffisant pour cette tache de classement/matching et disponible sur le tier gratuit de Mistral. Appele avec `temperature: 0.3` (reponses peu variables d'un run a l'autre) et `response_format: { type: "json_object" }` (force une reponse JSON stricte).
+
 Recoit, pour chaque jeu candidat de la bibliotheque : titre, temps joue, date de la derniere session, ainsi que les criteres declares par l'utilisateur (humeur, fatigue, temps disponible, moment de la journee). Le genre n'est pas envoye : la Steam Web API ne le fournit pas dans l'appel de recuperation de bibliotheque (`GetOwnedGames`), et l'obtenir demanderait un appel supplementaire par jeu (un par `appid`), trop couteux pour des bibliotheques de plusieurs centaines de jeux. Piste d'amelioration possible si necessaire a la qualite du matching.
 
-Renvoie : le nom du jeu et son ID Steam, pour chacun des 3 jeux suggeres.
+Renvoie : pour chacun des 3 jeux suggeres, son ID Steam (`appid`), son rang (1 a 3), un pourcentage de correspondance, et deux courtes justifications en francais (pourquoi ce jeu, pourquoi ce rang). Le nom du jeu, le temps joue et la derniere session affiches ensuite viennent des donnees source (`candidates`), jamais de la reponse de l'IA, qui pourrait les halluciner ou les reformuler (voir `buildSuggestions` dans `back/src/mistral.ts`).
 
 Tier gratuit utilise tant que le nombre d'utilisateurs reste faible ; passage a un plan payant a envisager si l'usage augmente.
+
+#### Exemple de prompt envoye a Mistral
+
+Genere par `buildPrompt()` (`back/src/mistral.ts`). Le message systeme cadre le role de l'IA ; le message utilisateur (ci-dessous, avec des valeurs d'exemple) porte la liste de jeux candidats et l'etat du joueur :
+
+```
+Contexte : le site "Ce soir je joue a ..." aide un joueur a choisir quoi jouer ce soir parmi les jeux Steam qu'il possede deja. Tu dois lui suggerer exactement 3 jeux, classes du plus pertinent (rang 1) au moins pertinent (rang 3), a partir de la liste de jeux candidats ci-dessous et de son etat du moment.
+
+Jeux candidats (bibliotheque Steam du joueur) :
+- appid 570 : "Dota 2", 320.5h joues au total, derniere session : 2026-08-03
+- appid 730 : "Counter-Strike 2", 84.0h joues au total, derniere session : 2026-07-28
+- appid 1145360 : "Hades", 12.5h joues au total, derniere session : 2026-06-11
+[... jusqu'a 40 jeux candidats]
+
+Etat du joueur ce soir :
+- Humeur(s) : detente, decouverte
+- Niveau de fatigue : fatigue
+- Temps disponible : 60 minutes
+- Moment de la journee : soir
+
+Consignes :
+- Choisis exactement 3 jeux, uniquement parmi les jeux candidats listes ci-dessus (utilise leur appid exact, ne jamais inventer ou choisir un jeu hors liste).
+- Classe-les avec rank 1 (le meilleur choix), rank 2 et rank 3.
+- Pour chaque jeu, donne un matchPercent (0 a 100) qui reflete a quel point ce jeu correspond a l'etat du joueur.
+- whyThisGame : explique en francais, en 1 a 2 phrases, ton direct, pourquoi ce jeu correspond a son etat de ce soir (humeur, fatigue, temps disponible, moment de la journee). Exemple de ton attendu : "Vous etes fatigue et vous avez une heure. Ce jeu se joue par sessions courtes, parfait pour souffler sans s'engager."
+- whyThisRank : explique en francais, en 1 a 2 phrases, pourquoi ce jeu occupe precisement ce rang plutot qu'un autre parmi les 3 proposes.
+- Reponds uniquement avec un objet JSON de la forme exacte suivante, sans texte avant ou apres :
+{"suggestions": [{"appid": number, "rank": 1 | 2 | 3, "matchPercent": number, "whyThisGame": string, "whyThisRank": string}, ...3 elements au total]}
+```
+
+Le message systeme associe : *"Tu es un assistant qui choisit des jeux video a proposer a un joueur pour sa soiree. Tu reponds uniquement avec du JSON strict respectant exactement le format demande, sans aucun texte hors JSON."*
+
+La liste de jeux candidats n'est jamais la bibliotheque complete : voir `selectCandidates()` (meme fichier) pour la construction de la shortlist deterministe de 40 jeux maximum (section "Sequence d'une requete de suggestion" ci-dessous).
 
 ### SteamGridDB
 
@@ -99,7 +134,7 @@ Persistees en Postgres (voir "Stockage persistant (Postgres)" ci-dessus) :
 
 - Front : Vue 3
 - Back : TypeScript, fonctions serverless Vercel natives sous `api/*.ts` (pas de framework HTTP), logique metier dans `back/src/`
-- Stockage persistant : Postgres (Vercel Postgres / Neon, via `@vercel/postgres`)
+- Stockage persistant : Postgres (Neon, via `@neondatabase/serverless`)
 - Hebergement : Vercel dans un premier temps
 
 ## Points encore ouverts
