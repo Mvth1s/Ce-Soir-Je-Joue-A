@@ -1,0 +1,64 @@
+name: Mettre a jour les captures de reference
+
+# Declenchement manuel uniquement : les baselines de regression visuelle
+# (tests/e2e/__screenshots__/) ne doivent changer que sur decision explicite
+# d'un mainteneur, jamais automatiquement (voir tests/README.md). Ce workflow
+# regenere les baselines et ouvre une pull request a relire comme n'importe
+# quel changement de code.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-baselines:
+    name: update-baselines
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Installer les dependances
+        run: pnpm install --frozen-lockfile
+
+      - name: Installer Chromium (Playwright)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Verifier que la base de test est configuree
+        env:
+          DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }}
+        run: |
+          if [ -z "$DATABASE_URL_TEST" ]; then
+            echo "::error::Le secret DATABASE_URL_TEST est manquant."
+            exit 1
+          fi
+
+      - name: Regenerer les captures de reference
+        run: pnpm exec playwright test --update-snapshots
+        env:
+          CI: true
+          DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
+
+      - name: Ouvrir une pull request avec les nouvelles captures
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "test: met a jour les captures de reference visuelles"
+          title: "Mise a jour des captures de reference (regression visuelle)"
+          body: |
+            Genere automatiquement par le workflow `update-visual-baselines`.
+
+            A relire comme un changement visuel volontaire avant de merger :
+            comparer chaque image modifiee dans l'onglet "Files changed".
+          branch: chore/update-visual-baselines
+          add-paths: tests/e2e/__screenshots__/**

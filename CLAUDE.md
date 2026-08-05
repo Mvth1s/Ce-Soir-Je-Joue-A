@@ -8,7 +8,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-V1 implemented: Steam login, criteria form, and the podium suggestion flow all work end-to-end. pnpm monorepo: `front/` (Vue 3 + Vite SPA), `back/src/` (backend logic: db, session, Steam/Mistral/SteamGridDB clients), `api/` (thin Vercel serverless entrypoints importing from `back/src/`). Common commands: `pnpm install`, `pnpm dev:full` (front + api together), `pnpm dev` (front only), `pnpm dev:api` (api only), `pnpm build`, `pnpm typecheck`.
+V1 implemented: Steam login, criteria form, and the podium suggestion flow all work end-to-end. pnpm monorepo: `front/` (Vue 3 + Vite SPA), `back/src/` (backend logic: db, session, Steam/Mistral/SteamGridDB clients), `api/` (thin Vercel serverless entrypoints importing from `back/src/`).
+
+## Commandes
+
+- `pnpm install` : installer les dependances (racine, workspaces `front` et `back`).
+- `pnpm dev:full` : lance le front (Vite, port 5173) et l'API locale (port 3000) en parallele ; ouvrir `http://localhost:5173` (Vite proxy les appels `/api`).
+- `pnpm dev` : front seul (les appels API echouent sans `dev:api` en face).
+- `pnpm dev:api` : API seule, servie directement sur `http://localhost:3000/api/...` par `scripts/dev-server.ts`.
+- `pnpm build` : build de production du front (`front/dist`), c'est aussi la commande utilisee par Vercel (`vercel.json`).
+- `pnpm typecheck` : `vue-tsc -b` (front) puis `tsc --noEmit` (back, qui couvre aussi `api/**` et `scripts/**`, voir `back/tsconfig.json`).
+- Filtrer un seul workspace : `pnpm --filter front <script>` ou `pnpm --filter back <script>` (ex. `pnpm --filter front typecheck`).
+- Preparer la base localement : `psql "$DATABASE_URL" -f back/src/db/schema.sql`.
+- `pnpm test:e2e` : suite Playwright (voir `tests/README.md`) ; aucun compte Steam ni cle d'API reelle necessaire (tout est mocke), mais `DATABASE_URL` doit pointer vers une vraie base Postgres (Neon) de test.
+- `pnpm healthcheck` : verifie que Steam Web API, Steam OpenID, Mistral, SteamGridDB et Neon repondent (voir `scripts/healthcheck.ts`), utilise par `.github/workflows/healthcheck.yml`.
+- Aucun linter (ESLint/Prettier) n'est configure dans ce depot a ce jour ; ne pas supposer l'existence d'une commande `lint`.
 
 ## Stack
 
@@ -22,6 +36,7 @@ V1 implemented: Steam login, criteria form, and the podium suggestion flow all w
 - `docs/01-cahier-des-charges.md` : objectifs, perimetre V1/V2, criteres, cas limites, RGPD
 - `docs/02-architecture-logicielle.md` : composants, services externes, sequence d'une requete, donnees stockees
 - `docs/03-architecture-site.md` : pages, navigation, comportement du podium, pages d'erreur
+- `docs/04-deploiement-et-rollback.md` : pipeline CI/CD, previews Vercel, promotion en production, rollback manuel
 
 Consulter ces documents avant toute decision de conception qui s'ecarte de ce qui y est deja tranche. Si une decision documentee doit changer, mettre a jour le document correspondant dans le meme commit.
 
@@ -36,6 +51,15 @@ Consulter ces documents avant toute decision de conception qui s'ecarte de ce qu
 Toute donnee utilisateur doit passer par un **identifiant utilisateur interne** (`user_id`, genere par le backend), jamais directement par le `SteamID64`. Le SteamID64 est stocke comme une "liaison de plateforme" (`user_id`, `platform`, `platform_id`) rattachee a cet identifiant interne. Cette regle existe pour permettre, plus tard et sans migration, l'ajout d'un vrai systeme de compte et d'autres plateformes.
 
 Ne jamais utiliser le SteamID64 comme cle primaire ou comme identifiant de session.
+
+## Architecture des handlers API
+
+Chaque fichier sous `api/` exporte un handler `(req, res) => Promise<void>` type sur `IncomingMessage`/`ServerResponse` (`node:http`), **pas** sur `VercelRequest`/`VercelResponse` — il n'y a pas de dependance a `@vercel/node` dans ce depot. Consequences a respecter pour tout nouveau handler :
+
+- Ne pas supposer que `req.body` est deja parse : lire et parser le flux soi-meme si absent (voir `readJsonBody` dans `api/suggest.ts`), avec une limite de taille explicite.
+- Utiliser `sendJson` et `rejectMethod` de `back/src/http.ts` pour les reponses et la verification de methode HTTP, plutot que reimplementer ce comportement.
+- La correspondance route -> fichier est purement basee sur l'arborescence de `api/` (ex. `api/auth/steam.ts` -> `/api/auth/steam`) ; en local, `scripts/dev-server.ts` la decouvre automatiquement au demarrage, aucune table de routes a maintenir a la main.
+- Toute logique metier (acces DB, appels Steam/Mistral/SteamGridDB) vit dans `back/src/`, jamais directement dans `api/*.ts` : les fichiers `api/` restent de fines entrees HTTP qui valident, appellent `back/src/`, puis serialisent la reponse.
 
 ## Services externes
 
@@ -64,6 +88,15 @@ Ne jamais utiliser le SteamID64 comme cle primaire ou comme identifiant de sessi
 - Pas de secret ou de cle d'API en dur dans le code : variables d'environnement uniquement.
 - Le front ne parle jamais directement a Steam, Mistral ou SteamGridDB : tout passe par le backend.
 - Toute nouvelle donnee utilisateur stockee doit etre documentee dans `docs/02-architecture-logicielle.md` (section "Donnees stockees"), en lien avec le point de vigilance RGPD du `docs/01-cahier-des-charges.md`.
+
+## Tests et CI/CD
+
+- Tests end-to-end Playwright dans `tests/e2e/` (voir `tests/README.md` pour le detail). Ils tournent contre une vraie instance du front et de l'API (`scripts/e2e-server.ts`), avec Steam OpenID/Steam Web API/Mistral/SteamGridDB entierement mockes (`tests/e2e/support/`) et une vraie base Postgres de test.
+- `scripts/e2e-server.ts` et `scripts/dev-server.ts` partagent leur logique de routage via `scripts/lib/apiServer.ts` ; ne pas dupliquer cette logique si un troisieme variant est necessaire un jour.
+- Le mock Steam OpenID (`tests/e2e/support/steamAuthMock.ts`) utilise `nock`, volontairement fige sur la branche majeure 13.x : `nock` 14+ patche aussi `fetch` global (via `@mswjs/interceptors`), ce qui bloquerait a tort les appels reels vers Neon (qui utilise `fetch`). Ne pas monter cette dependance sans revalider ce point.
+- Le mock des API HTTP (`tests/e2e/support/externalApiMocks.ts`) utilise `undici.MockAgent` : la version du paquet `undici` explicite en devDependency doit rester alignee sur celle bundlee par la version de Node utilisee (`process.versions.undici`), sinon `setGlobalDispatcher` n'a aucun effet sur le vrai `fetch` global (cle de registre globale differente selon la version majeure).
+- `.github/workflows/ci.yml` : jobs `test` -> `build` -> `deploy-production` (ce dernier uniquement sur push vers `main`). Les previews (branches `dev`, PR) restent gerees par l'integration Git native de Vercel, pas par ce workflow.
+- Les captures de reference de regression visuelle (`tests/e2e/__screenshots__/`) ne sont generees/comparees qu'en CI, jamais en local (voir `tests/README.md`).
 
 ## Langue
 
