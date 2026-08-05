@@ -27,8 +27,8 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
       undici:
-        specifier: ^6.28.0
-        version: 6.28.0
+        specifier: ^8.9.0
+        version: 8.9.0
       vercel:
         specifier: ^58.4.4
         version: 58.4.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(rollup@4.62.4)
@@ -2316,6 +2316,10 @@ packages:
     resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
     engines: {node: '>=20.18.1'}
 
+  undici@8.9.0:
+    resolution: {integrity: sha512-aWZpUj7XoGonMClx4gdDRfgBjqeA+F473aDmROQQbM9n6PRfK/u1q/a0X4wMTgcHfT8H6fpbt98PFuDUwFg2YA==}
+    engines: {node: '>=22.19.0'}
+
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
@@ -4551,6 +4555,8 @@ snapshots:
   undici@6.28.0: {}
 
   undici@7.29.0: {}
+
+  undici@8.9.0: {}
 
   universalify@2.0.1: {}
 
