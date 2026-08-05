@@ -1,0 +1,179 @@
+name: CI
+
+# Vercel deploie deja automatiquement une preview pour chaque push/PR (integration
+# Git native, projet deja lie voir .vercel/project.json) : ce workflow ne redeploie
+# donc jamais de preview lui-meme, il se contente de verifier (test -> build) avant
+# merge, et ne pilote explicitement qu'une chose : la promotion en production sur
+# push vers main (job deploy-production), pour que celle-ci soit conditionnee a la
+# reussite des tests plutot que de partir en parallele des checks GitHub.
+#
+# Pour que ce gate soit reellement respecte, desactiver le deploiement automatique
+# de Vercel sur la branche main (Project Settings -> Git -> Ignored Build Step, ou
+# equivalent) : voir le recapitulatif de mise en route pour le detail.
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "22"
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Installer les dependances
+        run: pnpm install --frozen-lockfile
+
+      - name: Verifier les types (front + back + tests)
+        run: pnpm typecheck
+
+      - name: Verifier la presence des mentions legales
+        run: pnpm exec tsx scripts/check-legal-pages.ts
+
+      - name: Auditer les dependances (vulnerabilites connues)
+        run: pnpm audit --audit-level=high
+
+      - name: Installer Chromium (Playwright)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Verifier que la base de test est configuree
+        env:
+          DATABASE_URL_TEST: ${{ secrets.DATABASE_URL_TEST }}
+        run: |
+          if [ -z "$DATABASE_URL_TEST" ]; then
+            echo "::error::Le secret DATABASE_URL_TEST est manquant. Voir tests/README.md : il faut une branche Neon dediee aux tests E2E."
+            exit 1
+          fi
+
+      - name: Lancer les tests end-to-end (Playwright)
+        run: pnpm test:e2e
+        env:
+          CI: true
+          DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
+
+      - name: Publier le rapport Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Notifier Discord en cas d'echec
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MESSAGE: "CI : le job test a echoue"
+          REF_NAME: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: .github/scripts/notify-discord.sh "$MESSAGE" "$REF_NAME" "$RUN_URL"
+
+  build:
+    name: build
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Installer les dependances
+        run: pnpm install --frozen-lockfile
+
+      - name: Construire le front
+        run: pnpm build
+
+      - name: Notifier Discord en cas d'echec
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MESSAGE: "CI : le job build a echoue"
+          REF_NAME: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: .github/scripts/notify-discord.sh "$MESSAGE" "$REF_NAME" "$RUN_URL"
+
+  deploy-production:
+    name: deploy-production
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Verifier que les secrets Vercel sont configures
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          missing=""
+          [ -z "$VERCEL_TOKEN" ] && missing="$missing VERCEL_TOKEN"
+          [ -z "$VERCEL_ORG_ID" ] && missing="$missing VERCEL_ORG_ID"
+          [ -z "$VERCEL_PROJECT_ID" ] && missing="$missing VERCEL_PROJECT_ID"
+          if [ -n "$missing" ]; then
+            echo "::error::Secret(s) manquant(s) pour le deploiement :$missing"
+            exit 1
+          fi
+
+      - name: Installer le CLI Vercel
+        run: npm install --global vercel@latest
+
+      - name: Construire pour la production (Vercel)
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
+          vercel build --prod --token="${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Deployer en production
+        id: deploy
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke test post-deploiement
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+        run: .github/scripts/smoke-test.sh "$DEPLOY_URL"
+
+      - name: Notifier Discord en cas d'echec (deploiement ou smoke test)
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MESSAGE: "Production : le deploiement ou le smoke test a echoue (voir docs/04-deploiement-et-rollback.md)"
+          REF_NAME: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: .github/scripts/notify-discord.sh "$MESSAGE" "$REF_NAME" "$RUN_URL"

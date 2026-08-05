@@ -8,3 +8,10 @@ dist/
 .DS_Store
 .vercel
 .env*
+
+# Playwright (voir tests/README.md) : les rapports/traces d'execution ne se
+# committent pas. tests/e2e/__screenshots__/ N'EST PAS ignore : ce sont les
+# baselines de regression visuelle, gerees via le workflow update-visual-baselines.
+test-results/
+playwright-report/
+blob-report/

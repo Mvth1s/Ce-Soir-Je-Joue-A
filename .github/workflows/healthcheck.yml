@@ -1,0 +1,47 @@
+name: Health-check services externes
+
+# Verifie quotidiennement que Steam Web API, Steam OpenID, Mistral, SteamGridDB
+# et la base Neon repondent toujours (voir scripts/healthcheck.ts). Un echec
+# fait volontairement echouer le workflow : c'est la notification GitHub
+# (rouge dans l'onglet Actions + email si configure) en plus du webhook Discord.
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  healthcheck:
+    name: healthcheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Installer les dependances
+        run: pnpm install --frozen-lockfile
+
+      - name: Lancer le health-check
+        run: pnpm healthcheck
+        env:
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          STEAMGRIDDB_API_KEY: ${{ secrets.STEAMGRIDDB_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Notifier Discord en cas d'echec
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MESSAGE: "Health-check : au moins un service externe est en panne ou hors delai"
+          REF_NAME: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: .github/scripts/notify-discord.sh "$MESSAGE" "$REF_NAME" "$RUN_URL"
