@@ -60,6 +60,13 @@
           rel="noopener"
           style="color: var(--acc)"
           >github.com/Mvth1s/Ce-Soir-Je-Joue-A</a
+        >, sous licence
+        <a
+          href="https://github.com/Mvth1s/Ce-Soir-Je-Joue-A/blob/main/LICENSE"
+          target="_blank"
+          rel="noopener"
+          style="color: var(--acc)"
+          >GNU GPL v3</a
         >.
       </p>
     </div>

@@ -27,6 +27,10 @@ Pas besoin d'aller plus loin dans le détail technique pour utiliser ou faire é
 
 Éditeur, hébergement, code source et traitement des données personnelles sont détaillés sur une page dédiée du site, accessible depuis le pied de page (`/mentions-legales`) une fois le site lancé.
 
+## Licence
+
+Ce projet est distribué sous licence [GNU GPL v3](LICENSE) (ou, à ton choix, toute version ultérieure). Tu peux réutiliser, modifier et redistribuer le code, à condition que toute version modifiée ou redistribuée reste elle aussi sous GPL v3 et fournisse son code source.
+
 ## Lancer le site sur ton ordinateur
 
 ### Ce qu'il te faut avant de commencer
