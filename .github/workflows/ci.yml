@@ -136,6 +136,9 @@ jobs:
       - name: Recuperer le code
         uses: actions/checkout@v4
 
+      - name: Installer pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Verifier que les secrets Vercel sont configures
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
