@@ -1,4 +1,8 @@
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    #case-vide { animation: slot-blink 1.6s ease-in-out infinite; }
+    @keyframes slot-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+  </style>
 
   <g id="dpad">
     <rect x="24" y="54" width="12" height="12" rx="1.5" fill="#3A3A4A" stroke="#EDEDF3" stroke-opacity="0.22" stroke-width="1.4"></rect>
