@@ -65,6 +65,13 @@ for (const viewport of VIEWPORTS) {
     });
 
     test(`podium : disposition et absence de scroll horizontal [${viewport.name}]`, async ({ page }) => {
+      // Le critere "moment" par defaut sur /criteres est auto-detecte depuis
+      // l'heure reelle (matin/aprem/soiree/nuit, voir useCriteria.ts). Sans
+      // figer l'horloge, ce test devient flaky pile pendant la tranche
+      // 23h-0h UTC ("nuit") : la reponse Mistral mockee differe selon le
+      // moment, ce qui change le contenu des cartes et donc la hauteur de
+      // page capturee, faisant echouer la comparaison de screenshot.
+      await page.clock.install({ time: new Date("2026-01-15T20:00:00Z") });
       await loginAsSteamUser(page, defaultSteamId());
       await page.getByRole("button", { name: "Trouver mes 3 jeux" }).click();
       await page.waitForURL("**/resultats");
