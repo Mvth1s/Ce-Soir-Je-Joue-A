@@ -22,6 +22,7 @@ V1 implemented: Steam login, criteria form, and the podium suggestion flow all w
 - Preparer la base localement : `psql "$DATABASE_URL" -f back/src/db/schema.sql`.
 - `pnpm test:e2e` : suite Playwright (voir `tests/README.md`) ; aucun compte Steam ni cle d'API reelle necessaire (tout est mocke), mais `DATABASE_URL` doit pointer vers une vraie base Postgres (Neon) de test.
 - `pnpm healthcheck` : verifie que Steam Web API, Steam OpenID, Mistral, SteamGridDB et Neon repondent (voir `scripts/healthcheck.ts`), utilise par `.github/workflows/healthcheck.yml`.
+- `pnpm changelog` : regenere `front/public/CHANGELOG.md` depuis l'historique git (voir section "Commits et changelog" plus bas). Fichier genere, jamais commit.
 - Aucun linter (ESLint/Prettier) n'est configure dans ce depot a ce jour ; ne pas supposer l'existence d'une commande `lint`.
 
 ## Stack
@@ -97,6 +98,12 @@ Chaque fichier sous `api/` exporte un handler `(req, res) => Promise<void>` type
 - Le mock des API HTTP (`tests/e2e/support/externalApiMocks.ts`) utilise `undici.MockAgent` : la version du paquet `undici` explicite en devDependency doit rester alignee sur celle bundlee par la version de Node utilisee (`process.versions.undici`), sinon `setGlobalDispatcher` n'a aucun effet sur le vrai `fetch` global (cle de registre globale differente selon la version majeure).
 - `.github/workflows/ci.yml` : jobs `test` -> `build` -> `deploy-production` (ce dernier uniquement sur push vers `main`). Les previews (branches `dev`, PR) restent gerees par l'integration Git native de Vercel, pas par ce workflow.
 - Les captures de reference de regression visuelle (`tests/e2e/__screenshots__/`) ne sont generees/comparees qu'en CI, jamais en local (voir `tests/README.md`).
+
+## Commits et changelog
+
+- Messages de commit au format [Conventional Commits](https://www.conventionalcommits.org/) (`type(scope): sujet`, voir `commitlint.config.js`), deja largement suivi dans l'historique avant d'etre rendu obligatoire. Verifie uniquement en local par le hook `commit-msg` de husky (`.husky/commit-msg`, installe automatiquement par `pnpm install` via le script `prepare`) : pas de job CI dedie, ce depot n'a qu'un seul mainteneur qui commit toujours depuis un clone avec le hook actif, un job de verification en CI serait redondant.
+- Pas de versioning semver ni de `semantic-release` : ce depot est une webapp en deploiement continu (pas un package publie avec des consommateurs qui suivent des versions), donc pas de tags ni de bump de version automatique.
+- Le changelog affiche au public (`/changelog`, lien en pied de page) est genere par `scripts/generate-changelog.ts` (`pnpm changelog`) a partir des commits `feat`/`fix`/`perf` uniquement (le reste - `chore`/`ci`/`docs`/`test`/`build`/`style`/`refactor` - n'a pas sa place dans un changelog oriente utilisateur), en excluant en plus les scopes techniques (`ci`, `e2e`, `test`, `deploy`, `dependabot`). Ecrit `front/public/CHANGELOG.md`, jamais commit (regenere a chaque deploiement production, voir le job `deploy-production`).
 
 ## Langue
 

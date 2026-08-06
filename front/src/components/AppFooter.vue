@@ -31,6 +31,9 @@ const logoSrc = computed(() => (theme.value === "dark" ? logoMonoLight : logoMon
         <router-link to="/faq" class="app-footer-link" style="font-size: 13px; color: var(--tx3)"
           >FAQ</router-link
         >
+        <router-link to="/changelog" class="app-footer-link" style="font-size: 13px; color: var(--tx3)"
+          >Changelog</router-link
+        >
         <router-link to="/mentions-legales" class="app-footer-link" style="font-size: 13px; color: var(--tx3)"
           >Mentions légales</router-link
         >

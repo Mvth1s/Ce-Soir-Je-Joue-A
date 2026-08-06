@@ -34,6 +34,11 @@ const router = createRouter({
       component: () => import("@/pages/FaqPage.vue"),
     },
     {
+      path: "/changelog",
+      name: "changelog",
+      component: () => import("@/pages/ChangelogPage.vue"),
+    },
+    {
       path: "/403",
       name: "forbidden",
       component: () => import("@/pages/ForbiddenPage.vue"),

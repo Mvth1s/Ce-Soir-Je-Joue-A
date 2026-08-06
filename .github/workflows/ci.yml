@@ -135,9 +135,30 @@ jobs:
     steps:
       - name: Recuperer le code
         uses: actions/checkout@v7
+        with:
+          # generate-changelog.ts lit tout l'historique (`git log`, pas de
+          # tags/versions, voir le script) : un checkout superficiel ne
+          # laisserait voir que le dernier commit.
+          fetch-depth: 0
 
       - name: Installer pnpm
         uses: pnpm/action-setup@v5
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Installer les dependances
+        run: pnpm install --frozen-lockfile
+
+      - name: Generer le changelog
+        # Ecrit front/public/CHANGELOG.md, lu avant `vercel build` juste en
+        # dessous pour qu'il soit inclus dans le build deploye (voir
+        # scripts/generate-changelog.ts et front/src/pages/ChangelogPage.vue).
+        # Jamais commit (voir .gitignore) : regenere a chaque deploiement.
+        run: pnpm changelog
 
       - name: Verifier que les secrets Vercel sont configures
         env:
