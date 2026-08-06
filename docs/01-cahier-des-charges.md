@@ -26,7 +26,7 @@ L'utilisateur renseigne, a chaque utilisation :
 - Humeur (ex : detente, defi, social, decouverte)
 - Niveau de fatigue
 - Temps de jeu disponible
-- Moment de la journee (matin / apres-midi / soir), recupere automatiquement via l'heure du PC, avec possibilite de le corriger manuellement
+- Moment de la journee (matin / apres-midi / soiree / nuit), recupere automatiquement via l'heure du PC, avec possibilite de le corriger manuellement
 
 ## Moteur de decision
 
@@ -67,4 +67,4 @@ Voir le document d'architecture logicielle pour le detail. Resume :
 
 ## Points encore ouverts
 
-- Justification du choix par l'IA affichee ou non sur chaque carte
+Aucun a ce jour. (La justification du choix par l'IA, autrefois listee ici comme point ouvert, est tranchee et implementee : voir `docs/03-architecture-site.md`, section "Justification du choix de l'IA (V1)".)
