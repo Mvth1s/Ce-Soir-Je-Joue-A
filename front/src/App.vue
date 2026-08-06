@@ -2,6 +2,7 @@
 import AppFooter from "@/components/AppFooter.vue";
 import AppHeader from "@/components/AppHeader.vue";
 import BootScreen from "@/components/BootScreen.vue";
+import CookieConsentBanner from "@/components/CookieConsentBanner.vue";
 </script>
 
 <template>
@@ -20,5 +21,6 @@ import BootScreen from "@/components/BootScreen.vue";
       <router-view />
     </main>
     <AppFooter />
+    <CookieConsentBanner />
   </div>
 </template>

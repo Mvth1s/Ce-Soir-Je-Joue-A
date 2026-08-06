@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /connexion
+Disallow: /criteres
+Disallow: /resultats
+Disallow: /403
+
+Sitemap: https://cesoirjejouea.vercel.app/sitemap.xml

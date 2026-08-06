@@ -87,6 +87,8 @@ Traite : le site est en ligne publiquement (`/mentions-legales`, verifiee automa
 
 Pas encore verifie : garantie explicite d'hebergement en UE (le site est heberge par Vercel Inc., sans engagement documente ici sur la localisation des donnees).
 
+**Mesure d'audience (Google Analytics 4).** GA4 n'est pas sur la liste d'exemption de consentement de la CNIL (contrairement a un outil d'audience "privacy-friendly" bien configure) : son chargement est donc soumis a un consentement opt-in prealable. Implementation : bandeau de consentement (`front/src/components/CookieConsentBanner.vue`, choix stocke en `localStorage`) ; le script `gtag.js` n'est jamais charge tant que l'utilisateur n'a pas explicitement accepte (`front/src/lib/analytics.ts`), et le choix reste modifiable a tout moment (lien "Gerer les cookies" en pied de page et sur `/mentions-legales`). Voir `docs/02-architecture-logicielle.md`, section "Services externes", pour le detail technique.
+
 ## Stack technique (vue d'ensemble)
 
 Voir le document d'architecture logicielle pour le detail. Resume :

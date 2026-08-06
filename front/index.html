@@ -12,6 +12,49 @@
     <link rel="apple-touch-icon" href="/src/assets/app-icon.svg" />
     <meta name="theme-color" content="#26211f" />
     <title>Ce soir je joue à…</title>
+
+    <!-- SEO -->
+    <meta
+      name="description"
+      content="Ce soir je joue à… trie votre bibliothèque Steam selon votre humeur, votre fatigue et le temps disponible, et vous propose 3 jeux à jouer maintenant, pas trente."
+    />
+    <link rel="canonical" href="https://cesoirjejouea.vercel.app/" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / réseaux sociaux -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ce soir je joue à…" />
+    <meta property="og:title" content="Ce soir je joue à…" />
+    <meta
+      property="og:description"
+      content="Votre bibliothèque Steam, triée par votre état du soir. Trois jeux proposés, pas trente."
+    />
+    <meta property="og:url" content="https://cesoirjejouea.vercel.app/" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Ce soir je joue à…" />
+    <meta
+      name="twitter:description"
+      content="Votre bibliothèque Steam, triée par votre état du soir. Trois jeux proposés, pas trente."
+    />
+
+    <!-- Google Search Console -->
+    <meta name="google-site-verification" content="k8-6n2cizLihULbkJ89EBYwAwTyu3LaoxJqqU1EcjZc" />
+
+    <!-- Données structurées (SEO + GEO : aide les moteurs classiques et les IA génératives à décrire le site) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Ce soir je joue à…",
+        "url": "https://cesoirjejouea.vercel.app/",
+        "description": "Suggère 3 jeux à jouer maintenant, choisis dans la bibliothèque Steam de l'utilisateur selon son humeur, sa fatigue et le temps disponible.",
+        "inLanguage": "fr-FR",
+        "isAccessibleForFree": true
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>

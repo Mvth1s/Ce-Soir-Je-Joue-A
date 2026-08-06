@@ -93,6 +93,8 @@ Ce projet est distribué sous licence [GNU GPL v3](LICENSE) (ou, à ton choix, t
    - `PUBLIC_BASE_URL` : l'adresse que ton navigateur utilise pour ouvrir le site en local (celle
      qui gère le retour de connexion Steam), normalement `http://localhost:5173` — pas le port 3000
      de l'API, que le navigateur ne contacte jamais directement.
+   - `VITE_GA_MEASUREMENT_ID` : optionnel, mesure d'audience Google Analytics 4. Laisse vide pour
+     développer sans analytics. Voir "Mesure d'audience" ci-dessous pour l'obtenir.
 
 3. **Préparer la base de données**, une seule fois (crée les tables nécessaires) :
    ```
@@ -118,6 +120,16 @@ Ce projet est distribué sous licence [GNU GPL v3](LICENSE) (ou, à ton choix, t
      pnpm dev:api
      ```
      Les routes sont alors disponibles directement sur `http://localhost:3000/api/...`.
+
+### Mesure d'audience (Google Analytics 4, optionnel)
+
+Pour savoir combien de personnes visitent le site et quelles pages elles consultent. Complètement optionnel : sans `VITE_GA_MEASUREMENT_ID`, le site fonctionne normalement, juste sans statistiques. Le script n'est de toute façon jamais chargé sans l'accord de la personne qui visite le site (bandeau de consentement, voir `docs/01-cahier-des-charges.md` section RGPD).
+
+1. Va sur [analytics.google.com](https://analytics.google.com) et connecte-toi avec ton compte Google.
+2. **Crée une propriété dédiée à ce site** (Admin → Créer → Propriété), distincte de toute propriété existante pour un autre site (ex. un portfolio) : chaque site doit avoir sa propre propriété GA4, sinon les statistiques des deux sites se mélangent. Nomme-la par exemple "Ce soir je joue à…", fuseau horaire France.
+3. Dans cette propriété, crée un flux de données **Web** avec l'URL de production du site (`https://cesoirjejouea.vercel.app`).
+4. Google t'affiche un **ID de mesure** au format `G-XXXXXXXXXX`. C'est la seule valeur à récupérer.
+5. Colle cet ID dans `VITE_GA_MEASUREMENT_ID` de ton `.env` (en local) et dans les variables d'environnement du projet Vercel (pour la production/preview, voir `docs/04-deploiement-et-rollback.md`).
 
 ### Vérifier que tout va bien sans lancer le site
 

@@ -110,6 +110,15 @@ La liste de jeux candidats n'est jamais la bibliotheque complete : voir `selectC
 
 Utilise l'ID Steam renvoye par Mistral pour recuperer l'affiche du jeu en format portrait, affichee sur chaque carte du podium. Choisi car Steam ne fournit pas nativement d'image portrait standardisee pour tous les jeux dans son API classique (plutot des capsules horizontales ou carrees).
 
+### Google Analytics 4 (mesure d'audience)
+
+Seul service externe appele directement depuis le navigateur plutot que via le backend (le front ne fait ici que charger un script tiers, il n'y a pas de donnee utilisateur du site a proteger dans cet appel comme pour Steam/Mistral/SteamGridDB). Identifiant de mesure fourni par `VITE_GA_MEASUREMENT_ID` (voir `.env.example` et README). Chargement conditionne au consentement de l'utilisateur (voir section RGPD du cahier des charges) :
+
+- `front/src/lib/analytics.ts` : injection differee du script `gtag.js`, jamais executee tant que le consentement n'a pas ete donne. `send_page_view` est desactive dans la config GA (`gtag("config", ...)`) : les `page_view` sont envoyes manuellement a chaque changement de route (hook `router.afterEach`, `front/src/router/index.ts`), necessaire car c'est une SPA sans rechargement complet entre les pages.
+- `front/src/composables/useCookieConsent.ts` : etat du consentement (`accepted` / `refused` / non renseigne), persiste en `localStorage`, reactif : charge ou decharge GA des que le choix change. Aucun consentement enregistre par defaut (opt-in strict).
+- `front/src/components/CookieConsentBanner.vue` : bandeau affiche tant qu'aucun choix n'a ete fait.
+- Si `VITE_GA_MEASUREMENT_ID` est vide (ex. environnements de dev/preview sans propriete GA4 dediee), le script n'est jamais charge, meme apres acceptation.
+
 ## Sequence d'une requete de suggestion
 
 1. Le client charge la page ; le backend verifie l'identifiant utilisateur interne et le SteamID64 associe.
