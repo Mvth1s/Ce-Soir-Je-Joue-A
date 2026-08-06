@@ -119,10 +119,21 @@ jobs:
       - name: Valider la syntaxe et les actions des workflows
         uses: reviewdog/action-actionlint@v1
         with:
-          # reporter local : affiche les erreurs dans les logs et fait
-          # echouer le job, sans necessiter de permissions supplementaires
-          # (pas de commentaire de PR ni de check API a creer).
+          # reporter local : affiche les erreurs dans les logs, sans
+          # necessiter de permissions supplementaires (pas de commentaire de
+          # PR ni de check API a creer).
           reporter: local
+          # filter_mode: file (le defaut) tente de restreindre les resultats
+          # aux lignes modifiees via un diff, ce que le reporter local ne
+          # configure pas ("reviewdog: diff command is empty", constate en
+          # CI) : nofilter fait analyser tout le fichier par actionlint sans
+          # tenter ce diff, ce qui convient ici (le job ne tourne de toute
+          # facon que si un .yml sous .github/workflows/ a change).
+          filter_mode: nofilter
+          # Le defaut (fail_level: none) ne fait jamais echouer le job meme
+          # si actionlint trouve une vraie erreur : sans ca, ce job ne sert
+          # a rien.
+          fail_level: error
 
   test:
     name: test
