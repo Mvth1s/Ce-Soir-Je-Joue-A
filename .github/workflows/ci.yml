@@ -171,9 +171,32 @@ jobs:
         # minimatch dans son arbre de build), jamais executees par l'app
         # deployee. Auditer aussi les devDependencies ferait echouer la CI
         # sur des paquets hors de notre controle sans rapport avec le
-        # risque reel. `pnpm audit --prod --audit-level=high` est propre a
-        # ce jour (verifie le 2026-08-05).
-        run: pnpm audit --prod --audit-level=high
+        # risque reel.
+        #
+        # --ignore (verifie le 2026-08-06, apres le passage a vue-router 5) :
+        # vue-router 5 fusionne unplugin-vue-router (routing par fichiers,
+        # non utilise par ce depot, voir front/src/router/index.ts) dans le
+        # paquet principal, et declare `vite`/`unplugin` comme ses propres
+        # dependances de production - ce qui rend visibles a `--prod` 4 CVE
+        # de `vite` (transitif via `vue-router>vite` et
+        # `vue-router>unplugin>vite`) qui existaient deja silencieusement
+        # dans la devDependency `vite` de `front/package.json` (meme version
+        # 5.4.x partout), simplement jamais auditees avant faute de chemin
+        # de production vers elles. Les 4 avis sont tous specifiques au
+        # serveur de dev Vite et/ou a Windows (bypass `server.fs.deny`,
+        # CORS du serveur de dev esbuild, traversee de chemin dans les
+        # sourcemaps de deps optimisees en dev, fuite NTLMv2 via UNC sous
+        # Windows) : ce depot ne lance que `vite build` (jamais `vite dev`)
+        # en CI, sur Linux, pour produire un SPA statique servi tel quel -
+        # aucun de ces 4 avis ne s'applique a cet usage. A revalider si le
+        # depot se met un jour a executer `vite dev` en CI/production, ou
+        # lors d'un futur passage a Vite 6 (qui les corrige justement).
+        run: >
+          pnpm audit --prod --audit-level=high
+          --ignore GHSA-fx2h-pf6j-xcff
+          --ignore GHSA-67mh-4wv8-2f99
+          --ignore GHSA-4w7w-66w2-5vf9
+          --ignore GHSA-v6wh-96g9-6wx3
 
       - name: Installer Chromium (Playwright)
         run: pnpm exec playwright install --with-deps chromium
