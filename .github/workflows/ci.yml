@@ -10,6 +10,18 @@ name: CI
 # Pour que ce gate soit reellement respecte, desactiver le deploiement automatique
 # de Vercel sur la branche main (Project Settings -> Git -> Ignored Build Step, ou
 # equivalent) : voir le recapitulatif de mise en route pour le detail.
+#
+# Filtrage par chemin (job `changes`, voir CLAUDE.md section "CI : filtrage par
+# chemin") : `test`/`build` ne tournent que si le diff touche du code ou de la
+# config susceptible d'affecter typecheck/build/tests (front, back, api, db,
+# scripts, tests, deps, config). Un changement uniquement `docs` et/ou
+# `workflows` saute ces deux jobs (rien a typechecker/tester) ; `workflows`
+# declenche a la place `yaml-lint`, qui valide seulement le YAML modifie.
+# `deploy-production` n'a pas besoin de condition dediee : comme il depend de
+# `build` (needs: build), il se saute automatiquement en cascade si `build`
+# a lui-meme ete saute (needs implique success(), jamais vrai pour un job
+# skipped) - donc pas de redeploiement pour un push docs/workflows-only vers
+# main, ce qui est correct puisque ni l'un ni l'autre n'affecte l'app deployee.
 on:
   pull_request:
     branches: [main, dev]
@@ -24,8 +36,101 @@ env:
   NODE_VERSION: "22"
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    # Lecture seule, requise par dorny/paths-filter pour lister les fichiers
+    # modifies via l'API GitHub (pas de checkout ici : plus rapide, et evite
+    # les soucis de fetch-depth insuffisant sur les evenements push).
+    permissions:
+      pull-requests: read
+    outputs:
+      front: ${{ steps.filter.outputs.front }}
+      back: ${{ steps.filter.outputs.back }}
+      api: ${{ steps.filter.outputs.api }}
+      db: ${{ steps.filter.outputs.db }}
+      scripts: ${{ steps.filter.outputs.scripts }}
+      tests: ${{ steps.filter.outputs.tests }}
+      deps: ${{ steps.filter.outputs.deps }}
+      config: ${{ steps.filter.outputs.config }}
+      workflows: ${{ steps.filter.outputs.workflows }}
+      docs: ${{ steps.filter.outputs.docs }}
+      # Vrai si le diff touche a quoi que ce soit susceptible de casser
+      # typecheck, build ou la suite e2e. Volontairement large : `front` et
+      # `back`/`api`/`db` declenchent le meme job complet (typecheck + e2e)
+      # faute de suite de tests separable en sous-ensembles plus fins dans cet
+      # outillage (un seul `pnpm typecheck`, une seule suite Playwright qui
+      # couvre deja front+back ensemble). `scripts` et `tests` sont inclus
+      # car scripts/lib/apiServer.ts et tests/e2e/** font partie du harnais de
+      # test lui-meme. `docs` et `workflows` sont volontairement absents de
+      # cette liste : ni l'un ni l'autre ne peut faire echouer typecheck/
+      # build/tests.
+      run_full_suite: ${{ steps.filter.outputs.front == 'true' || steps.filter.outputs.back == 'true' || steps.filter.outputs.api == 'true' || steps.filter.outputs.db == 'true' || steps.filter.outputs.scripts == 'true' || steps.filter.outputs.tests == 'true' || steps.filter.outputs.deps == 'true' || steps.filter.outputs.config == 'true' }}
+    steps:
+      - name: Determiner les categories de fichiers modifies
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            front:
+              - 'front/**'
+            back:
+              - 'back/src/**'
+            api:
+              - 'api/**'
+            db:
+              - 'back/src/db/**'
+              - '**/schema.sql'
+              - 'migrations/**'
+            scripts:
+              - 'scripts/**'
+            tests:
+              - 'tests/**'
+            deps:
+              - 'package.json'
+              - 'front/package.json'
+              - 'back/package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+            config:
+              - 'tsconfig.base.json'
+              - 'playwright.config.ts'
+              - 'commitlint.config.js'
+              - 'vercel.json'
+              - 'lighthouserc.json'
+            workflows:
+              - '.github/workflows/**'
+            docs:
+              - '**/*.md'
+              - 'docs/**'
+
+  yaml-lint:
+    name: yaml-lint
+    needs: changes
+    # Seul cas ou ce job tourne : un .yml sous .github/workflows/ a change.
+    # Ne remplace pas `test`/`build` : valide juste la syntaxe et les actions
+    # utilisees dans le(s) fichier(s) modifie(s), pas le comportement de l'app.
+    if: needs.changes.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v7
+
+      - name: Valider la syntaxe et les actions des workflows
+        uses: reviewdog/action-actionlint@v1
+        with:
+          # reporter local : affiche les erreurs dans les logs et fait
+          # echouer le job, sans necessiter de permissions supplementaires
+          # (pas de commentaire de PR ni de check API a creer).
+          reporter: local
+
   test:
     name: test
+    needs: changes
+    # Sans `docs`/`workflows` comme seule categorie modifiee, run_full_suite
+    # est vrai et ce job tourne normalement (comportement identique a avant
+    # ce filtrage pour tout changement de code).
+    if: needs.changes.outputs.run_full_suite == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Recuperer le code
@@ -96,7 +201,12 @@ jobs:
 
   build:
     name: build
-    needs: test
+    needs: [changes, test]
+    # Explicite plutot que de compter uniquement sur la cascade `needs: test`
+    # (un job skipped ne satisfait pas le success() implicite de `needs`,
+    # donc `build` se sauterait de toute facon) : plus lisible d'avoir la
+    # meme condition que `test` ecrite ici directement.
+    if: needs.changes.outputs.run_full_suite == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Recuperer le code
@@ -129,6 +239,11 @@ jobs:
   deploy-production:
     name: deploy-production
     needs: build
+    # Pas de condition liee au filtrage par chemin ici : `needs: build`
+    # suffit. Si `build` a ete saute (push docs/workflows-only vers main),
+    # ce job se saute automatiquement avec lui (needs exige success(), jamais
+    # vrai pour un job skipped) - comportement voulu, voir le commentaire en
+    # tete de fichier.
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
