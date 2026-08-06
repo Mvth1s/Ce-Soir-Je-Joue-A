@@ -176,7 +176,13 @@ jobs:
 
       - name: Smoke test post-deploiement
         env:
-          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
+          # Volontairement PAS steps.deploy.outputs.url : c'est l'URL de
+          # deploiement ephemere (ex. ce-soir-je-joue-a9rj0eshe-....vercel.app),
+          # protegee par defaut par la Vercel Deployment Protection (redirige
+          # en 302 vers vercel.com/sso-api), y compris pour les deploiements
+          # de production. Le domaine custom ci-dessous n'a pas cette
+          # protection et est celui reellement expose au public.
+          DEPLOY_URL: https://cesoirjejouea.vercel.app
         run: .github/scripts/smoke-test.sh "$DEPLOY_URL"
 
       - name: Notifier Discord en cas d'echec (deploiement ou smoke test)
