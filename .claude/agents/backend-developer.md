@@ -16,7 +16,7 @@ Sequence de reference pour une requete de suggestion :
 2. Resynchroniser la bibliotheque (cache si valide, sinon appel a la Steam Web API).
 3. Si bibliotheque vide, basculer sur une liste de jeux gratuits Steam.
 4. Recevoir les criteres utilisateur (humeur, fatigue, temps disponible, moment de la journee).
-5. Envoyer a Mistral, pour chaque jeu candidat : titre, genre, temps joue, derniere session, plus les criteres utilisateur.
+5. Envoyer a Mistral, pour une shortlist deterministe de jeux candidats (max 40, priorite aux jeux recents/tres joues) : titre, temps joue, derniere session, plus les criteres utilisateur. Pas le genre : la Steam Web API ne le fournit pas dans l'appel de bibliotheque, et l'obtenir demanderait un appel supplementaire par jeu.
 6. Recevoir de Mistral 3 jeux (nom + ID Steam).
 7. Recuperer l'affiche portrait de chaque jeu via SteamGridDB a partir de l'ID Steam.
 8. Renvoyer les 3 jeux et leurs affiches au front.
