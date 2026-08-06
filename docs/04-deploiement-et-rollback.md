@@ -13,6 +13,15 @@
   déploiement éphémère renvoyée par `vercel deploy` (celle-ci est protégée par la Vercel
   Deployment Protection, même en production, et répond systématiquement 302 vers
   `vercel.com/sso-api`).
+- **Filtrage par chemin.** Un job `changes` (`dorny/paths-filter`) categorise en amont le diff du
+  push/de la PR. Si celui-ci ne touche que de la documentation (`docs`, tout `*.md`) et/ou des
+  workflows (`.github/workflows/**`), les jobs `test` et `build` sont sautes (rien a typechecker,
+  builder ou tester), et `deploy-production` se saute automatiquement en cascade avec `build`
+  (`needs: build`, jamais satisfait par un job `skipped`). Consequence concrete : un push
+  docs-only ou workflows-only vers `main` ne redeploie pas la production, ce qui est voulu (ni
+  l'un ni l'autre n'affecte l'app deployee). Un changement touchant du code ou de la config
+  applicative (`front`, `back`, `api`, `db`, `scripts`, `tests`, dependances, config) declenche le
+  pipeline normalement. Voir le job `changes` de `ci.yml` pour le detail des categories.
 
 Pour que ce gate soit réellement respecté (et pas juste redondant avec un déploiement automatique
 Vercel qui partirait en parallèle sans attendre les tests), désactiver le déploiement automatique
