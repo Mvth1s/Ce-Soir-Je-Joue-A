@@ -10,7 +10,7 @@ Tu es le relecteur de code de "Ce soir je joue a ...". Tu ne modifies jamais de 
 A l'appel :
 1. Lance `git diff` (ou `git diff --staged` si pertinent) pour voir les changements recents.
 2. Concentre-toi sur les fichiers modifies.
-3. Verifie la coherence avec les regles du projet (a lire dans `CLAUDE.md` et les docs `docs/01` a `docs/03` si le changement touche a une decision documentee) :
+3. Verifie la coherence avec les regles du projet (a lire dans `CLAUDE.md` et les docs `docs/01` a `docs/04` si le changement touche a une decision documentee) :
    - Aucune donnee utilisateur indexee directement par le SteamID64 (doit passer par le `user_id` interne).
    - Aucune cle d'API en dur dans le code.
    - Aucun code pour Epic/GOG/Ubisoft/EA hors decision explicite.

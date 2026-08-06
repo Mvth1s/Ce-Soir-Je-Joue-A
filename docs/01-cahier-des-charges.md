@@ -1,5 +1,10 @@
 # Cahier des charges - Ce soir je joue a ...
 
+Ce document repond a trois questions simples : a qui sert ce site, jusqu'ou va la version actuelle
+(V1), et quelles regles le moteur de suggestion doit respecter. Il precede les documents plus
+techniques (`02-architecture-logicielle.md`, `03-architecture-site.md`, `04-deploiement-et-rollback.md`)
+qui expliquent, eux, *comment* c'est construit plutot que *quoi* construire.
+
 ## Contexte et probleme
 
 Plus une bibliotheque de jeux est grosse (Steam, Epic, GOG, etc.), plus choisir un jeu devient une charge mentale. L'utilisateur finit souvent par ne rien lancer, ou par relancer toujours les 2-3 memes jeux, sans explorer le reste de sa bibliotheque.
@@ -23,10 +28,21 @@ Reduire le temps entre "je veux jouer" et "je joue" en proposant une selection c
 
 L'utilisateur renseigne, a chaque utilisation :
 
-- Humeur (ex : detente, defi, social, decouverte)
-- Niveau de fatigue
-- Temps de jeu disponible
+- Humeur, une ou plusieurs parmi : detente, defi, social, decouverte, nostalgie, creatif
+- Niveau de fatigue : frais / ca va / fatigue / crame
+- Temps de jeu disponible : ~30 min / ~1 h / ~2 h / 3 h et plus
 - Moment de la journee (matin / apres-midi / soiree / nuit), recupere automatiquement via l'heure du PC, avec possibilite de le corriger manuellement
+
+Ce que ca donne concretement une fois envoye au backend (`POST /api/suggest`, voir `back/src/criteria.ts`) :
+
+```json
+{
+  "moods": ["detente", "nostalgie"],
+  "fatigue": "fatigue",
+  "time": "60",
+  "moment": "soiree"
+}
+```
 
 ## Moteur de decision
 
@@ -34,7 +50,17 @@ Une IA (API gratuite de Mistral) fait le matching entre l'etat declare par l'uti
 
 Donnees envoyees a l'IA pour chaque jeu candidat : titre, temps joue, date de la derniere session. Le genre n'est pas envoye : la Steam Web API ne le fournit pas dans l'appel de recuperation de bibliotheque, et l'obtenir demanderait un appel supplementaire par jeu, trop couteux pour des bibliotheques de plusieurs centaines de jeux. Piste d'amelioration possible si la qualite du matching s'avere insuffisante sans cette donnee.
 
-Donnees attendues en retour : nom du jeu et ID Steam (pour une correspondance precise et pour permettre l'affichage de l'affiche du jeu en portrait).
+Donnees attendues en retour : nom du jeu et ID Steam (pour une correspondance precise et pour permettre l'affichage de l'affiche du jeu en portrait), plus un pourcentage de correspondance et une explication en francais, par jeu. Exemple simplifie d'un element de la reponse (le prompt complet est dans `back/src/mistral.ts`) :
+
+```json
+{
+  "appid": 413150,
+  "rank": 1,
+  "matchPercent": 87,
+  "whyThisGame": "Vous etes fatigue et vous avez une heure. Ce jeu se joue par sessions courtes, parfait pour souffler sans s'engager.",
+  "whyThisRank": "..."
+}
+```
 
 Le tier gratuit de l'API Mistral est juge suffisant tant que le nombre d'utilisateurs reste faible ; un passage a un plan payant sera envisage si l'usage augmente.
 
@@ -55,7 +81,11 @@ Chaque carte affiche l'affiche du jeu en format portrait, recuperee via SteamGri
 
 ## RGPD et donnees stockees
 
-Point de vigilance explicite du porteur de projet : etre extremement prudent sur les donnees stockees (SteamID64, historique de suggestions) et respecter le RGPD des que le site est accessible a d'autres personnes que le porteur de projet lui-meme. A creuser plus en detail avant toute ouverture publique du site : information claire sur les donnees stockees, possibilite de suppression du compte/des donnees sur demande, hebergement avec garanties claires si possible en UE.
+Point de vigilance explicite du porteur de projet : etre extremement prudent sur les donnees stockees (SteamID64, historique de suggestions) et respecter le RGPD des que le site est accessible a d'autres personnes que le porteur de projet lui-meme.
+
+Traite : le site est en ligne publiquement (`/mentions-legales`, verifiee automatiquement en CI par `scripts/check-legal-pages.ts`) et couvre l'information claire sur les donnees stockees (identifiant interne, SteamID64 rattache comme simple liaison de plateforme, cache de bibliotheque) ainsi qu'un contact pour demander la suppression de ses donnees. Voir `docs/02-architecture-logicielle.md`, section "Donnees stockees", pour le detail technique de ce qui est effectivement en base.
+
+Pas encore verifie : garantie explicite d'hebergement en UE (le site est heberge par Vercel Inc., sans engagement documente ici sur la localisation des donnees).
 
 ## Stack technique (vue d'ensemble)
 
