@@ -60,7 +60,9 @@ Ce projet est distribué sous licence [GNU GPL v3](LICENSE) (ou, à ton choix, t
    En plus des 3 clés ci-dessus, il faut aussi remplir :
    - `SESSION_SECRET` : une phrase secrète aléatoire d'au moins 32 caractères (sert à sécuriser la connexion). Tu peux en générer une avec `openssl rand -base64 32`.
    - `DATABASE_URL` : l'adresse de ta base Postgres.
-   - `PUBLIC_BASE_URL` : l'adresse à laquelle le site tourne en local, normalement `http://localhost:3000`.
+   - `PUBLIC_BASE_URL` : l'adresse que ton navigateur utilise pour ouvrir le site en local (celle
+     qui gère le retour de connexion Steam), normalement `http://localhost:5173` — pas le port 3000
+     de l'API, que le navigateur ne contacte jamais directement.
 
 3. **Préparer la base de données**, une seule fois (crée les tables nécessaires) :
    ```

@@ -17,7 +17,7 @@ V1 implemented: Steam login, criteria form, and the podium suggestion flow all w
 - `pnpm dev` : front seul (les appels API echouent sans `dev:api` en face).
 - `pnpm dev:api` : API seule, servie directement sur `http://localhost:3000/api/...` par `scripts/dev-server.ts`.
 - `pnpm build` : build de production du front (`front/dist`), c'est aussi la commande utilisee par Vercel (`vercel.json`).
-- `pnpm typecheck` : `vue-tsc -b` (front) puis `tsc --noEmit` (back, qui couvre aussi `api/**` et `scripts/**`, voir `back/tsconfig.json`).
+- `pnpm typecheck` : `vue-tsc -b` (front), puis `tsc --noEmit` (back, qui couvre aussi `api/**` et `scripts/**`, voir `back/tsconfig.json`), puis `tsc --noEmit -p tests/tsconfig.json` (verifie `tests/e2e/**` separement, avec sa propre config car ce code tourne cote navigateur/Playwright plutot que Node pur).
 - Filtrer un seul workspace : `pnpm --filter front <script>` ou `pnpm --filter back <script>` (ex. `pnpm --filter front typecheck`).
 - Preparer la base localement : `psql "$DATABASE_URL" -f back/src/db/schema.sql`.
 - `pnpm test:e2e` : suite Playwright (voir `tests/README.md`) ; aucun compte Steam ni cle d'API reelle necessaire (tout est mocke), mais `DATABASE_URL` doit pointer vers une vraie base Postgres (Neon) de test.
