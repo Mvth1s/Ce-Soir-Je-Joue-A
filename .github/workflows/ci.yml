@@ -24,22 +24,6 @@ env:
   NODE_VERSION: "22"
 
 jobs:
-  commitlint:
-    name: commitlint
-    # PR uniquement : sur push (merge), les commits ont deja ete valides au
-    # moment de leur creation par le hook commit-msg de husky (voir
-    # .husky/commit-msg et commitlint.config.js) ou par ce job lors de la PR.
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Recuperer le code
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Verifier les messages de commit de la PR
-        uses: wagoid/commitlint-github-action@v6
-
   test:
     name: test
     runs-on: ubuntu-latest
