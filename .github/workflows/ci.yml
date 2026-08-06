@@ -39,9 +39,7 @@ jobs:
   changes:
     name: changes
     runs-on: ubuntu-latest
-    # Lecture seule, requise par dorny/paths-filter pour lister les fichiers
-    # modifies via l'API GitHub (pas de checkout ici : plus rapide, et evite
-    # les soucis de fetch-depth insuffisant sur les evenements push).
+    # Lecture seule, requise par dorny/paths-filter.
     permissions:
       pull-requests: read
     outputs:
@@ -67,6 +65,17 @@ jobs:
       # build/tests.
       run_full_suite: ${{ steps.filter.outputs.front == 'true' || steps.filter.outputs.back == 'true' || steps.filter.outputs.api == 'true' || steps.filter.outputs.db == 'true' || steps.filter.outputs.scripts == 'true' || steps.filter.outputs.tests == 'true' || steps.filter.outputs.deps == 'true' || steps.filter.outputs.config == 'true' }}
     steps:
+      # dorny/paths-filter n'utilise l'API GitHub (sans checkout) que sur
+      # `pull_request` ; sur `push` il calcule toujours le diff via des
+      # commandes git locales et echoue sans depot git present ("fatal: not
+      # a git repository") -- constate en prod sur les 3 premiers push vers
+      # `dev` apres l'introduction de ce job (echec en ~10s a chaque fois,
+      # jusqu'a ce correctif). fetch-depth par defaut suffit : l'action fait
+      # elle-meme un fetch iteratif si la profondeur initiale ne suffit pas
+      # a trouver la base de comparaison.
+      - name: Recuperer le code
+        uses: actions/checkout@v7
+
       - name: Determiner les categories de fichiers modifies
         id: filter
         uses: dorny/paths-filter@v3
@@ -173,10 +182,11 @@ jobs:
         # sur des paquets hors de notre controle sans rapport avec le
         # risque reel.
         #
-        # --ignore (verifie le 2026-08-06, apres le passage a vue-router 5) :
-        # vue-router 5 fusionne unplugin-vue-router (routing par fichiers,
-        # non utilise par ce depot, voir front/src/router/index.ts) dans le
-        # paquet principal, et declare `vite`/`unplugin` comme ses propres
+        # 4 avis ignores via `pnpm-workspace.yaml` (auditConfig.ignoreGhsas,
+        # verifie le 2026-08-06 apres le passage a vue-router 5) : vue-router
+        # 5 fusionne unplugin-vue-router (routing par fichiers, non utilise
+        # par ce depot, voir front/src/router/index.ts) dans le paquet
+        # principal, et declare `vite`/`unplugin` comme ses propres
         # dependances de production - ce qui rend visibles a `--prod` 4 CVE
         # de `vite` (transitif via `vue-router>vite` et
         # `vue-router>unplugin>vite`) qui existaient deja silencieusement
@@ -191,12 +201,7 @@ jobs:
         # aucun de ces 4 avis ne s'applique a cet usage. A revalider si le
         # depot se met un jour a executer `vite dev` en CI/production, ou
         # lors d'un futur passage a Vite 6 (qui les corrige justement).
-        run: >
-          pnpm audit --prod --audit-level=high
-          --ignore GHSA-fx2h-pf6j-xcff
-          --ignore GHSA-67mh-4wv8-2f99
-          --ignore GHSA-4w7w-66w2-5vf9
-          --ignore GHSA-v6wh-96g9-6wx3
+        run: pnpm audit --prod --audit-level=high
 
       - name: Installer Chromium (Playwright)
         run: pnpm exec playwright install --with-deps chromium
