@@ -116,7 +116,7 @@ Seul service externe appele directement depuis le navigateur plutot que via le b
 
 - `front/src/lib/analytics.ts` : injection differee du script `gtag.js`, jamais executee tant que le consentement n'a pas ete donne. `send_page_view` est desactive dans la config GA (`gtag("config", ...)`) : les `page_view` sont envoyes manuellement a chaque changement de route (hook `router.afterEach`, `front/src/router/index.ts`), necessaire car c'est une SPA sans rechargement complet entre les pages.
 - `front/src/composables/useCookieConsent.ts` : etat du consentement (`accepted` / `refused` / non renseigne), persiste en `localStorage`, reactif : charge ou decharge GA des que le choix change. Aucun consentement enregistre par defaut (opt-in strict).
-- `front/src/components/CookieConsentBanner.vue` : bandeau affiche tant qu'aucun choix n'a ete fait.
+- `front/src/components/CookieConsentBanner.vue` : bandeau affiche tant qu'aucun choix n'a ete fait, en `position: fixed` bas d'ecran. Pour eviter qu'il ne masque le pied de page (et ses liens) pendant qu'il est affiche, `front/src/App.vue` reserve l'espace correspondant via un `padding-bottom` en CSS statique (`clamp()`, ajuste empiriquement sur la hauteur reelle du bandeau), applique tant que `useCookieConsent().choice === null`. Ecarte volontairement une mesure JS de la hauteur reelle du bandeau (ex. `ResizeObserver`) : ça provoquait un second rendu apres l'affichage initial, donc un vrai Cumulative Layout Shift, detecte par le job CI `lighthouse.yml`.
 - Si `VITE_GA_MEASUREMENT_ID` est vide (ex. environnements de dev/preview sans propriete GA4 dediee), le script n'est jamais charge, meme apres acceptation.
 
 ## Sequence d'une requete de suggestion
