@@ -15,3 +15,8 @@ dist/
 test-results/
 playwright-report/
 blob-report/
+# Genere a chaque deploiement production par scripts/generate-changelog.ts
+# a partir des GitHub Releases publiees (voir job deploy-production dans
+# .github/workflows/ci.yml et release.config.js) : pas de source de verite
+# ici, jamais commit.
+front/public/CHANGELOG.md

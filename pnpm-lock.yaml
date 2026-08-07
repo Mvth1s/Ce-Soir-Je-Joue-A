@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  nanoid: '>=3.3.17 <4'
+
 importers:
 
   .:
@@ -17,15 +20,9 @@ importers:
       '@playwright/test':
         specifier: ^1.62.1
         version: 1.62.1
-      '@semantic-release/changelog':
-        specifier: ^7.0.0
-        version: 7.0.0(semantic-release@25.0.9(typescript@5.9.3))
       '@semantic-release/commit-analyzer':
         specifier: ^13.0.1
         version: 13.0.1(semantic-release@25.0.9(typescript@5.9.3))
-      '@semantic-release/git':
-        specifier: ^11.0.1
-        version: 11.0.1(semantic-release@25.0.9(typescript@5.9.3))
       '@semantic-release/github':
         specifier: ^12.0.9
         version: 12.0.9(semantic-release@25.0.9(typescript@5.9.3))
@@ -1330,12 +1327,6 @@ packages:
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
 
-  '@semantic-release/changelog@7.0.0':
-    resolution: {integrity: sha512-TNPyag5db24o7jWjre7UwKB4EcL8oJxbRhnDQ7hmZRAYqzreAc6PgdxQuU3pppp5xQinYtiumL0iG8SSKvnlzg==}
-    engines: {node: ^22.22.2 || >=24.15}
-    peerDependencies:
-      semantic-release: '>=20.1.0'
-
   '@semantic-release/commit-analyzer@13.0.1':
     resolution: {integrity: sha512-wdnBPHKkr9HhNhXOhZD5a2LNl91+hs8CC2vsAVYxtZH3y0dV3wKn+uZSN61rdJQZ8EGxzWB3inWocBHV9+u/CQ==}
     engines: {node: '>=20.8.1'}
@@ -1345,12 +1336,6 @@ packages:
   '@semantic-release/error@4.0.0':
     resolution: {integrity: sha512-mgdxrHTLOjOddRVYIYDo0fR3/v61GNN1YGkfbrjuIKg/uMgCd+Qzo3UAXJ+woLQQpos4pl5Esuw5A7AoNlzjUQ==}
     engines: {node: '>=18'}
-
-  '@semantic-release/git@11.0.1':
-    resolution: {integrity: sha512-Zr8BUYCTZMc8V6wDKN2dpR7nJgewd9I6THL3ydLTnp3OEdTo1/4RBLNYaeRucYMsjMv+BXoCNfXA0NADj1kwhw==}
-    engines: {node: ^22.22.2 || >=24.15}
-    peerDependencies:
-      semantic-release: '>=20.1.0'
 
   '@semantic-release/github@12.0.9':
     resolution: {integrity: sha512-ODIqb0V3QqndipryEEiaBxUQCFjvv7Oese5Dt4omMGa60YRNEW0Sx3K+zri0uac2Y6S9nOlMehciWIzvvRCTGQ==}
@@ -2134,10 +2119,6 @@ packages:
   events-universal@1.0.1:
     resolution: {integrity: sha512-LUd5euvbMLpwOF8m6ivPCbhQeSiYVNb8Vs0fQ8QjXo0JTkEHpz8pxdQf0gStltaPpw0Cca8b39KxvK9cfKRiAw==}
 
-  execa@10.0.1:
-    resolution: {integrity: sha512-ge98qjkRK4IB7tL7Ju/6qmm5LHoH1eEMt5FNZrz3f4UIYhF28lggX20z3FaX1sgc67msLEn0N0BscOs29iuwyw==}
-    engines: {node: '>=22'}
-
   execa@3.2.0:
     resolution: {integrity: sha512-kJJfVbI/lZE1PZYDI5VPxp8zXPO9rtxOkhpZ0jMKha56AI9y2gGVC6bkukStQf0ka5Rh15BA5m7cCCH4jmHqkw==}
     engines: {node: ^8.12.0 || >=9.7.0}
@@ -2732,8 +2713,8 @@ packages:
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
 
-  nanoid@3.3.16:
-    resolution: {integrity: sha512-bzlKTyNJ7+LdGIIwy8ijFpIqEQIvafahV7eYykJ8Cvh42EdJeODoJ6gUJXpQJvej1BddH8OqTXZNE/KfbWAu8Q==}
+  nanoid@3.3.17:
+    resolution: {integrity: sha512-xQLf0A3HOMlgHq0n247/LRuAOYmB7dXJ/DvAxGvsSBij45XtBSmQycu+F8ODbHwns/XyFZagyL1+J0Offw1E0g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -3750,11 +3731,6 @@ packages:
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
 
-  which-command@0.1.0:
-    resolution: {integrity: sha512-XZyoF5/5hZtXitIwzrU4NKK+Wtbb9aB9CezUEw2Q0wlYK8NUYQxC1rRXgNueYLtBAJwXIb+/tFVk4dozciNJMA==}
-    engines: {node: '>=22'}
-    hasBin: true
-
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
@@ -4701,13 +4677,6 @@ snapshots:
 
   '@sec-ant/readable-stream@0.4.1': {}
 
-  '@semantic-release/changelog@7.0.0(semantic-release@25.0.9(typescript@5.9.3))':
-    dependencies:
-      '@semantic-release/error': 4.0.0
-      aggregate-error: 5.0.0
-      lodash-es: 4.18.1
-      semantic-release: 25.0.9(typescript@5.9.3)
-
   '@semantic-release/commit-analyzer@13.0.1(semantic-release@25.0.9(typescript@5.9.3))':
     dependencies:
       conventional-changelog-angular: 8.3.1
@@ -4723,20 +4692,6 @@ snapshots:
       - supports-color
 
   '@semantic-release/error@4.0.0': {}
-
-  '@semantic-release/git@11.0.1(semantic-release@25.0.9(typescript@5.9.3))':
-    dependencies:
-      '@semantic-release/error': 4.0.0
-      aggregate-error: 5.0.0
-      debug: 4.4.3
-      dir-glob: 3.0.1
-      execa: 10.0.1
-      lodash-es: 4.18.1
-      micromatch: 4.0.8
-      p-reduce: 3.0.0
-      semantic-release: 25.0.9(typescript@5.9.3)
-    transitivePeerDependencies:
-      - supports-color
 
   '@semantic-release/github@12.0.9(semantic-release@25.0.9(typescript@5.9.3))':
     dependencies:
@@ -5831,21 +5786,6 @@ snapshots:
     transitivePeerDependencies:
       - bare-abort-controller
 
-  execa@10.0.1:
-    dependencies:
-      '@sindresorhus/merge-streams': 4.0.0
-      figures: 6.1.0
-      get-stream: 9.0.1
-      human-signals: 8.0.1
-      is-plain-obj: 4.1.0
-      is-stream: 4.0.1
-      npm-run-path: 6.0.0
-      pretty-ms: 9.3.0
-      signal-exit: 4.1.0
-      strip-final-newline: 4.0.0
-      which-command: 0.1.0
-      yoctocolors: 2.2.0
-
   execa@3.2.0:
     dependencies:
       cross-spawn: 7.0.6
@@ -6412,7 +6352,7 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
-  nanoid@3.3.16: {}
+  nanoid@3.3.17: {}
 
   neo-async@2.6.2: {}
 
@@ -6672,7 +6612,7 @@ snapshots:
 
   postcss@8.5.25:
     dependencies:
-      nanoid: 3.3.16
+      nanoid: 3.3.17
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
@@ -7399,8 +7339,6 @@ snapshots:
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
-
-  which-command@0.1.0: {}
 
   which@2.0.2:
     dependencies:

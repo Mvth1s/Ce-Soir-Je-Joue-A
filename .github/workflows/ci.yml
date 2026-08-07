@@ -8,13 +8,13 @@ name: CI
 # production (job `deploy-production`), toutes deux conditionnees a la reussite
 # des tests plutot que de partir en parallele des checks GitHub.
 #
-# `release` (semantic-release) tourne avant `deploy-production` et pousse
-# directement sur `main` un commit `chore(release): x.y.z [skip ci]` mettant a
-# jour front/public/CHANGELOG.md (voir section "Commits et changelog" de
-# CLAUDE.md) : le token GITHUB_TOKEN par defaut ne redeclenche pas ce workflow
-# pour ce push (comportement standard des Actions), donc pas de boucle. C'est
-# pour recuperer ce commit que `deploy-production` checkoute explicitement
-# `main` (et non le SHA qui a declenche ce run) avant de builder.
+# `release` (semantic-release) tourne avant `deploy-production` et cree un tag
+# + une GitHub Release via l'API (voir section "Commits et changelog" de
+# CLAUDE.md) : pas de commit pousse sur `main` (le ruleset GitHub sur cette
+# branche l'interdirait de toute facon - PR obligatoire, voir le commentaire
+# en tete de release.config.js). `deploy-production` regenere ensuite
+# front/public/CHANGELOG.md a partir des GitHub Releases publiees (jamais
+# commit), donc a besoin que `release` ait fini avant de builder.
 #
 # Pour que ce gate soit reellement respecte, desactiver le deploiement automatique
 # de Vercel sur la branche main (Project Settings -> Git -> Ignored Build Step, ou
@@ -293,15 +293,12 @@ jobs:
     # evite de le lancer pour rien sur un diff docs/workflows-only.
     if: needs.changes.outputs.run_full_suite == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    # contents: write pour le tag + le commit chore(release) pousses par
-    # @semantic-release/git (voir release.config.js) ; issues/pull-requests:
-    # write pour que @semantic-release/github puisse creer la GitHub Release
-    # (successComment/failComment desactives dans release.config.js, donc pas
-    # besoin d'aller plus loin que ca).
+    # contents: write pour le tag + la GitHub Release crees par
+    # @semantic-release/github (API REST, pas de push sur `main` - voir
+    # release.config.js). successComment/failComment desactives dans
+    # release.config.js, donc pas besoin de issues/pull-requests: write.
     permissions:
       contents: write
-      issues: write
-      pull-requests: write
     steps:
       - name: Recuperer le code
         uses: actions/checkout@v7
@@ -322,7 +319,7 @@ jobs:
       - name: Installer les dependances
         run: pnpm install --frozen-lockfile
 
-      - name: Publier une release (tag, GitHub Release, CHANGELOG.md)
+      - name: Publier une release (tag + GitHub Release)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm exec semantic-release
@@ -350,12 +347,6 @@ jobs:
     steps:
       - name: Recuperer le code
         uses: actions/checkout@v7
-        with:
-          # ref: main (et non le SHA qui a declenche ce run) : le job `release`
-          # a pousse un commit chore(release) sur main juste avant (voir
-          # needs ci-dessus), qui met a jour front/public/CHANGELOG.md - on
-          # veut deployer avec ce commit inclus, pas celui d'avant.
-          ref: main
 
       - name: Installer pnpm
         uses: pnpm/action-setup@v5
@@ -368,6 +359,16 @@ jobs:
 
       - name: Installer les dependances
         run: pnpm install --frozen-lockfile
+      - name: Generer le changelog
+        # Ecrit front/public/CHANGELOG.md a partir des GitHub Releases
+        # publiees par le job `release` (voir release.config.js), lu avant
+        # `vercel build` juste en dessous pour qu'il soit inclus dans le
+        # build deploye (voir scripts/generate-changelog.ts et
+        # front/src/pages/ChangelogPage.vue). Jamais commit (voir
+        # .gitignore) : regenere a chaque deploiement.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm changelog
 
       - name: Verifier que les secrets Vercel sont configures
         env:
