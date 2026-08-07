@@ -129,7 +129,7 @@ Pour savoir combien de personnes visitent le site et quelles pages elles consult
 2. **Crée une propriété dédiée à ce site** (Admin → Créer → Propriété), distincte de toute propriété existante pour un autre site (ex. un portfolio) : chaque site doit avoir sa propre propriété GA4, sinon les statistiques des deux sites se mélangent. Nomme-la par exemple "Ce soir je joue à…", fuseau horaire France.
 3. Dans cette propriété, crée un flux de données **Web** avec l'URL de production du site (`https://cesoirjejouea.vercel.app`).
 4. Google t'affiche un **ID de mesure** au format `G-XXXXXXXXXX`. C'est la seule valeur à récupérer.
-5. Colle cet ID dans `VITE_GA_MEASUREMENT_ID` de ton `.env` (en local) et dans les variables d'environnement du projet Vercel (pour la production/preview, voir `docs/04-deploiement-et-rollback.md`).
+5. Colle cet ID dans `VITE_GA_MEASUREMENT_ID` de ton `.env` (en local) et dans les variables d'environnement du projet Vercel (Project Settings → Environment Variables), pour qu'il soit aussi disponible en production/preview.
 
 ### Vérifier que tout va bien sans lancer le site
 

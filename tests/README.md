@@ -70,9 +70,12 @@ d'une machine a l'autre, ce qui produirait des faux positifs.
   disponible en artefact du workflow).
 - **Premiere execution / mise a jour volontaire du visuel** : declencher manuellement le workflow
   `update-visual-baselines.yml` (onglet Actions -> "Run workflow"), qui lance
-  `playwright test --update-snapshots` et ouvre automatiquement une pull request avec les nouvelles
-  images. Relire cette PR comme n'importe quelle revue de code avant de merger : elle doit
-  correspondre a un changement visuel voulu, pas a une regression.
+  `playwright test --update-snapshots` et pousse les nouvelles images sur la branche
+  `chore/update-visual-baselines`. Le workflow ne peut pas ouvrir lui-meme la pull request (les
+  Actions GitHub n'ont pas la permission de creer des PR sur ce depot) : ouvrir la PR a la main
+  depuis cette branche une fois le workflow termine. Relire cette PR comme n'importe quelle revue
+  de code avant de merger : elle doit correspondre a un changement visuel voulu, pas a une
+  regression.
 
 ## Deboguer un test qui echoue
 
