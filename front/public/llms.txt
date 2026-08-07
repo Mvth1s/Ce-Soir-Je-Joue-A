@@ -1,0 +1,20 @@
+# Ce soir je joue à…
+
+> Application web qui suggère 3 jeux à jouer immédiatement, choisis dans la bibliothèque Steam de l'utilisateur en fonction de son humeur, sa fatigue, le temps disponible et le moment de la journée. Connexion via Steam uniquement (OpenID), aucune inscription par email/mot de passe.
+
+Le site est en français. Le choix des jeux est fait par un modèle Mistral AI (`mistral-small-latest`) à partir de la bibliothèque Steam de l'utilisateur (titres, temps joué, dernière session) et des critères qu'il renseigne ; les affiches viennent de SteamGridDB.
+
+## Pages publiques
+
+- [Accueil](https://cesoirjejouea.vercel.app/) : présentation du principe, appel à connexion Steam.
+- [FAQ](https://cesoirjejouea.vercel.app/faq) : fonctionnement du matching, données conservées, gratuité, code source.
+- [Mentions légales](https://cesoirjejouea.vercel.app/mentions-legales) : éditeur, hébergement, données personnelles, cookies.
+- [Changelog](https://cesoirjejouea.vercel.app/changelog) : historique des évolutions du site.
+
+## Pages nécessitant une connexion Steam (non pertinentes hors contexte utilisateur)
+
+/connexion, /criteres, /resultats
+
+## Code source
+
+https://github.com/Mvth1s/Ce-Soir-Je-Joue-A (licence GPL-3.0-or-later)

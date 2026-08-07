@@ -11,18 +11,23 @@
     "build": "pnpm --filter front build",
     "test:e2e": "playwright test",
     "healthcheck": "tsx scripts/healthcheck.ts",
-    "typecheck": "pnpm --filter front typecheck && pnpm --filter back typecheck && tsc --noEmit -p tests/tsconfig.json"
+    "typecheck": "pnpm --filter front typecheck && pnpm --filter back typecheck && tsc --noEmit -p tests/tsconfig.json",
+    "changelog": "tsx scripts/generate-changelog.ts",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=20"
   },
   "packageManager": "pnpm@11.3.0",
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
     "@playwright/test": "^1.62.1",
-    "@types/node": "^22.20.1",
-    "concurrently": "^9.0.1",
+    "@types/node": "^26.1.2",
+    "concurrently": "^10.0.4",
+    "husky": "^9.1.7",
     "nock": "^13.5.6",
-    "tsx": "^4.23.4",
+    "tsx": "^4.23.5",
     "typescript": "^5.6.3",
     "undici": "^6.28.0",
     "vercel": "^58.4.4"

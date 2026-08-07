@@ -51,9 +51,17 @@ Editeur (pseudo + contact), hebergement (Vercel), lien vers le code source (repo
 
 Questions frequentes en accordeon (`<details>`/`<summary>`, sans JS supplementaire) : fonctionnement du matching IA, donnees stockees, mot de passe Steam, bouton "Lancer", bibliotheque vide, modification des criteres, gratuite du site, code source. Accessible depuis le footer, present sur tous les ecrans.
 
+### 7. Page changelog (`/changelog`)
+
+Liste les nouveautes et corrections visibles pour l'utilisateur, generees automatiquement a partir de l'historique des commits (`front/public/CHANGELOG.md`, produit par `scripts/generate-changelog.ts`, voir `docs/04-deploiement-et-rollback.md` et la section "Commits et changelog" de `CLAUDE.md`). Affiche un message si le fichier est indisponible. Accessible depuis le footer, present sur tous les ecrans.
+
 ## Pied de page
 
-Present sur tous les ecrans (`AppFooter.vue`, monte une fois dans `App.vue`) : marque du site (lien vers l'accueil), tagline, liens vers la FAQ, les mentions legales et le code source, resume du stack technique et credit de l'auteur.
+Present sur tous les ecrans (`AppFooter.vue`, monte une fois dans `App.vue`) : marque du site (lien vers l'accueil), tagline, liens vers la FAQ, le changelog, les mentions legales et le code source, resume du stack technique et credit de l'auteur. Contient aussi un bouton "Gerer les cookies" qui rouvre le bandeau de consentement (voir ci-dessous).
+
+## Bandeau de consentement cookies
+
+Affiche (`CookieConsentBanner.vue`, monte dans `App.vue`) tant que l'utilisateur n'a pas fait de choix (accepter/refuser la mesure d'audience Google Analytics 4). Le choix est memorise et n'est plus redemande, mais reste modifiable a tout moment via le pied de page ou la page mentions legales. Voir `docs/01-cahier-des-charges.md` (section RGPD) et `docs/02-architecture-logicielle.md` (section "Google Analytics 4") pour le detail.
 
 ## Pages d'erreur
 

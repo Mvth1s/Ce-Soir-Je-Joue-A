@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useTheme } from "@/composables/useTheme";
+import { useCookieConsent } from "@/composables/useCookieConsent";
 import logoMonoDark from "@/assets/logo-mono-dark.svg";
 import logoMonoLight from "@/assets/logo-mono-light.svg";
 
 const { theme } = useTheme();
 const logoSrc = computed(() => (theme.value === "dark" ? logoMonoLight : logoMonoDark));
+const { resetChoice } = useCookieConsent();
 </script>
 
 <template>
@@ -31,9 +33,28 @@ const logoSrc = computed(() => (theme.value === "dark" ? logoMonoLight : logoMon
         <router-link to="/faq" class="app-footer-link" style="font-size: 13px; color: var(--tx3)"
           >FAQ</router-link
         >
+        <router-link to="/changelog" class="app-footer-link" style="font-size: 13px; color: var(--tx3)"
+          >Changelog</router-link
+        >
         <router-link to="/mentions-legales" class="app-footer-link" style="font-size: 13px; color: var(--tx3)"
           >Mentions légales</router-link
         >
+        <button
+          type="button"
+          class="app-footer-link"
+          style="
+            font-size: 13px;
+            color: var(--tx3);
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            font-family: inherit;
+          "
+          @click="resetChoice"
+        >
+          Gérer les cookies
+        </button>
         <a
           href="https://github.com/Mvth1s/Ce-Soir-Je-Joue-A"
           target="_blank"

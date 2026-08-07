@@ -15,6 +15,36 @@ Plus une bibliothèque Steam grossit, plus choisir un jeu devient une corvée : 
 
 Si ta bibliothèque Steam est vide, le site te propose à la place une petite sélection de jeux gratuits sur Steam.
 
+<details>
+<summary>Concrètement, qu'est-ce qui part vers l'IA et qu'est-ce qui en revient ?</summary>
+
+Pas besoin de comprendre ce détail pour utiliser le site — c'est juste pour les curieux. Le site envoie à l'IA ta bibliothèque (nom du jeu, temps joué, dernière session) et ton état du moment, en langage à peu près comme ça :
+
+```
+Jeux candidats (bibliotheque Steam du joueur) :
+- appid 413150 : "Stardew Valley", 80.3h joues au total, derniere session : il y a 3 jours
+
+Etat du joueur ce soir :
+- Humeur(s) : detente, nostalgie
+- Niveau de fatigue : fatigue
+- Temps disponible : 60 minutes
+- Moment de la journee : soiree
+```
+
+Et elle répond avec exactement 3 jeux choisis parmi cette liste (jamais un jeu inventé), classés, chacun avec une explication en français :
+
+```json
+{"suggestions": [
+  {"appid": 413150, "rank": 1, "matchPercent": 87,
+   "whyThisGame": "Vous etes fatigue et vous avez une heure...",
+   "whyThisRank": "..."}
+]}
+```
+
+Le texte que tu lis en retournant une carte, c'est directement cette explication de l'IA — le site ne le réécrit pas.
+
+</details>
+
 ## De quoi le site est fait
 
 - **Ce que tu vois** (les pages, les boutons, le podium) : dossier `front/`
@@ -37,7 +67,7 @@ Ce projet est distribué sous licence [GNU GPL v3](LICENSE) (ou, à ton choix, t
 
 - [Node.js](https://nodejs.org) installé.
 - Le gestionnaire de paquets `pnpm` (`npm install -g pnpm` si tu ne l'as pas).
-- Une base de données Postgres (le plus simple : ajouter l'intégration "Vercel Postgres" à ton projet Vercel, qui t'en crée une gratuite).
+- Une base de données Postgres : ce projet utilise [Neon](https://neon.tech) (un hébergeur Postgres qui fonctionne bien avec des projets serverless comme celui-ci). Le plus simple : crée un compte gratuit directement sur neon.tech, ou ajoute l'intégration "Neon" au Marketplace de ton projet Vercel si tu en as déjà un. Vercel ne propose plus sa propre offre "Vercel Postgres" — elle a été remplacée par ces intégrations tierces.
 - Trois clés d'API gratuites, une par service utilisé par le site :
 
 | Variable | À quoi ça sert | Où l'obtenir |
@@ -60,7 +90,11 @@ Ce projet est distribué sous licence [GNU GPL v3](LICENSE) (ou, à ton choix, t
    En plus des 3 clés ci-dessus, il faut aussi remplir :
    - `SESSION_SECRET` : une phrase secrète aléatoire d'au moins 32 caractères (sert à sécuriser la connexion). Tu peux en générer une avec `openssl rand -base64 32`.
    - `DATABASE_URL` : l'adresse de ta base Postgres.
-   - `PUBLIC_BASE_URL` : l'adresse à laquelle le site tourne en local, normalement `http://localhost:3000`.
+   - `PUBLIC_BASE_URL` : l'adresse que ton navigateur utilise pour ouvrir le site en local (celle
+     qui gère le retour de connexion Steam), normalement `http://localhost:5173` — pas le port 3000
+     de l'API, que le navigateur ne contacte jamais directement.
+   - `VITE_GA_MEASUREMENT_ID` : optionnel, mesure d'audience Google Analytics 4. Laisse vide pour
+     développer sans analytics. Voir "Mesure d'audience" ci-dessous pour l'obtenir.
 
 3. **Préparer la base de données**, une seule fois (crée les tables nécessaires) :
    ```
@@ -86,6 +120,16 @@ Ce projet est distribué sous licence [GNU GPL v3](LICENSE) (ou, à ton choix, t
      pnpm dev:api
      ```
      Les routes sont alors disponibles directement sur `http://localhost:3000/api/...`.
+
+### Mesure d'audience (Google Analytics 4, optionnel)
+
+Pour savoir combien de personnes visitent le site et quelles pages elles consultent. Complètement optionnel : sans `VITE_GA_MEASUREMENT_ID`, le site fonctionne normalement, juste sans statistiques. Le script n'est de toute façon jamais chargé sans l'accord de la personne qui visite le site (bandeau de consentement, voir `docs/01-cahier-des-charges.md` section RGPD).
+
+1. Va sur [analytics.google.com](https://analytics.google.com) et connecte-toi avec ton compte Google.
+2. **Crée une propriété dédiée à ce site** (Admin → Créer → Propriété), distincte de toute propriété existante pour un autre site (ex. un portfolio) : chaque site doit avoir sa propre propriété GA4, sinon les statistiques des deux sites se mélangent. Nomme-la par exemple "Ce soir je joue à…", fuseau horaire France.
+3. Dans cette propriété, crée un flux de données **Web** avec l'URL de production du site (`https://cesoirjejouea.vercel.app`).
+4. Google t'affiche un **ID de mesure** au format `G-XXXXXXXXXX`. C'est la seule valeur à récupérer.
+5. Colle cet ID dans `VITE_GA_MEASUREMENT_ID` de ton `.env` (en local) et dans les variables d'environnement du projet Vercel (pour la production/preview, voir `docs/04-deploiement-et-rollback.md`).
 
 ### Vérifier que tout va bien sans lancer le site
 
