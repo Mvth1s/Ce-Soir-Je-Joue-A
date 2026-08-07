@@ -359,7 +359,6 @@ jobs:
 
       - name: Installer les dependances
         run: pnpm install --frozen-lockfile
-
       - name: Generer le changelog
         # Ecrit front/public/CHANGELOG.md a partir des GitHub Releases
         # publiees par le job `release` (voir release.config.js), lu avant
