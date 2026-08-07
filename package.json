@@ -12,21 +12,32 @@
     "test:e2e": "playwright test",
     "healthcheck": "tsx scripts/healthcheck.ts",
     "typecheck": "pnpm --filter front typecheck && pnpm --filter back typecheck && tsc --noEmit -p tests/tsconfig.json",
-    "changelog": "tsx scripts/generate-changelog.ts",
+    "release:dry-run": "semantic-release --dry-run --no-ci",
     "prepare": "husky"
   },
   "engines": {
     "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mvth1s/Ce-Soir-Je-Joue-A"
   },
   "packageManager": "pnpm@11.3.0",
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.2.0",
     "@playwright/test": "^1.62.1",
+    "@semantic-release/changelog": "^7.0.0",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^11.0.1",
+    "@semantic-release/github": "^12.0.9",
+    "@semantic-release/release-notes-generator": "^14.1.1",
     "@types/node": "^26.1.2",
     "concurrently": "^10.0.4",
+    "conventional-changelog-conventionalcommits": "9.3.1",
     "husky": "^9.1.7",
     "nock": "^13.5.6",
+    "semantic-release": "^25.0.9",
     "tsx": "^4.23.5",
     "typescript": "^5.6.3",
     "undici": "^6.28.0",

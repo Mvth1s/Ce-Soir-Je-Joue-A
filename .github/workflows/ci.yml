@@ -3,9 +3,18 @@ name: CI
 # Vercel deploie deja automatiquement une preview pour chaque push/PR (integration
 # Git native, projet deja lie voir .vercel/project.json) : ce workflow ne redeploie
 # donc jamais de preview lui-meme, il se contente de verifier (test -> build) avant
-# merge, et ne pilote explicitement qu'une chose : la promotion en production sur
-# push vers main (job deploy-production), pour que celle-ci soit conditionnee a la
-# reussite des tests plutot que de partir en parallele des checks GitHub.
+# merge, et pilote explicitement deux choses sur push vers main : la publication
+# d'une release (job `release`, voir release.config.js) et la promotion en
+# production (job `deploy-production`), toutes deux conditionnees a la reussite
+# des tests plutot que de partir en parallele des checks GitHub.
+#
+# `release` (semantic-release) tourne avant `deploy-production` et pousse
+# directement sur `main` un commit `chore(release): x.y.z [skip ci]` mettant a
+# jour front/public/CHANGELOG.md (voir section "Commits et changelog" de
+# CLAUDE.md) : le token GITHUB_TOKEN par defaut ne redeclenche pas ce workflow
+# pour ce push (comportement standard des Actions), donc pas de boucle. C'est
+# pour recuperer ce commit que `deploy-production` checkoute explicitement
+# `main` (et non le SHA qui a declenche ce run) avant de builder.
 #
 # Pour que ce gate soit reellement respecte, desactiver le deploiement automatique
 # de Vercel sur la branche main (Project Settings -> Git -> Ignored Build Step, ou
@@ -107,6 +116,7 @@ jobs:
               - 'commitlint.config.js'
               - 'vercel.json'
               - 'lighthouserc.json'
+              - 'release.config.js'
             workflows:
               - '.github/workflows/**'
             docs:
@@ -275,24 +285,29 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: .github/scripts/notify-discord.sh "$MESSAGE" "$REF_NAME" "$RUN_URL"
 
-  deploy-production:
-    name: deploy-production
-    needs: build
-    # Pas de condition liee au filtrage par chemin ici : `needs: build`
-    # suffit. Si `build` a ete saute (push docs/workflows-only vers main),
-    # ce job se saute automatiquement avec lui (needs exige success(), jamais
-    # vrai pour un job skipped) - comportement voulu, voir le commentaire en
-    # tete de fichier.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  release:
+    name: release
+    needs: [changes, test]
+    # Meme condition explicite que `build` (voir son commentaire) : semantic-release
+    # ne publie de toute facon que sur `main` (voir release.config.js), mais on
+    # evite de le lancer pour rien sur un diff docs/workflows-only.
+    if: needs.changes.outputs.run_full_suite == 'true' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: production
+    # contents: write pour le tag + le commit chore(release) pousses par
+    # @semantic-release/git (voir release.config.js) ; issues/pull-requests:
+    # write pour que @semantic-release/github puisse creer la GitHub Release
+    # (successComment/failComment desactives dans release.config.js, donc pas
+    # besoin d'aller plus loin que ca).
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - name: Recuperer le code
         uses: actions/checkout@v7
         with:
-          # generate-changelog.ts lit tout l'historique (`git log`, pas de
-          # tags/versions, voir le script) : un checkout superficiel ne
-          # laisserait voir que le dernier commit.
+          # semantic-release a besoin de tout l'historique (et des tags) pour
+          # determiner le dernier release et les commits a analyser depuis.
           fetch-depth: 0
 
       - name: Installer pnpm
@@ -307,12 +322,52 @@ jobs:
       - name: Installer les dependances
         run: pnpm install --frozen-lockfile
 
-      - name: Generer le changelog
-        # Ecrit front/public/CHANGELOG.md, lu avant `vercel build` juste en
-        # dessous pour qu'il soit inclus dans le build deploye (voir
-        # scripts/generate-changelog.ts et front/src/pages/ChangelogPage.vue).
-        # Jamais commit (voir .gitignore) : regenere a chaque deploiement.
-        run: pnpm changelog
+      - name: Publier une release (tag, GitHub Release, CHANGELOG.md)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm exec semantic-release
+
+      - name: Notifier Discord en cas d'echec
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          MESSAGE: "CI : le job release a echoue"
+          REF_NAME: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: .github/scripts/notify-discord.sh "$MESSAGE" "$REF_NAME" "$RUN_URL"
+
+  deploy-production:
+    name: deploy-production
+    needs: [build, release]
+    # Pas de condition liee au filtrage par chemin ici : `needs: [build, release]`
+    # suffit. Si `build` et `release` ont ete sautes (push docs/workflows-only
+    # vers main), ce job se saute automatiquement avec eux (needs exige
+    # success(), jamais vrai pour un job skipped) - comportement voulu, voir
+    # le commentaire en tete de fichier.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v7
+        with:
+          # ref: main (et non le SHA qui a declenche ce run) : le job `release`
+          # a pousse un commit chore(release) sur main juste avant (voir
+          # needs ci-dessus), qui met a jour front/public/CHANGELOG.md - on
+          # veut deployer avec ce commit inclus, pas celui d'avant.
+          ref: main
+
+      - name: Installer pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Installer les dependances
+        run: pnpm install --frozen-lockfile
 
       - name: Verifier que les secrets Vercel sont configures
         env:
