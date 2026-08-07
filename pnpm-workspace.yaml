@@ -1,6 +1,13 @@
 packages:
   - "front"
   - "back"
+overrides:
+  # GHSA-2v37-7h3g-55p8 (high, corrigee en 3.3.17) : nanoid est une
+  # dependance transitive de postcss (via @vue/compiler-sfc, vite),
+  # constate le 2026-08-07 sur `pnpm audit --prod --audit-level=high`. Range
+  # bornee a la branche 3.x (postcss ne declare pas de compatibilite avec
+  # nanoid 4+) : juste le patch qui corrige l'avis, pas de saut de majeure.
+  nanoid: ">=3.3.17 <4"
 allowBuilds:
   bufferutil: false
   esbuild: true
