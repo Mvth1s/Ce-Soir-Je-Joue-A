@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import AppFooter from "@/components/AppFooter.vue";
 import AppHeader from "@/components/AppHeader.vue";
 import BootScreen from "@/components/BootScreen.vue";
 import CookieConsentBanner from "@/components/CookieConsentBanner.vue";
+
+// Reserve l'espace occupe par le bandeau cookies (position: fixed) pour que
+// le pied de page ne se retrouve jamais masque derriere lui.
+const cookieBannerHeight = ref(0);
 </script>
 
 <template>
@@ -14,6 +19,7 @@ import CookieConsentBanner from "@/components/CookieConsentBanner.vue";
       background: var(--bg);
       color: var(--tx);
     "
+    :style="{ paddingBottom: `${cookieBannerHeight}px` }"
   >
     <BootScreen />
     <AppHeader />
@@ -21,6 +27,6 @@ import CookieConsentBanner from "@/components/CookieConsentBanner.vue";
       <router-view />
     </main>
     <AppFooter />
-    <CookieConsentBanner />
+    <CookieConsentBanner @height-change="(h) => (cookieBannerHeight = h)" />
   </div>
 </template>

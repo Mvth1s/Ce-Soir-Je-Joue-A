@@ -1,12 +1,45 @@
 <script setup lang="ts">
+import { nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { useCookieConsent } from "@/composables/useCookieConsent";
 
+const emit = defineEmits<{ (e: "height-change", height: number): void }>();
+
 const { choice, accept, refuse } = useCookieConsent();
+const bannerEl = ref<HTMLElement | null>(null);
+let observer: ResizeObserver | null = null;
+
+// Le bandeau est en `position: fixed` en bas de l'ecran : sans cette reserve
+// d'espace (appliquee par App.vue via l'evenement height-change), il se
+// superpose au pied de page (lui-meme colle en bas de viewport via flex:1
+// sur <main>) et rend ses liens (FAQ, mentions legales...) incliquables tant
+// que l'utilisateur n'a pas repondu au bandeau.
+watch(
+  choice,
+  async (value) => {
+    if (value !== null) {
+      observer?.disconnect();
+      observer = null;
+      emit("height-change", 0);
+      return;
+    }
+    await nextTick();
+    if (!bannerEl.value) return;
+    observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) emit("height-change", entry.contentRect.height);
+    });
+    observer.observe(bannerEl.value);
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => observer?.disconnect());
 </script>
 
 <template>
   <div
     v-if="choice === null"
+    ref="bannerEl"
     role="dialog"
     aria-label="Gestion des cookies de mesure d'audience"
     style="

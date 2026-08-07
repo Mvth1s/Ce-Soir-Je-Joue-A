@@ -134,9 +134,14 @@ test("le header et le footer restent fonctionnels sur toutes les tailles d'ecran
   await themeToggle.click();
   await expect(themeToggle).not.toHaveText(before ?? "");
 
-  await page.getByRole("link", { name: "FAQ" }).click();
+  // Scope au pied de page : le bandeau de consentement cookies contient lui
+  // aussi un lien "mentions légales" (dans son texte), ce qui rend
+  // `getByRole` ambigu sur la page entiere tant que l'utilisateur n'a pas
+  // repondu au bandeau.
+  const footer = page.getByRole("contentinfo");
+  await footer.getByRole("link", { name: "FAQ" }).click();
   await page.waitForURL("**/faq");
 
-  await page.getByRole("link", { name: "Mentions légales" }).click();
+  await footer.getByRole("link", { name: "Mentions légales" }).click();
   await page.waitForURL("**/mentions-legales");
 });
