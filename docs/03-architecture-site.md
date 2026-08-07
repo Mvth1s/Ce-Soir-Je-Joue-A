@@ -53,7 +53,7 @@ Questions frequentes en accordeon (`<details>`/`<summary>`, sans JS supplementai
 
 ### 7. Page changelog (`/changelog`)
 
-Liste les nouveautes et corrections par version, generees automatiquement a partir de l'historique des commits par `semantic-release` a chaque release (`front/public/CHANGELOG.md`, voir `release.config.js` et la section "Commits et changelog" de `CLAUDE.md`). Affiche un message si le fichier est indisponible. Accessible depuis le footer, present sur tous les ecrans.
+Liste les nouveautes et corrections par version, generees par `semantic-release` a chaque release et republiees dans `front/public/CHANGELOG.md` a chaque deploiement (`scripts/generate-changelog.ts`, voir `release.config.js` et la section "Commits et changelog" de `CLAUDE.md`). Affiche un message si le fichier est indisponible. Accessible depuis le footer, present sur tous les ecrans.
 
 ## Pied de page
 
