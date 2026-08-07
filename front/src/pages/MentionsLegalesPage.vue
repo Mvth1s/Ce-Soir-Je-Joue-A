@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useCookieConsent } from "@/composables/useCookieConsent";
+
+const { resetChoice } = useCookieConsent();
+</script>
 
 <template>
   <section
@@ -88,7 +92,36 @@
       <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Cookies</h2>
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
         Un unique cookie de session, technique et nécessaire au fonctionnement du site (rester connecté), est
-        déposé après connexion. Aucun cookie de mesure d'audience ou de publicité tiers n'est utilisé.
+        déposé après connexion ; il ne nécessite pas de consentement.
+      </p>
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
+        Avec votre accord uniquement (bandeau proposé à votre première visite), Google Analytics 4 dépose des
+        cookies de mesure d'audience pour comprendre la fréquentation du site (pages visitées, provenance).
+        Ces données sont traitées par Google Ireland Limited et peuvent transiter hors de l'Union européenne ;
+        voir la
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noopener"
+          style="color: var(--acc)"
+          >politique de confidentialité de Google</a
+        >. Aucun cookie publicitaire n'est utilisé, et votre choix reste modifiable à tout moment :
+        <button
+          type="button"
+          style="
+            display: inline;
+            padding: 0;
+            border: none;
+            background: none;
+            font: inherit;
+            color: var(--acc);
+            text-decoration: underline;
+            cursor: pointer;
+          "
+          @click="resetChoice"
+        >
+          gérer mes cookies
+        </button>.
       </p>
     </div>
 
