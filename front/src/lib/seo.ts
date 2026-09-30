@@ -1,5 +1,10 @@
-const BASE_URL = "https://cesoirjejouea.vercel.app";
-const DEFAULT_TITLE = "Ce soir je joue à…";
+import { routeStructuredData, serializeJsonLd, SITE_NAME, SITE_URL } from "@/lib/structuredData";
+
+const BASE_URL = SITE_URL;
+const DEFAULT_TITLE = SITE_NAME;
+// Marque les balises JSON-LD propres a une route (fil d'Ariane, FAQPage), a
+// remplacer a chaque navigation ; le graphe commun du site n'en fait pas partie.
+const ROUTE_JSONLD_ATTR = "data-route-jsonld";
 
 // Image de partage par defaut (generee par scripts/generate-brand-assets.ts),
 // identique a celle declaree en dur dans index.html.
@@ -15,6 +20,18 @@ export interface RouteSeo {
   // absolu servi depuis front/public/, image 1200x630).
   ogImage?: string;
   ogImageAlt?: string;
+  breadcrumb?: string;
+}
+
+function applyRouteStructuredData(path: string, breadcrumb: string | undefined): void {
+  for (const script of document.head.querySelectorAll(`script[${ROUTE_JSONLD_ATTR}]`)) script.remove();
+  for (const data of routeStructuredData(path, breadcrumb)) {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.setAttribute(ROUTE_JSONLD_ATTR, "");
+    script.textContent = serializeJsonLd(data);
+    document.head.appendChild(script);
+  }
 }
 
 function setMeta(selector: string, content: string): void {
@@ -47,4 +64,5 @@ export function applyRouteSeo(path: string, seo: RouteSeo): void {
   setMeta('meta[property="og:image:alt"]', ogImageAlt);
   setMeta('meta[name="twitter:image"]', ogImageUrl);
   setMeta('meta[name="twitter:image:alt"]', ogImageAlt);
+  applyRouteStructuredData(path, seo.breadcrumb);
 }

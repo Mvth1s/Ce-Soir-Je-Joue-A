@@ -8,6 +8,9 @@ declare module "vue-router" {
     description?: string;
     ogImage?: string;
     ogImageAlt?: string;
+    // Libelle de la page dans le fil d'Ariane (BreadcrumbList) : a renseigner
+    // uniquement pour les pages publiques hors accueil.
+    breadcrumb?: string;
   }
 }
 
@@ -57,6 +60,7 @@ const router = createRouter({
       component: () => import("@/pages/MentionsLegalesPage.vue"),
       meta: {
         title: "Mentions légales — Ce soir je joue à…",
+        breadcrumb: "Mentions légales",
         description: "Éditeur, hébergement, données personnelles et cookies du site Ce soir je joue à….",
       },
     },
@@ -66,6 +70,7 @@ const router = createRouter({
       component: () => import("@/pages/FaqPage.vue"),
       meta: {
         title: "FAQ — Ce soir je joue à…",
+        breadcrumb: "FAQ",
         description:
           "Comment l'IA choisit vos jeux, quelles données sont conservées, et les autres questions fréquentes sur Ce soir je joue à….",
       },
@@ -76,6 +81,7 @@ const router = createRouter({
       component: () => import("@/pages/ChangelogPage.vue"),
       meta: {
         title: "Changelog — Ce soir je joue à…",
+        breadcrumb: "Changelog",
         description: "Historique des évolutions du site Ce soir je joue à….",
       },
     },

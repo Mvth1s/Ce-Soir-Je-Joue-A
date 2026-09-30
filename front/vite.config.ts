@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { serializeJsonLd, siteGraph } from "./src/lib/structuredData";
 
 // Polices critiques (sous-ensemble latin, suffisant pour le francais) a
 // precharger : Space Grotesk 400 pour le texte courant, Pixelify Sans 600 pour
@@ -31,10 +32,29 @@ function preloadCriticalFonts(): Plugin {
   };
 }
 
+// Injecte dans index.html le graphe JSON-LD commun a toutes les pages
+// (WebSite, WebApplication, auteur), genere depuis src/lib/structuredData.ts
+// plutot qu'ecrit a la main dans le HTML (source unique).
+function injectSiteStructuredData(): Plugin {
+  return {
+    name: "csjj:site-structured-data",
+    transformIndexHtml() {
+      return [
+        {
+          tag: "script",
+          attrs: { type: "application/ld+json" },
+          children: serializeJsonLd(siteGraph()),
+          injectTo: "head",
+        },
+      ];
+    },
+  };
+}
+
 // En dev, `vercel dev` sert les fonctions api/ sur le port 3000 ;
 // ce proxy évite les soucis de cookies/CORS entre les deux serveurs.
 export default defineConfig({
-  plugins: [vue(), preloadCriticalFonts()],
+  plugins: [vue(), preloadCriticalFonts(), injectSiteStructuredData()],
   // Le repo centralise toutes les variables d'env dans le .env a la racine
   // du monorepo (voir .env.example) ; sans ca, Vite ne chargerait que
   // front/.env, qui n'existe pas.
