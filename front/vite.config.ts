@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { visualizer } from "rollup-plugin-visualizer";
 import { serializeJsonLd, siteGraph } from "./src/lib/structuredData";
 
 // Polices critiques (sous-ensemble latin, suffisant pour le francais) a
@@ -53,13 +54,23 @@ function injectSiteStructuredData(): Plugin {
 
 // En dev, `vercel dev` sert les fonctions api/ sur le port 3000 ;
 // ce proxy évite les soucis de cookies/CORS entre les deux serveurs.
-export default defineConfig({
-  plugins: [vue(), preloadCriticalFonts(), injectSiteStructuredData()],
+//
+// `pnpm analyze` (mode "analyze") : build client seul dans dist-analyze/, avec
+// une carte des chunks (taille brute et gzip) dans dist-analyze/stats.html.
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    vue(),
+    preloadCriticalFonts(),
+    injectSiteStructuredData(),
+    mode === "analyze" &&
+      visualizer({ filename: "dist-analyze/stats.html", template: "treemap", gzipSize: true }),
+  ],
   // Le repo centralise toutes les variables d'env dans le .env a la racine
   // du monorepo (voir .env.example) ; sans ca, Vite ne chargerait que
   // front/.env, qui n'existe pas.
   envDir: "..",
   build: {
+    outDir: mode === "analyze" ? "dist-analyze" : "dist",
     // Vite inline par defaut en data: URI les fichiers < 4 Ko, dont plusieurs
     // sous-ensembles de polices : ils gonfleraient alors la feuille de style
     // critique alors que le navigateur ne les telechargerait peut-etre jamais
@@ -76,4 +87,4 @@ export default defineConfig({
       "/api": "http://localhost:3000",
     },
   },
-});
+}));

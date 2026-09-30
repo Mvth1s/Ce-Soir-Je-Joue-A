@@ -2,6 +2,8 @@ node_modules/
 dist/
 # Build serveur du pre-rendu (voir scripts/prerender.ts), jamais deploye.
 front/dist-ssr/
+# Carte des chunks produite par `pnpm analyze`.
+front/dist-analyze/
 .vercel/
 *.tsbuildinfo
 .env

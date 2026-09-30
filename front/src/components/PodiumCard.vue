@@ -96,6 +96,8 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
               :src="suggestion.posterUrl"
               :alt="suggestion.name"
               class="podium-card__poster-img"
+              width="600"
+              height="900"
               :class="{ 'podium-card__poster-img--loaded': posterLoaded }"
               fetchpriority="high"
               decoding="async"
@@ -304,6 +306,11 @@ const showHoverHint = computed(() => props.size === "gold" && !isTouch.value);
   padding: 13px;
 }
 
+/* width/height (600x900, format demande a SteamGridDB, voir
+   back/src/steamgriddb.ts) donnent au navigateur le ratio 2:3 de l'affiche
+   avant son chargement ; la zone elle-meme est deja reservee par la hauteur
+   fixe de la carte (image en position absolue), donc aucun decalage de mise
+   en page (CLS) quand l'affiche arrive. */
 .podium-card__poster-img {
   position: absolute;
   inset: 0;

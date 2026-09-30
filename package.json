@@ -9,6 +9,7 @@
     "dev:api": "tsx watch --env-file=.env scripts/dev-server.ts",
     "dev:full": "concurrently -n front,api -c blue,green \"pnpm --filter front dev\" \"pnpm dev:api\"",
     "build": "pnpm --filter front build",
+    "analyze": "pnpm --filter front analyze",
     "test:e2e": "playwright test",
     "healthcheck": "tsx scripts/healthcheck.ts",
     "typecheck": "pnpm --filter front typecheck && pnpm --filter back typecheck && tsc --noEmit -p tests/tsconfig.json",
