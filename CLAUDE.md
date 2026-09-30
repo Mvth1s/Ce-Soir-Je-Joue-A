@@ -16,7 +16,7 @@ V1 implemented: Steam login, criteria form, and the podium suggestion flow all w
 - `pnpm dev:full` : lance le front (Vite, port 5173) et l'API locale (port 3000) en parallele ; ouvrir `http://localhost:5173` (Vite proxy les appels `/api`).
 - `pnpm dev` : front seul (les appels API echouent sans `dev:api` en face).
 - `pnpm dev:api` : API seule, servie directement sur `http://localhost:3000/api/...` par `scripts/dev-server.ts`.
-- `pnpm build` : build de production du front (`front/dist`), c'est aussi la commande utilisee par Vercel (`vercel.json`).
+- `pnpm build` : build de production du front (`front/dist`), c'est aussi la commande utilisee par Vercel (`vercel.json`). Enchaine build client, build serveur de `front/src/entry-server.ts` et pre-rendu des pages publiques (`scripts/prerender.ts`, voir `docs/03-architecture-site.md`, section "Referencement"). Pour tester les pages pre-rendues avec `vite preview`, utiliser l'URL avec slash final (`/faq/`) : le serveur de preview ne lit pas les rewrites de `vercel.json`.
 - `pnpm typecheck` : `vue-tsc -b` (front), puis `tsc --noEmit` (back, qui couvre aussi `api/**` et `scripts/**`, voir `back/tsconfig.json`), puis `tsc --noEmit -p tests/tsconfig.json` (verifie `tests/e2e/**` separement, avec sa propre config car ce code tourne cote navigateur/Playwright plutot que Node pur).
 - Filtrer un seul workspace : `pnpm --filter front <script>` ou `pnpm --filter back <script>` (ex. `pnpm --filter front typecheck`).
 - Preparer la base localement : `psql "$DATABASE_URL" -f back/src/db/schema.sql`.

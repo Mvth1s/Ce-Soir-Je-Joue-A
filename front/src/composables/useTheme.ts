@@ -5,6 +5,8 @@ export type Theme = "light" | "dark";
 const theme = ref<Theme>("light");
 
 watchEffect(() => {
+  // Absent lors du rendu serveur du pre-rendu (src/entry-server.ts).
+  if (typeof document === "undefined") return;
   document.documentElement.dataset.theme = theme.value;
   const [acc, accInk] =
     theme.value === "dark" ? ["#6FB3E0", "#10222E"] : ["#2F72A6", "#FFF8F3"];

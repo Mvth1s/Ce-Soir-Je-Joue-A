@@ -8,7 +8,7 @@ import { join } from "node:path";
 
 const ROOT = join(__dirname, "..");
 const LEGAL_PAGE_PATH = join(ROOT, "front/src/pages/MentionsLegalesPage.vue");
-const ROUTER_PATH = join(ROOT, "front/src/router/index.ts");
+const ROUTER_PATH = join(ROOT, "front/src/router/routes.ts");
 const MIN_TEXT_LENGTH = 200;
 const REQUIRED_KEYWORDS = ["Données personnelles", "SteamID64", "Éditeur"];
 
@@ -46,7 +46,7 @@ function main(): void {
 
   const routerSource = readFileSync(ROUTER_PATH, "utf-8");
   if (!routerSource.includes("/mentions-legales")) {
-    fail("la route /mentions-legales n'est plus declaree dans front/src/router/index.ts");
+    fail("la route /mentions-legales n'est plus declaree dans front/src/router/routes.ts");
   }
 
   console.log("[check-legal-pages] OK : page des mentions legales presente, routee et non vide.");

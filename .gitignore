@@ -1,5 +1,7 @@
 node_modules/
 dist/
+# Build serveur du pre-rendu (voir scripts/prerender.ts), jamais deploye.
+front/dist-ssr/
 .vercel/
 *.tsbuildinfo
 .env

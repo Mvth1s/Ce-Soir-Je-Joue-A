@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vue-tsc -b && vite build --ssrManifest && vite build --ssr src/entry-server.ts --outDir dist-ssr && tsx ../scripts/prerender.ts",
     "typecheck": "vue-tsc -b",
     "preview": "vite preview"
   },
