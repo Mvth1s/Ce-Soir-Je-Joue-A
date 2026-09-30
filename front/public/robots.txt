@@ -1,3 +1,8 @@
+# Seules les pages publiques (accueil, FAQ, mentions legales, changelog) sont
+# destinees aux moteurs de recherche : elles sont pre-rendues et listees dans
+# le sitemap. Les routes ci-dessous exigent une connexion Steam ou sont des
+# pages d'erreur ; sans session, elles n'affichent qu'un shell vide ou une
+# redirection, sans interet a l'indexation (elles portent aussi un noindex).
 User-agent: *
 Allow: /
 Disallow: /connexion

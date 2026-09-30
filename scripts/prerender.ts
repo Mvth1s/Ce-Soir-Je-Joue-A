@@ -6,7 +6,9 @@
 // - ses balises head (title, description, canonical absolu, robots, OG,
 //   Twitter) et ses donnees structurees propres (fil d'Ariane, FAQPage) ;
 // - le rendu de la page dans #app, et le prechargement du JS/CSS de sa route.
-// Ecrit aussi front/dist/spa.html, le shell SPA sans contenu (noindex, sans
+// Genere aussi front/dist/sitemap.xml a partir de la meme liste de routes
+// (source unique : pas de sitemap a maintenir a la main). Ecrit enfin
+// front/dist/spa.html, le shell SPA sans contenu (noindex, sans
 // canonical) vers lequel vercel.json reecrit toutes les autres URL : sans lui,
 // les routes privees et les 404 recevraient le HTML pre-rendu de l'accueil.
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -30,6 +32,16 @@ interface RouteHead {
   ogImage: string;
   ogImageAlt: string;
   jsonLd: Record<string, unknown>[];
+}
+
+// lastmod = date du build : le site est redeploye a chaque changement de
+// contenu (y compris le changelog, regenere a chaque deploiement production).
+function sitemap(canonicals: string[]): string {
+  const lastmod = new Date().toISOString().slice(0, 10);
+  const urls = canonicals
+    .map((loc) => `  <url>\n    <loc>${escapeHtml(loc)}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>\n`)
+    .join("");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}</urlset>\n`;
 }
 
 interface ServerEntry {
@@ -130,8 +142,10 @@ async function main(): Promise<void> {
   writeFileSync(join(DIST_DIR, SPA_SHELL), shell);
   console.log(`[prerender] ${SPA_SHELL} (shell SPA, noindex)`);
 
+  const canonicals: string[] = [];
   for (const path of entry.PRERENDERED_PATHS) {
     const { appHtml, head, modules } = await entry.render(path);
+    canonicals.push(head.canonical);
     let html = applyHead(template, head);
     html = replaceOnce(html, "</head>", `${preloadLinks(template, modules, manifest)}  </head>`);
     // Theme par defaut du client (front/src/composables/useTheme.ts), pour que
@@ -144,6 +158,9 @@ async function main(): Promise<void> {
     writeFileSync(outFile, html);
     console.log(`[prerender] ${path} -> ${outFile.replace(`${ROOT}/`, "")}`);
   }
+
+  writeFileSync(join(DIST_DIR, "sitemap.xml"), sitemap(canonicals));
+  console.log(`[prerender] sitemap.xml (${canonicals.length} URL)`);
 
   // Le ssr-manifest ne sert qu'a ce script : inutile (et indesirable) de le
   // deployer.
