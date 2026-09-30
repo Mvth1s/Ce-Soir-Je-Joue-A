@@ -13,6 +13,7 @@
     "healthcheck": "tsx scripts/healthcheck.ts",
     "typecheck": "pnpm --filter front typecheck && pnpm --filter back typecheck && tsc --noEmit -p tests/tsconfig.json",
     "changelog": "tsx scripts/generate-changelog.ts",
+    "brand-assets": "tsx scripts/generate-brand-assets.ts",
     "release:dry-run": "semantic-release --dry-run --no-ci",
     "prepare": "husky"
   },

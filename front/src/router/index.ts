@@ -6,6 +6,8 @@ declare module "vue-router" {
   interface RouteMeta {
     title?: string;
     description?: string;
+    ogImage?: string;
+    ogImageAlt?: string;
   }
 }
 
@@ -93,7 +95,7 @@ const router = createRouter({
 });
 
 router.afterEach((to) => {
-  applyRouteSeo(to.path, to.meta.title, to.meta.description);
+  applyRouteSeo(to.path, to.meta);
   trackPageview(to.path, to.meta.title);
 });
 
