@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { visualizer } from "rollup-plugin-visualizer";
-import { serializeJsonLd, siteGraph } from "./src/lib/structuredData";
+import { serializeJsonLd, siteGraph } from "./src/lib/structuredData.ts";
 
 // Polices critiques (sous-ensemble latin, suffisant pour le francais) a
 // precharger : Space Grotesk 400 pour le texte courant, Pixelify Sans 600 pour
