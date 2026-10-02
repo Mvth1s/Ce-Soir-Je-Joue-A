@@ -1,11 +1,11 @@
 // Simule les 3 services externes appeles via `fetch` par back/src/
 // (Steam Web API, Mistral, SteamGridDB), sans toucher a leur code de
-// production. `fetch` global de Node (>=18) est base sur undici : on
-// remplace le dispatcher global par un `MockAgent`, avec `enableNetConnect()`
-// pour laisser passer tout ce qui n'est pas explicitement mocke ici
-// (notamment les appels du driver Postgres Neon, qui utilisent aussi `fetch`
-// mais doivent atteindre la vraie base de test, voir tests/README.md).
-import { MockAgent, setGlobalDispatcher } from "undici";
+// production. `nock` 14+ intercepte aussi le `fetch` global de Node (via
+// @mswjs/interceptors), en plus des modules `http`/`https` : les memes
+// regles que pour Steam OpenID s'appliquent donc ici, y compris le blocage
+// de tout hote externe non mocke (voir installSteamAuthMock dans
+// steamAuthMock.ts, qui autorise seulement localhost et la base Neon de test).
+import nock from "nock";
 import { EMPTY_LIBRARY_SUFFIX, FIXTURE_GAMES } from "../fixtures/library";
 
 let installed = false;
@@ -14,35 +14,22 @@ export function installExternalApiMocks(): void {
   if (installed) return;
   installed = true;
 
-  const mockAgent = new MockAgent();
-  mockAgent.enableNetConnect();
-  setGlobalDispatcher(mockAgent);
+  nock("https://api.steampowered.com")
+    .persist()
+    .get((uri) => uri.startsWith("/IPlayerService/GetOwnedGames"))
+    .reply(200, (uri) => {
+      const steamid = new URL(`https://api.steampowered.com${uri}`).searchParams.get("steamid");
+      if (steamid?.endsWith(EMPTY_LIBRARY_SUFFIX)) {
+        // Comme un vrai profil sans jeux/prive : la Steam Web API ne
+        // renvoie pas de champ `games` du tout (voir back/src/steamWebApi.ts).
+        return { response: {} };
+      }
+      return { response: { game_count: FIXTURE_GAMES.length, games: FIXTURE_GAMES } };
+    });
 
-  mockAgent
-    .get("https://api.steampowered.com")
-    .intercept({
-      path: (path) => path.startsWith("/IPlayerService/GetOwnedGames"),
-      method: "GET",
-    })
-    .reply(
-      200,
-      (opts) => {
-        const steamid = new URL(`https://api.steampowered.com${opts.path}`).searchParams.get(
-          "steamid",
-        );
-        if (steamid?.endsWith(EMPTY_LIBRARY_SUFFIX)) {
-          // Comme un vrai profil sans jeux/prive : la Steam Web API ne
-          // renvoie pas de champ `games` du tout (voir back/src/steamWebApi.ts).
-          return { response: {} };
-        }
-        return { response: { game_count: FIXTURE_GAMES.length, games: FIXTURE_GAMES } };
-      },
-    )
-    .persist();
-
-  mockAgent
-    .get("https://api.mistral.ai")
-    .intercept({ path: "/v1/chat/completions", method: "POST" })
+  nock("https://api.mistral.ai")
+    .persist()
+    .post("/v1/chat/completions")
     .reply(200, {
       choices: [
         {
@@ -75,21 +62,16 @@ export function installExternalApiMocks(): void {
           },
         },
       ],
-    })
-    .persist();
+    });
 
-  mockAgent
-    .get("https://www.steamgriddb.com")
-    .intercept({
-      path: (path) => path.startsWith("/api/v2/grids/steam/"),
-      method: "GET",
-    })
-    .reply(200, (opts) => {
-      const appid = opts.path.split("/").pop()?.split("?")[0];
+  nock("https://www.steamgriddb.com")
+    .persist()
+    .get((uri) => uri.startsWith("/api/v2/grids/steam/"))
+    .reply(200, (uri) => {
+      const appid = uri.split("/").pop()?.split("?")[0];
       return {
         success: true,
         data: [{ url: `http://localhost:3000/e2e-assets/poster.png?appid=${appid}` }],
       };
-    })
-    .persist();
+    });
 }
