@@ -23,9 +23,9 @@ Tous les services externes (Steam OpenID, Steam Web API, Mistral, SteamGridDB) s
   connexion reussie ou refusee. **Aucun fichier de `back/src/` ou `api/` n'est modifie pour ce
   mock** : tout vit dans `tests/e2e/`.
 - **Steam Web API, Mistral, SteamGridDB** (`support/externalApiMocks.ts`) : ces trois services
-  sont appeles via `fetch` (undici) cote backend ; un `MockAgent` undici les intercepte, avec
-  `enableNetConnect()` pour laisser passer tout le reste (notamment le driver Postgres, qui utilise
-  aussi `fetch` mais doit atteindre une vraie base, voir plus bas).
+  sont appeles via `fetch` cote backend, que `nock` (14+) intercepte aussi. Tout appel reseau vers
+  un hote externe non mocke est bloque (`nock.disableNetConnect()`), sauf localhost et `*.neon.tech`
+  : le driver Postgres utilise lui aussi `fetch` mais doit atteindre une vraie base, voir plus bas.
 
 Les seuls "utilisateurs" de test sont deux SteamID64 fixes (`tests/e2e/fixtures/library.ts`) :
 un avec une bibliotheque de demonstration, un reserve au cas "bibliotheque vide".
