@@ -5,7 +5,7 @@
 // propres a une route).
 // Import relatif (pas l'alias "@") : ce module est aussi charge par
 // vite.config.ts, ou l'alias n'est pas resolu.
-import { FAQ_ITEMS } from "../content/faq";
+import { FAQ_ITEMS } from "../content/faq.ts";
 
 export const SITE_URL = "https://cesoirjejouea.vercel.app";
 export const SITE_NAME = "Ce soir je joue à…";
