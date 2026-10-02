@@ -2,12 +2,20 @@ packages:
   - "front"
   - "back"
 overrides:
-  # GHSA-2v37-7h3g-55p8 (high, corrigee en 3.3.17) : nanoid est une
+  # GHSA-2v37-7h3g-55p8 (high) : nanoid est une
   # dependance transitive de postcss (via @vue/compiler-sfc, vite),
   # constate le 2026-08-07 sur `pnpm audit --prod --audit-level=high`. Range
   # bornee a la branche 3.x (postcss ne declare pas de compatibilite avec
   # nanoid 4+) : juste le patch qui corrige l'avis, pas de saut de majeure.
-  nanoid: ">=3.3.17 <4"
+  # Plancher remonte a 3.3.18 le 2026-10-02 : l'avis a ete revise depuis
+  # (versions vulnerables desormais <3.3.18).
+  nanoid: ">=3.3.18 <4"
+  # 7 avis high (GHSA-c29m-xwm3-cm6r, GHSA-mghh-pgcx-3jjj, GHSA-x97p-jq2g-jp4f,
+  # GHSA-3pq3-5fj3-cg6v, GHSA-542g-h47m-68v8, GHSA-m8m8-qj5v-23w3,
+  # GHSA-r4gj-5m52-g5wh), tous corriges en 1.20.0 : axios est une dependance
+  # transitive de `openid` (connexion Steam, back), qui declare ^1.6.0.
+  # Constate le 2026-10-02 sur `pnpm audit --prod --audit-level=high`.
+  axios: ">=1.20.0 <2"
 allowBuilds:
   bufferutil: false
   esbuild: true

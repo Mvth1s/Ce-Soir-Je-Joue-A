@@ -5,7 +5,13 @@ export type ConsentChoice = "accepted" | "refused";
 
 const STORAGE_KEY = "csjj_analytics_consent";
 
+// Pas de localStorage ni de window lors du rendu serveur du pre-rendu
+// (src/entry-server.ts) : aucun choix, donc bandeau affiche, comme pour une
+// premiere visite.
+const isBrowser = typeof window !== "undefined";
+
 function readStoredChoice(): ConsentChoice | null {
+  if (!isBrowser) return null;
   const value = localStorage.getItem(STORAGE_KEY);
   return value === "accepted" || value === "refused" ? value : null;
 }
@@ -13,6 +19,7 @@ function readStoredChoice(): ConsentChoice | null {
 const choice = ref<ConsentChoice | null>(readStoredChoice());
 
 watchEffect(() => {
+  if (!isBrowser) return;
   if (choice.value === "accepted") {
     loadGoogleAnalytics();
   } else {

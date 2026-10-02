@@ -73,6 +73,15 @@ Parcours lineaire et simple en V1 : atterrissage -> connexion Steam -> saisie de
 
 La bibliotheque se resynchronise automatiquement a chaque chargement de page (pas de bouton "actualiser" manuel en V1).
 
+## Referencement (SEO/GEO) et pre-rendu
+
+Le site reste une SPA statique (pas de SSR a la demande, pas de fonction de rendu deployee), mais les pages publiques (`/`, `/faq`, `/mentions-legales`, `/changelog`, marquees `indexable` dans `front/src/router/routes.ts`) sont **pre-rendues au build** par `scripts/prerender.ts` (derniere etape de `pnpm --filter front build`, via un build serveur de `front/src/entry-server.ts`). Chaque page publique a donc son propre fichier `front/dist/<route>/index.html`, qui contient deja son contenu et ses balises head en dur : title, description, canonical absolu (sans query string ni slash final), `robots`, Open Graph/Twitter (image `front/public/og/cover-1200x630.png`, surchargeable par route via `meta.ogImage`) et donnees structurees JSON-LD (graphe commun WebSite/WebApplication/auteur, fil d'Ariane hors accueil, FAQPage sur `/faq` generee depuis `front/src/content/faq.ts`).
+
+- Cote client, l'application est montee normalement (pas d'hydratation) et remplace le contenu pre-rendu ; les navigations suivantes mettent a jour les memes balises via `front/src/lib/seo.ts`.
+- Toutes les autres URL (routes privees `/connexion`, `/criteres`, `/resultats`, `/403`, et 404) sont servies par `front/dist/spa.html`, un shell sans contenu en `noindex` et sans canonical (`vercel.json`, rewrites). Les pages publiques hors accueil y ont une reecriture explicite vers leur `index.html`, verifiee par le script de pre-rendu.
+- `/changelog` n'a que ses balises head pre-rendues : son contenu est charge au runtime depuis `/CHANGELOG.md`.
+- `robots.txt` et `sitemap.xml` ne listent/n'autorisent que ces pages publiques.
+
 ## Points encore ouverts
 
 - Contenu exact de l'explication affichee au dos de chaque carte (texte libre genere par l'IA, ou format plus structure ?)

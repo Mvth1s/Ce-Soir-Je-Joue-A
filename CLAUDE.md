@@ -16,13 +16,15 @@ V1 implemented: Steam login, criteria form, and the podium suggestion flow all w
 - `pnpm dev:full` : lance le front (Vite, port 5173) et l'API locale (port 3000) en parallele ; ouvrir `http://localhost:5173` (Vite proxy les appels `/api`).
 - `pnpm dev` : front seul (les appels API echouent sans `dev:api` en face).
 - `pnpm dev:api` : API seule, servie directement sur `http://localhost:3000/api/...` par `scripts/dev-server.ts`.
-- `pnpm build` : build de production du front (`front/dist`), c'est aussi la commande utilisee par Vercel (`vercel.json`).
+- `pnpm build` : build de production du front (`front/dist`), c'est aussi la commande utilisee par Vercel (`vercel.json`). Enchaine build client, build serveur de `front/src/entry-server.ts` et pre-rendu des pages publiques (`scripts/prerender.ts`, voir `docs/03-architecture-site.md`, section "Referencement"). Pour tester les pages pre-rendues avec `vite preview`, utiliser l'URL avec slash final (`/faq/`) : le serveur de preview ne lit pas les rewrites de `vercel.json`.
+- `pnpm analyze` : build client seul dans `front/dist-analyze/` (jamais deploye) avec une carte des chunks JS/CSS (tailles brute et gzip) dans `front/dist-analyze/stats.html` (`rollup-plugin-visualizer`).
 - `pnpm typecheck` : `vue-tsc -b` (front), puis `tsc --noEmit` (back, qui couvre aussi `api/**` et `scripts/**`, voir `back/tsconfig.json`), puis `tsc --noEmit -p tests/tsconfig.json` (verifie `tests/e2e/**` separement, avec sa propre config car ce code tourne cote navigateur/Playwright plutot que Node pur).
 - Filtrer un seul workspace : `pnpm --filter front <script>` ou `pnpm --filter back <script>` (ex. `pnpm --filter front typecheck`).
 - Preparer la base localement : `psql "$DATABASE_URL" -f back/src/db/schema.sql`.
 - `pnpm test:e2e` : suite Playwright (voir `tests/README.md`) ; aucun compte Steam ni cle d'API reelle necessaire (tout est mocke), mais `DATABASE_URL` doit pointer vers une vraie base Postgres (Neon) de test.
 - `pnpm healthcheck` : verifie que Steam Web API, Steam OpenID, Mistral, SteamGridDB et Neon repondent (voir `scripts/healthcheck.ts`), utilise par `.github/workflows/healthcheck.yml`.
 - `pnpm changelog` : regenere `front/public/CHANGELOG.md` depuis les GitHub Releases publiees (voir section "Commits et changelog" plus bas). Fichier genere, jamais commit.
+- `pnpm brand-assets` : regenere les images de marque statiques de `front/public/` (image Open Graph, favicons PNG et icones du manifest) a partir des SVG de `front/src/assets/` et de la palette de `tokens.css`, via Playwright/Chromium (voir `scripts/generate-brand-assets.ts`). Les PNG produits sont commit, pas regeneres au build.
 - `pnpm release:dry-run` : previsualise localement (sans rien pousser) la prochaine version et les notes de release que `semantic-release` generera (voir section "Commits et changelog" plus bas).
 - `pnpm exec tsx scripts/check-legal-pages.ts` : garde-fou CI qui verifie que `front/src/pages/MentionsLegalesPage.vue` existe, est routee et contient toujours les mots-cles RGPD attendus (`Données personnelles`, `SteamID64`, `Éditeur`). A lancer si cette page est modifiee.
 - Aucun linter (ESLint/Prettier) n'est configure dans ce depot a ce jour ; ne pas supposer l'existence d'une commande `lint`.

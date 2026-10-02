@@ -4,6 +4,9 @@
   "installCommand": "pnpm install",
   "devCommand": "pnpm --filter front dev --port $PORT",
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/faq", "destination": "/faq/index.html" },
+    { "source": "/mentions-legales", "destination": "/mentions-legales/index.html" },
+    { "source": "/changelog", "destination": "/changelog/index.html" },
+    { "source": "/((?!api/).*)", "destination": "/spa.html" }
   ]
 }
