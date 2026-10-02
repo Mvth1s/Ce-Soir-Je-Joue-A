@@ -56,6 +56,14 @@ function signonDiscoveryXrds(claimedId: string): string {
 </xrds:XRDS>`;
 }
 
+// `host` au format "hote:port", tel que nock le passe au filtre.
+// localhost/127.0.0.1 : front et API de test eux-memes. *.neon.tech : base de
+// test Neon (l'API HTTP du driver est servie par api.<region>.neon.tech).
+function isAllowedRealHost(host: string): boolean {
+  const hostname = host.replace(/:\d+$/, "");
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname.endsWith(".neon.tech");
+}
+
 let installed = false;
 
 // A appeler une seule fois, avant de servir la moindre requete (voir
@@ -66,14 +74,15 @@ export function installSteamAuthMock(): void {
   if (installed) return;
   installed = true;
 
-  // Filet de securite : bloque tout appel HTTP (core http/https, donc axios)
-  // vers un hote externe non explicitement mocke, pour ne jamais retomber
-  // silencieusement sur le vrai Steam pendant les tests. Le driver Postgres
-  // (@neondatabase/serverless) et `fetch` (Mistral/SteamGridDB/Steam Web API,
-  // mockes separement via undici MockAgent, voir externalApiMocks.ts) ne
-  // passent pas par ce module et ne sont donc pas concernes.
+  // Filet de securite : bloque tout appel reseau vers un hote externe non
+  // explicitement mocke (ici ou dans externalApiMocks.ts), pour ne jamais
+  // retomber silencieusement sur le vrai Steam, Mistral ou SteamGridDB
+  // pendant les tests. Depuis nock 14, ce blocage couvre aussi le `fetch`
+  // global, pas seulement `http`/`https` (axios) : il faut donc autoriser
+  // explicitement le driver Postgres (@neondatabase/serverless), qui passe
+  // par `fetch` et doit atteindre la vraie base de test (voir tests/README.md).
   nock.disableNetConnect();
-  nock.enableNetConnect(/^(127\.0\.0\.1|localhost)/);
+  nock.enableNetConnect(isAllowedRealHost);
 
   nock(STEAM_HOST)
     .persist()
