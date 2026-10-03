@@ -7,9 +7,23 @@ declare global {
 }
 
 let loaded = false;
+let scriptInjected = false;
 
-function gtag(...args: unknown[]): void {
-  window.dataLayer!.push(args);
+// Drapeau d'opt-out officiel de gtag.js : une fois le script charge, il reste
+// dans la page meme si l'utilisateur retire son consentement ; ce drapeau
+// garantit qu'il n'envoie alors plus aucun hit (mesure automatique comprise)
+// jusqu'au prochain chargement de page.
+function setGoogleAnalyticsDisabled(disabled: boolean): void {
+  if (MEASUREMENT_ID) (window as unknown as Record<string, unknown>)[`ga-disable-${MEASUREMENT_ID}`] = disabled;
+}
+
+// Doit pousser l'objet `arguments` lui-meme, comme le snippet officiel de
+// Google, et non un tableau : gtag.js ignore silencieusement les tableaux
+// pousses dans dataLayer. Avec `(...args) => push(args)`, la balise se
+// chargeait bien mais n'envoyait jamais aucun hit (constate le 2026-10-03,
+// GA4 "collecte de donnees non active").
+function gtag(..._args: unknown[]): void {
+  window.dataLayer!.push(arguments);
 }
 
 // N'appeler qu'apres consentement explicite de l'utilisateur (voir
@@ -18,6 +32,7 @@ function gtag(...args: unknown[]): void {
 export function loadGoogleAnalytics(): void {
   if (loaded || !MEASUREMENT_ID) return;
   loaded = true;
+  setGoogleAnalyticsDisabled(false);
 
   window.dataLayer = window.dataLayer ?? [];
   gtag("js", new Date());
@@ -26,6 +41,11 @@ export function loadGoogleAnalytics(): void {
   // rechargement complet entre les pages.
   gtag("config", MEASUREMENT_ID, { send_page_view: false, anonymize_ip: true });
 
+  // Apres un retrait puis un nouveau consentement, gtag.js est deja charge et
+  // ecoute toujours le meme dataLayer : inutile (et source de doublons) de
+  // l'injecter une seconde fois.
+  if (scriptInjected) return;
+  scriptInjected = true;
   const script = document.createElement("script");
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;
@@ -33,8 +53,11 @@ export function loadGoogleAnalytics(): void {
 }
 
 export function unloadGoogleAnalytics(): void {
+  setGoogleAnalyticsDisabled(true);
   loaded = false;
-  window.dataLayer = [];
+  // Ne pas remplacer window.dataLayer : gtag.js garde une reference vers le
+  // tableau d'origine et n'ecouterait plus un nouveau tableau, ce qui
+  // casserait la mesure apres un nouveau consentement sans rechargement.
 }
 
 export function isGoogleAnalyticsLoaded(): boolean {

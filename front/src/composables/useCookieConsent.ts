@@ -1,5 +1,5 @@
 import { ref, watchEffect } from "vue";
-import { loadGoogleAnalytics, unloadGoogleAnalytics } from "@/lib/analytics";
+import { loadGoogleAnalytics, trackPageview, unloadGoogleAnalytics } from "@/lib/analytics";
 
 export type ConsentChoice = "accepted" | "refused";
 
@@ -31,6 +31,12 @@ export function useCookieConsent() {
   function accept(): void {
     localStorage.setItem(STORAGE_KEY, "accepted");
     choice.value = "accepted";
+    // Les page_view ne partent qu'aux changements de route (router.afterEach) :
+    // sans ca, la page sur laquelle l'utilisateur accepte ne serait jamais
+    // comptee. loadGoogleAnalytics est idempotent, le watchEffect ci-dessus
+    // ne la rechargera pas.
+    loadGoogleAnalytics();
+    trackPageview(window.location.pathname, document.title);
   }
 
   function refuse(): void {
