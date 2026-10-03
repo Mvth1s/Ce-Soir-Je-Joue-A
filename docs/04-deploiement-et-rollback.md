@@ -13,6 +13,15 @@
   déploiement éphémère renvoyée par `vercel deploy` (celle-ci est protégée par la Vercel
   Deployment Protection, même en production, et répond systématiquement 302 vers
   `vercel.com/sso-api`).
+- **Variables `VITE_*` : jamais "Sensitive" sur Vercel.** Le build de production tourne dans
+  GitHub Actions (`vercel pull` puis `vercel build`), et le CLI ne peut pas relire une variable
+  marquee sensible : il l'ecrit avec la valeur litterale `[SENSITIVE]`, que Vite inline telle quelle
+  dans le bundle. Constate le 2026-10-03 : `VITE_GA_MEASUREMENT_ID` valait `[SENSITIVE]` en
+  production, GA4 ne recevait rien. Les variables `VITE_*` sont publiques par nature (visibles
+  dans le JS servi) : les creer avec `vercel env add NOM production --no-sensitive`. Les
+  variables lues uniquement au runtime par les fonctions `api/` (cles d'API, `DATABASE_URL`...)
+  peuvent rester sensibles : Vercel injecte leur vraie valeur a l'execution. Les previews
+  (construites par Vercel lui-meme) ne sont pas concernees.
 - **Filtrage par chemin.** Un job `changes` (`dorny/paths-filter`) categorise en amont le diff du
   push/de la PR. Si celui-ci ne touche que de la documentation (`docs`, tout `*.md`) et/ou des
   workflows (`.github/workflows/**`), les jobs `test` et `build` sont sautes (rien a typechecker,
