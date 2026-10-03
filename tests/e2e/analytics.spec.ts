@@ -38,6 +38,13 @@ async function isOptedOut(page: Page): Promise<boolean> {
   );
 }
 
+// Comparaison sur le nom d'hote analyse, pas sur une sous-chaine de l'URL
+// (regle CodeQL js/incomplete-url-substring-sanitization).
+function isGtagScriptRequest(url: string): boolean {
+  const { hostname, pathname } = new URL(url);
+  return hostname === "www.googletagmanager.com" && pathname === "/gtag/js";
+}
+
 function pageViews(entries: DataLayerEntry[] | null): unknown[] {
   return (entries ?? [])
     .filter((entry) => entry.command === "event" && entry.target === "page_view")
@@ -51,7 +58,7 @@ test.beforeEach(async ({ page }) => {
 test("aucune mesure d'audience n'est chargee avant le consentement", async ({ page }) => {
   const gtagRequests: string[] = [];
   page.on("request", (request) => {
-    if (request.url().includes("googletagmanager.com")) gtagRequests.push(request.url());
+    if (isGtagScriptRequest(request.url())) gtagRequests.push(request.url());
   });
 
   await page.goto("/faq");
@@ -64,7 +71,7 @@ test("aucune mesure d'audience n'est chargee avant le consentement", async ({ pa
 test("accepter les cookies mesure la page courante puis chaque navigation", async ({ page }) => {
   const gtagRequests: string[] = [];
   page.on("request", (request) => {
-    if (request.url().includes("googletagmanager.com/gtag/js")) gtagRequests.push(request.url());
+    if (isGtagScriptRequest(request.url())) gtagRequests.push(request.url());
   });
 
   await page.goto("/faq");
