@@ -58,6 +58,11 @@ export default defineConfig({
       port: PORT_FRONT,
       reuseExistingServer: !process.env.CI,
       timeout: 30_000,
+      // ID GA4 factice : active le chargement de la mesure d'audience apres
+      // consentement (voir tests/e2e/analytics.spec.ts), sans jamais rien
+      // envoyer a Google (requetes interceptees par les tests). Prioritaire
+      // sur un eventuel .env local, Vite donnant la priorite a process.env.
+      env: { VITE_GA_MEASUREMENT_ID: "G-E2ETEST000" },
     },
   ],
 });
