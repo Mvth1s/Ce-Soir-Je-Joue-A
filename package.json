@@ -35,7 +35,7 @@
     "@semantic-release/release-notes-generator": "^14.1.1",
     "@types/node": "^26.6.4",
     "concurrently": "^10.0.5",
-    "conventional-changelog-conventionalcommits": "9.3.1",
+    "conventional-changelog-conventionalcommits": "10.4.0",
     "husky": "^9.1.7",
     "nock": "^14.0.17",
     "semantic-release": "^25.0.9",
