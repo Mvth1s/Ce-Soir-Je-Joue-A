@@ -36,6 +36,11 @@ jobs:
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
           STEAMGRIDDB_API_KEY: ${{ secrets.STEAMGRIDDB_API_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          # Neon peut mettre plusieurs secondes a se reveiller (scale-to-zero) :
+          # timeout par tentative plus long que les API HTTP (5s), et 2
+          # nouvelles tentatives apres la premiere sur erreur transitoire.
+          DATABASE_TIMEOUT_MS: "15000"
+          DATABASE_RETRIES: "2"
 
       - name: Notifier Discord en cas d'echec
         if: failure()

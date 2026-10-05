@@ -1,5 +1,9 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 
+// Re-exporte pour scripts/healthcheck.ts, qui doit distinguer les erreurs
+// transitoires du driver sans dependre directement du paquet (declare dans back/).
+export { NeonDbError } from "@neondatabase/serverless";
+
 // Pilote HTTP (une requete = un appel fetch) plutot qu'une connexion
 // persistante : pas de cycle de vie de connexion (.connect()/.end()) a gerer
 // entre des invocations de fonctions serverless qui sont ephemeres par
