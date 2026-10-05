@@ -41,6 +41,6 @@
     "semantic-release": "^25.0.9",
     "tsx": "^4.23.15",
     "typescript": "^5.6.3",
-    "vercel": "^58.4.4"
+    "vercel": "^62.2.0"
   }
 }
