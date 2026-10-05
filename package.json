@@ -40,7 +40,7 @@
     "nock": "^14.0.17",
     "semantic-release": "^25.0.9",
     "tsx": "^4.23.15",
-    "typescript": "^5.6.3",
+    "typescript": "^7.0.2",
     "vercel": "^62.2.0"
   }
 }
