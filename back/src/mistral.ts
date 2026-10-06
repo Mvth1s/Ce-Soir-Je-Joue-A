@@ -13,10 +13,17 @@ import type { Criteria } from "./criteria";
 import type { Game, Suggestion } from "./types";
 
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions";
-// Modele du tier gratuit Mistral le plus proche pour ce type de tache (petit modele
-// generaliste rapide). A ajuster si le nom exact change cote Mistral.
-const MISTRAL_MODEL = "mistral-small-latest";
+// Petit modele generaliste rapide, suffisant pour ce classement/matching. Pas
+// `mistral-small-latest` : sur le plan Free, il repond 429 meme a une requete
+// de quelques tokens (constate le 2026-10-06), alors que `ministral-8b-latest`
+// a des limites bien plus larges (625 000 tokens/min contre 20 000).
+const MISTRAL_MODEL = "ministral-8b-latest";
 const MAX_ATTEMPTS = 2;
+
+// Mistral a refuse la requete pour depassement de quota ou de debit (HTTP 429).
+// Distinguee des autres echecs pour que l'API reponde "service sature" plutot
+// qu'une erreur generique, et jamais retentee immediatement (inutile).
+export class MistralRateLimitError extends Error {}
 
 // Part du quota de `selectCandidates` reservee respectivement aux jeux recemment
 // joues et aux jeux les plus joues, avant de completer avec le reste.
@@ -130,6 +137,9 @@ export async function matchWithMistral(
       validateAgainstCandidates(mistralSuggestions, validAppids);
       return buildSuggestions(mistralSuggestions, candidates);
     } catch (error) {
+      if (error instanceof MistralRateLimitError) {
+        throw error;
+      }
       lastError = error;
     }
   }
@@ -167,6 +177,9 @@ async function requestMistralSuggestions(prompt: string): Promise<MistralSuggest
     }),
   });
 
+  if (response.status === 429) {
+    throw new MistralRateLimitError("Mistral API a repondu avec le statut 429 (quota ou debit depasse).");
+  }
   if (!response.ok) {
     throw new Error(`Mistral API a repondu avec le statut ${response.status}.`);
   }
