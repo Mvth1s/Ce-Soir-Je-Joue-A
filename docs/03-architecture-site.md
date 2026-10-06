@@ -67,6 +67,8 @@ Affiche (`CookieConsentBanner.vue`, monte dans `App.vue`) tant que l'utilisateur
 
 Des pages/messages d'erreur stylises (coherents avec l'identite visuelle du site) sont prevus pour les erreurs qui ne relevent pas du site lui-meme : 404 (page introuvable), 403 (acces refuse), et autres erreurs HTTP similaires.
 
+Sur la page de resultats, un echec du calcul des suggestions affiche un ecran d'erreur avec "Reessayer" et "Modifier mes criteres". Deux variantes de message : generique ("Impossible de calculer vos suggestions pour le moment") et service sature ("Le service de suggestions est sature", quand l'API repond 503 `service_busy` parce que le quota Mistral est depasse).
+
 ## Navigation
 
 Parcours lineaire et simple en V1 : atterrissage -> connexion Steam -> saisie des criteres -> resultats. Pas de tableau de bord, pas d'historique visible, pas de reglages avances, conformement au choix de ne pas ajouter de systeme de compte pour le moment.

@@ -10,6 +10,9 @@ const router = useRouter();
 const { state, summary } = useCriteria();
 
 const phase = ref<Phase>("loading");
+// Vrai quand l'API signale un service de suggestion sature (quota Mistral
+// depasse, 503 `service_busy`) : message dedie plutot que l'erreur generique.
+const serviceBusy = ref(false);
 const suggestions = ref<PodiumSuggestion[]>([]);
 
 const summaryLower = computed(() => summary.value.toLowerCase());
@@ -49,6 +52,7 @@ function preloadImages(urls: string[], timeoutMs = 2500): Promise<void[]> {
 
 async function fetchSuggestions() {
   phase.value = "loading";
+  serviceBusy.value = false;
   try {
     const res = await fetch("/api/suggest", {
       method: "POST",
@@ -65,6 +69,7 @@ async function fetchSuggestions() {
       return;
     }
     if (!res.ok) {
+      serviceBusy.value = res.status === 503;
       phase.value = "error";
       return;
     }
@@ -172,10 +177,18 @@ onMounted(fetchSuggestions);
         color: var(--tx);
       "
     >
-      Impossible de calculer vos suggestions pour le moment.
+      {{
+        serviceBusy
+          ? "Le service de suggestions est saturé."
+          : "Impossible de calculer vos suggestions pour le moment."
+      }}
     </h2>
     <p style="margin: 0; max-width: 46ch; font-size: 15px; line-height: 1.6; color: var(--tx2)">
-      Réessayez dans un instant. Si le problème persiste, vérifiez votre connexion Steam.
+      {{
+        serviceBusy
+          ? "Trop de demandes en même temps : réessayez dans quelques minutes."
+          : "Réessayez dans un instant. Si le problème persiste, vérifiez votre connexion Steam."
+      }}
     </p>
     <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center">
       <button

@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { getSession } from "../back/src/session";
 import { CriteriaSchema } from "../back/src/criteria";
 import { getSuggestions } from "../back/src/suggestFlow";
+import { MistralRateLimitError } from "../back/src/mistral";
 import { rejectMethod, sendJson } from "../back/src/http";
 
 // Le corps attendu (criteres) fait quelques centaines d'octets ; on plafonne large
@@ -70,6 +71,13 @@ export default async function handler(
     const suggestions = await getSuggestions(session.userId, parsedCriteria.data);
     sendJson(res, 200, { suggestions });
   } catch (error) {
+    if (error instanceof MistralRateLimitError) {
+      // Quota/debit Mistral depasse : temporaire, le front affiche un message
+      // dedie plutot que l'erreur generique.
+      console.error("suggestion_service_busy", error);
+      sendJson(res, 503, { error: "service_busy" });
+      return;
+    }
     console.error("suggestion_failed", error);
     sendJson(res, 500, { error: "suggestion_failed" });
   }

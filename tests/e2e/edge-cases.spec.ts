@@ -49,6 +49,23 @@ test("un echec du calcul de suggestions affiche un message et permet de reessaye
   await expect(page.getByText("Votre podium du soir")).toBeVisible({ timeout: 10_000 });
 });
 
+// Quota Mistral depasse : l'API repond 503 `service_busy` (voir api/suggest.ts),
+// le front doit afficher le message dedie plutot que l'erreur generique.
+test("un service de suggestions sature affiche un message dedie", async ({ page }) => {
+  await loginAsSteamUser(page, emptyLibrarySteamId());
+
+  await page.route("**/api/suggest", async (route) => {
+    await route.fulfill({ status: 503, body: JSON.stringify({ error: "service_busy" }) });
+  });
+
+  await page.getByRole("button", { name: "Trouver mes 3 jeux" }).click();
+  await page.waitForURL("**/resultats");
+
+  await expect(page.getByText("Le service de suggestions est saturé.")).toBeVisible();
+  await expect(page.getByText("Impossible de calculer vos suggestions pour le moment.")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Réessayer" })).toBeVisible();
+});
+
 test("depuis l'ecran d'erreur, modifier les criteres revient au formulaire", async ({ page }) => {
   await loginAsSteamUser(page, emptyLibrarySteamId());
 
