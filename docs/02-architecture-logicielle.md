@@ -65,13 +65,13 @@ Trois tables :
 
 ### Mistral API
 
-**Modele utilise : `mistral-small-latest`** (constante `MISTRAL_MODEL`, `back/src/mistral.ts`), un petit modele generaliste rapide, suffisant pour cette tache de classement/matching et disponible sur le tier gratuit de Mistral. Appele avec `temperature: 0.3` (reponses peu variables d'un run a l'autre) et `response_format: { type: "json_object" }` (force une reponse JSON stricte).
+**Modele utilise : `ministral-8b-latest`** (constante `MISTRAL_MODEL`, `back/src/mistral.ts`), un petit modele generaliste rapide, suffisant pour cette tache de classement/matching et disponible sur le tier gratuit de Mistral. Remplace `mistral-small-latest` depuis le 2026-10-06 : sur le plan Free, ce dernier repondait 429 meme a une requete de quelques tokens (limite de 20 000 tokens/min contre 625 000 pour `ministral-8b`), ce qui cassait toutes les suggestions en production. Appele avec `temperature: 0.3` (reponses peu variables d'un run a l'autre) et `response_format: { type: "json_object" }` (force une reponse JSON stricte).
 
 Recoit, pour chaque jeu candidat de la bibliotheque : titre, temps joue, date de la derniere session, ainsi que les criteres declares par l'utilisateur (humeur, fatigue, temps disponible, moment de la journee). Le genre n'est pas envoye : la Steam Web API ne le fournit pas dans l'appel de recuperation de bibliotheque (`GetOwnedGames`), et l'obtenir demanderait un appel supplementaire par jeu (un par `appid`), trop couteux pour des bibliotheques de plusieurs centaines de jeux. Piste d'amelioration possible si necessaire a la qualite du matching.
 
 Renvoie : pour chacun des 3 jeux suggeres, son ID Steam (`appid`), son rang (1 a 3), un pourcentage de correspondance, et deux courtes justifications en francais (pourquoi ce jeu, pourquoi ce rang). Le nom du jeu, le temps joue et la derniere session affiches ensuite viennent des donnees source (`candidates`), jamais de la reponse de l'IA, qui pourrait les halluciner ou les reformuler (voir `buildSuggestions` dans `back/src/mistral.ts`).
 
-Tier gratuit utilise tant que le nombre d'utilisateurs reste faible ; passage a un plan payant a envisager si l'usage augmente.
+Tier gratuit utilise tant que le nombre d'utilisateurs reste faible ; passage a un plan payant a envisager si l'usage augmente. Si Mistral refuse une requete pour quota ou debit depasse (HTTP 429), elle n'est pas retentee : `/api/suggest` repond `503 { error: "service_busy" }` et la page de resultats affiche un message dedie ("Le service de suggestions est sature") au lieu de l'erreur generique. Attention : le health-check (`scripts/healthcheck.ts`) n'appelle que `/v1/models`, qui reste accessible meme quand la completion est limitee ; il ne detecte donc pas ce cas.
 
 #### Exemple de prompt envoye a Mistral
 
