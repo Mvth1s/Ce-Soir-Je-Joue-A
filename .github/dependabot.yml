@@ -16,6 +16,15 @@ updates:
       # dediee (breaking changes potentiels).
       minor-and-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # TS 7 n'expose pas d'API (prevue en 7.1) : vue-tsc/Volar ne fonctionnent qu'avec TS <= 6.
+      # A lever quand vue-tsc supportera TS 7. Garder typescript aligne dans les 3 package.json.
+      - dependency-name: "typescript"
+        versions: [">=7.0.0"]
+      # Epingle volontairement (voir scripts/semantic-release/generate-notes.cjs) : la v10 exige
+      # conventional-changelog-writer 9, alors que release-notes-generator 14 depend encore du writer 8.
+      - dependency-name: "conventional-changelog-conventionalcommits"
+        update-types: ["version-update:semver-major"]
 
   # Garde aussi les actions utilisees dans .github/workflows/ a jour
   # (actions/checkout, actions/setup-node, github/codeql-action, ...).
