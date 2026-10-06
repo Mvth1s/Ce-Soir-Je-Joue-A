@@ -25,6 +25,12 @@ updates:
       # conventional-changelog-writer 9, alors que release-notes-generator 14 depend encore du writer 8.
       - dependency-name: "conventional-changelog-conventionalcommits"
         update-types: ["version-update:semver-major"]
+      # iron-session 9 est ESM-only : les fonctions Vercel (compilees en CommonJS, "type": "commonjs")
+      # plantent au chargement en prod (ERR_REQUIRE_ESM), alors que la CI/e2e (tsx) passe. Constate
+      # le 2026-10-06 (v1.1.2, rollback). A lever avec un import dynamique dans back/src/session.ts,
+      # valide par un vrai login sur une preview Vercel avant toute promotion.
+      - dependency-name: "iron-session"
+        update-types: ["version-update:semver-major"]
 
   # Garde aussi les actions utilisees dans .github/workflows/ a jour
   # (actions/checkout, actions/setup-node, github/codeql-action, ...).
