@@ -16,6 +16,15 @@ overrides:
   # transitive de `openid` (connexion Steam, back), qui declare ^1.6.0.
   # Constate le 2026-10-02 sur `pnpm audit --prod --audit-level=high`.
   axios: ">=1.20.0 <2"
+  # 2 avis high sur follow-redirects (en-tetes sensibles mal filtres), corriges
+  # en 1.16.1 : dependance transitive d'axios (via `openid`, back). Constate le
+  # 2026-10-29 sur `pnpm audit --prod --audit-level=high`.
+  follow-redirects: ">=1.16.1 <2"
+  # GHSA-587h-7wmj-h5pm (high, launch-editor) corrige en vite 8.3.3 : vite est
+  # aussi tire en dependance de production par vue-router (via unplugin), d'ou
+  # l'override en plus du bump de la devDependency du front. Constate le
+  # 2026-10-29 sur `pnpm audit --prod --audit-level=high`.
+  vite: ">=8.3.3 <9"
 allowBuilds:
   bufferutil: false
   esbuild: true
