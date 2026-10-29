@@ -38,19 +38,22 @@ const { resetChoice } = useCookieConsent();
     <div style="display: flex; flex-direction: column; gap: 10px">
       <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Éditeur du site</h2>
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
-        "Ce soir je joue à…" est un projet personnel édité par <strong style="color: var(--tx)">Mvth1s</strong>.
-        Contact :
-        <a href="mailto:mag.d3v+github@pm.me" style="color: var(--acc)">mag.d3v+github@pm.me</a>.
+        "Ce soir je joue à…" est un projet personnel, gratuit et non commercial, édité par un particulier,
+        <strong style="color: var(--tx)">Mathis Aguado</strong>. Le site ne vend rien, n'affiche aucune
+        publicité et ne génère aucun revenu. Contact :
+        <a href="mailto:mag.d3v+ce-soir-je-joue-a@pm.me" style="color: var(--acc)">mag.d3v+ce-soir-je-joue-a@pm.me</a>.
       </p>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 10px">
       <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Hébergement</h2>
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
-        Le site est hébergé par Vercel Inc. Coordonnées complètes de l'hébergeur disponibles sur
-        <a href="https://vercel.com/legal" target="_blank" rel="noopener" style="color: var(--acc)"
-          >vercel.com/legal</a
-        >.
+        Le site est hébergé par Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis.
+        Contact :
+        <a href="mailto:privacy@vercel.com" style="color: var(--acc)">privacy@vercel.com</a> (téléphone non
+        communiqué par l'hébergeur). Vercel est certifié EU-U.S. Data Privacy Framework.
+        La base de données est hébergée par Neon (TODO : raison sociale, adresse et région d'hébergement
+        de la base à compléter).
       </p>
     </div>
 
@@ -78,13 +81,84 @@ const { resetChoice } = useCookieConsent();
     <div style="display: flex; flex-direction: column; gap: 10px">
       <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Données personnelles</h2>
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
-        La connexion se fait uniquement via Steam (OpenID) : aucun mot de passe n'est créé ni stocké sur ce
-        site. Un identifiant interne est généré pour chaque compte ; le SteamID64 lui est rattaché comme
-        simple liaison de plateforme. La bibliothèque Steam (jeux, temps joué, dernière session) est mise en
-        cache temporairement pour éviter des appels répétés à Steam. Aucune donnée n'est cédée, vendue ou
-        utilisée à des fins publicitaires. Pour toute question ou demande de suppression de vos données,
-        écrivez à
-        <a href="mailto:mag.d3v+github@pm.me" style="color: var(--acc)">mag.d3v+github@pm.me</a>.
+        La connexion se fait uniquement via Steam (OpenID) : votre mot de passe Steam est saisi sur le site de
+        Steam, jamais sur celui-ci, et aucun mot de passe n'est collecté, créé ni stocké ici. Un identifiant
+        interne est généré pour chaque compte ; le SteamID64 lui est rattaché comme simple liaison de
+        plateforme. La bibliothèque Steam (liste des jeux, temps joué, date de dernière session) est mise en
+        cache pour éviter des appels répétés à Steam. Les critères choisis et les suggestions obtenues ne sont
+        pas enregistrés. Aucune donnée n'est cédée, vendue ou utilisée à des fins publicitaires.
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Services tiers appelés</h2>
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
+        Votre navigateur ne contacte jamais directement ces services : c'est le serveur du site qui les
+        interroge.
+      </p>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
+        <li>
+          <strong style="color: var(--tx)">Steam</strong> (Valve Corporation, États-Unis) : authentification
+          OpenID, puis lecture de votre bibliothèque de jeux à partir de votre SteamID64. Votre profil Steam
+          doit rendre ses jeux visibles pour que cette lecture fonctionne.
+        </li>
+        <li>
+          <strong style="color: var(--tx)">Mistral AI</strong> (France) : reçoit une sélection de jeux de
+          votre bibliothèque (titre, temps joué, dernière session) et les critères choisis, afin de proposer
+          trois suggestions. Aucun identifiant (SteamID64, identifiant interne) ne lui est transmis.
+        </li>
+        <li>
+          <strong style="color: var(--tx)">SteamGridDB</strong> : reçoit uniquement l'identifiant Steam des
+          jeux suggérés, pour récupérer leur affiche. Aucune donnée vous concernant ne lui est transmise.
+        </li>
+      </ul>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Transferts hors de l'Union européenne</h2>
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
+        Certaines données peuvent être traitées hors de l'Union européenne : par Vercel Inc. (hébergement,
+        États-Unis), par Valve Corporation lors des appels à Steam (États-Unis) et, si vous l'acceptez, par
+        Google pour la mesure d'audience (voir « Cookies » ci-dessous). TODO : préciser la région
+        d'hébergement de la base Neon et des fonctions Vercel.
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Durées de conservation</h2>
+      <ul style="margin: 0; padding-left: 20px; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
+        <li>Cookie de session : 14 jours au maximum, ou jusqu'à la déconnexion.</li>
+        <li>
+          Bibliothèque Steam en cache : rafraîchie depuis Steam lorsqu'elle date de plus de 4 heures, et
+          supprimée avec le compte.
+        </li>
+        <li>
+          Identifiant interne et SteamID64 : conservés jusqu'à suppression sur demande (voir « Vos droits et
+          suppression des données » ci-dessous).
+        </li>
+        <li>
+          Choix relatif aux cookies : conservé dans le stockage local de votre navigateur jusqu'à ce que vous
+          le modifiiez ou effaciez les données du site.
+        </li>
+        <li>
+          Données Google Analytics : conservées 2 mois.
+        </li>
+      </ul>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Vos droits et suppression des données</h2>
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
+        Conformément au RGPD, vous pouvez demander l'accès à vos données, leur rectification, leur effacement,
+        leur portabilité, ou vous opposer à leur traitement. Pour supprimer votre compte (identifiant interne,
+        SteamID64 et bibliothèque en cache), écrivez à
+        <a href="mailto:mag.d3v+ce-soir-je-joue-a@pm.me" style="color: var(--acc)">mag.d3v+ce-soir-je-joue-a@pm.me</a> depuis
+        n'importe quelle adresse en indiquant votre profil Steam ; aucune demande n'a besoin d'être publiée
+        publiquement. Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une
+        réclamation à la
+        <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener" style="color: var(--acc)"
+          >CNIL</a
+        >.
       </p>
     </div>
 
@@ -96,8 +170,10 @@ const { resetChoice } = useCookieConsent();
       </p>
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
         Avec votre accord uniquement (bandeau proposé à votre première visite), Google Analytics 4 dépose des
-        cookies de mesure d'audience pour comprendre la fréquentation du site (pages visitées, provenance).
-        Ces données sont traitées par Google Ireland Limited et peuvent transiter hors de l'Union européenne ;
+        cookies de mesure d'audience pour comprendre la fréquentation du site (pages visitées, provenance),
+        avec anonymisation de l'adresse IP. Tant que vous n'avez pas accepté, le script Google Analytics n'est
+        pas chargé. Le bandeau propose « Refuser » et « Accepter » côte à côte, avec la même facilité. Ces
+        données sont traitées par Google Ireland Limited et peuvent transiter hors de l'Union européenne ;
         voir la
         <a
           href="https://policies.google.com/privacy"
@@ -105,7 +181,8 @@ const { resetChoice } = useCookieConsent();
           rel="noopener"
           style="color: var(--acc)"
           >politique de confidentialité de Google</a
-        >. Aucun cookie publicitaire n'est utilisé, et votre choix reste modifiable à tout moment :
+        >. Aucun cookie publicitaire n'est utilisé, et vous pouvez retirer ou modifier votre choix à tout
+        moment, depuis le pied de page ou ici :
         <button
           type="button"
           style="

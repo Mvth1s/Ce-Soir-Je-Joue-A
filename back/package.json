@@ -11,7 +11,7 @@
     "@neondatabase/serverless": "^1.2.0",
     "iron-session": "^8.0.4",
     "openid": "^2.0.18",
-    "zod": "^4.6.5"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
