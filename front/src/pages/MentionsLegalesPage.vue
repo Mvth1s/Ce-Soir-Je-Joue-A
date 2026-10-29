@@ -38,21 +38,21 @@ const { resetChoice } = useCookieConsent();
     <div style="display: flex; flex-direction: column; gap: 10px">
       <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Éditeur du site</h2>
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
-        "Ce soir je joue à…" est un projet personnel, gratuit et non commercial, édité par un particulier sous
-        le pseudonyme <strong style="color: var(--tx)">Mvth1s</strong>. Le site ne vend rien, n'affiche aucune
+        "Ce soir je joue à…" est un projet personnel, gratuit et non commercial, édité par un particulier,
+        <strong style="color: var(--tx)">Mathis Aguado</strong>. Le site ne vend rien, n'affiche aucune
         publicité et ne génère aucun revenu. Contact :
-        <a href="mailto:mag.d3v+github@pm.me" style="color: var(--acc)">mag.d3v+github@pm.me</a>.
+        <a href="mailto:mag.d3v+ce-soir-je-joue-a@pm.me" style="color: var(--acc)">mag.d3v+ce-soir-je-joue-a@pm.me</a>.
       </p>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 10px">
       <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Hébergement</h2>
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
-        Le site est hébergé par Vercel Inc. (TODO : adresse postale et téléphone de l'hébergeur à reporter
-        depuis
-        <a href="https://vercel.com/legal" target="_blank" rel="noopener" style="color: var(--acc)"
-          >vercel.com/legal</a
-        >). La base de données est hébergée par Neon (TODO : raison sociale, adresse et région d'hébergement
+        Le site est hébergé par Vercel Inc., 440 N Barranca Avenue #4133, Covina, CA 91723, États-Unis.
+        Contact :
+        <a href="mailto:privacy@vercel.com" style="color: var(--acc)">privacy@vercel.com</a> (téléphone non
+        communiqué par l'hébergeur). Vercel est certifié EU-U.S. Data Privacy Framework.
+        La base de données est hébergée par Neon (TODO : raison sociale, adresse et région d'hébergement
         de la base à compléter).
       </p>
     </div>
@@ -133,16 +133,15 @@ const { resetChoice } = useCookieConsent();
           supprimée avec le compte.
         </li>
         <li>
-          Identifiant interne et SteamID64 : TODO : durée de conservation à définir (aucune purge automatique
-          à ce jour ; supprimés sur demande).
+          Identifiant interne et SteamID64 : conservés jusqu'à suppression sur demande (voir « Vos droits et
+          suppression des données » ci-dessous).
         </li>
         <li>
           Choix relatif aux cookies : conservé dans le stockage local de votre navigateur jusqu'à ce que vous
           le modifiiez ou effaciez les données du site.
         </li>
         <li>
-          Données Google Analytics : TODO : durée de conservation configurée dans la propriété Google
-          Analytics à reporter ici.
+          Données Google Analytics : conservées 2 mois.
         </li>
       </ul>
     </div>
@@ -153,7 +152,7 @@ const { resetChoice } = useCookieConsent();
         Conformément au RGPD, vous pouvez demander l'accès à vos données, leur rectification, leur effacement,
         leur portabilité, ou vous opposer à leur traitement. Pour supprimer votre compte (identifiant interne,
         SteamID64 et bibliothèque en cache), écrivez à
-        <a href="mailto:mag.d3v+github@pm.me" style="color: var(--acc)">mag.d3v+github@pm.me</a> depuis
+        <a href="mailto:mag.d3v+ce-soir-je-joue-a@pm.me" style="color: var(--acc)">mag.d3v+ce-soir-je-joue-a@pm.me</a> depuis
         n'importe quelle adresse en indiquant votre profil Steam ; aucune demande n'a besoin d'être publiée
         publiquement. Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une
         réclamation à la
