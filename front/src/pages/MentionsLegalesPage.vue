@@ -121,8 +121,11 @@ const { resetChoice } = useCookieConsent();
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
         Certaines données peuvent être traitées hors de l'Union européenne : par Vercel Inc. (hébergement,
         États-Unis), par Valve Corporation lors des appels à Steam (États-Unis) et, si vous l'acceptez, par
-        Google pour la mesure d'audience (voir « Cookies » ci-dessous). TODO : préciser la région
-        d'hébergement de la base Neon et des fonctions Vercel.
+        Google pour la mesure d'audience (voir « Cookies » ci-dessous). La base de données est hébergée
+        sur l'infrastructure AWS de la région eu-west-2 (Londres, Royaume-Uni), pays couvert par une
+        décision d'adéquation de la Commission européenne (renouvelée le 21/12/2025) ; son fournisseur,
+        Databricks, Inc., est une société américaine. TODO : préciser la région d'exécution des
+        fonctions Vercel.
       </p>
     </div>
 
