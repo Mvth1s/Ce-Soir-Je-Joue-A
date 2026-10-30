@@ -3,6 +3,7 @@
   "outputDirectory": "front/dist",
   "installCommand": "pnpm install",
   "devCommand": "pnpm --filter front dev --port $PORT",
+  "regions": ["lhr1"],
   "rewrites": [
     { "source": "/faq", "destination": "/faq/index.html" },
     { "source": "/mentions-legales", "destination": "/mentions-legales/index.html" },
