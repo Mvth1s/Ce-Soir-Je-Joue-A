@@ -38,10 +38,11 @@ const { resetChoice } = useCookieConsent();
     <div style="display: flex; flex-direction: column; gap: 10px">
       <h2 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--tx)">Éditeur du site</h2>
       <p style="margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--tx2)">
-        "Ce soir je joue à…" est un projet personnel, gratuit et non commercial, édité par un particulier,
-        <strong style="color: var(--tx)">Mathis Aguado</strong>. Le site ne vend rien, n'affiche aucune
-        publicité et ne génère aucun revenu. Contact :
-        <a href="mailto:mag.d3v+ce-soir-je-joue-a@pm.me" style="color: var(--acc)">mag.d3v+ce-soir-je-joue-a@pm.me</a>.
+        Ce site est édité par <strong style="color: var(--tx)">Mvth1s</strong>, à titre personnel et non
+        professionnel. Conformément à l'article 1-1, II de la loi n° 2004-575 du 21 juin 2004 (LCEN),
+        l'éditeur a choisi de conserver l'anonymat. Ses éléments d'identification ont été communiqués à
+        l'hébergeur. Le site ne vend rien, n'affiche aucune publicité et ne génère aucun revenu. Contact :
+        <a href="mailto:mag.d3v+cesoirjejouea@pm.me" style="color: var(--acc)">mag.d3v+cesoirjejouea@pm.me</a>.
       </p>
     </div>
 
@@ -52,8 +53,9 @@ const { resetChoice } = useCookieConsent();
         Contact :
         <a href="mailto:privacy@vercel.com" style="color: var(--acc)">privacy@vercel.com</a> (téléphone non
         communiqué par l'hébergeur). Vercel est certifié EU-U.S. Data Privacy Framework.
-        La base de données est hébergée par Neon (TODO : raison sociale, adresse et région d'hébergement
-        de la base à compléter).
+        La base de données est hébergée par Neon : Databricks, Inc. (maison mère de Neon, LLC), 160 Spear
+        Street, 15th Floor, San Francisco, CA 94105, États-Unis, sur l'infrastructure Amazon Web Services
+        de la région eu-west-2 (Londres, Royaume-Uni).
       </p>
     </div>
 
@@ -152,7 +154,7 @@ const { resetChoice } = useCookieConsent();
         Conformément au RGPD, vous pouvez demander l'accès à vos données, leur rectification, leur effacement,
         leur portabilité, ou vous opposer à leur traitement. Pour supprimer votre compte (identifiant interne,
         SteamID64 et bibliothèque en cache), écrivez à
-        <a href="mailto:mag.d3v+ce-soir-je-joue-a@pm.me" style="color: var(--acc)">mag.d3v+ce-soir-je-joue-a@pm.me</a> depuis
+        <a href="mailto:mag.d3v+cesoirjejouea@pm.me" style="color: var(--acc)">mag.d3v+cesoirjejouea@pm.me</a> depuis
         n'importe quelle adresse en indiquant votre profil Steam ; aucune demande n'a besoin d'être publiée
         publiquement. Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une
         réclamation à la
