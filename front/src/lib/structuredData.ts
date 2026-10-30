@@ -13,7 +13,7 @@ export const SITE_NAME = "Ce soir je joue à…";
 const SITE_DESCRIPTION =
   "Suggère 3 jeux à jouer maintenant, choisis dans la bibliothèque Steam de l'utilisateur selon son humeur, sa fatigue et le temps disponible.";
 
-const AUTHOR_ID = "https://mathisaguado.vercel.app/#person";
+const AUTHOR_ID = `${SITE_URL}/#person`;
 
 export type JsonLd = Record<string, unknown>;
 
@@ -49,9 +49,8 @@ export function siteGraph(): JsonLd {
       {
         "@type": "Person",
         "@id": AUTHOR_ID,
-        name: "Mathis Aguado",
-        url: "https://mathisaguado.vercel.app",
-        sameAs: ["https://github.com/Mvth1s", "https://www.linkedin.com/in/mathis-aguado"],
+        name: "Mvth1s",
+        sameAs: ["https://github.com/Mvth1s"],
       },
     ],
   };
