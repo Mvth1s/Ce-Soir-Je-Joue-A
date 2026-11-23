@@ -8,13 +8,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.2.0",
+    "@neondatabase/serverless": "^1.2.1",
     "iron-session": "^8.0.4",
-    "openid": "^2.0.18",
+    "openid": "^2.0.19",
     "zod": "^4.6.6"
   },
   "devDependencies": {
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.6",
     "@types/openid": "^2.0.5",
     "typescript": "^6.0.3"
   }
